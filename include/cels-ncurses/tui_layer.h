@@ -142,6 +142,12 @@ extern void tui_layer_move(TUI_Layer* layer, int x, int y);
  */
 extern void tui_layer_resize(TUI_Layer* layer, int w, int h);
 
+/* Resize all layers to new terminal dimensions.
+ * Called by input system on KEY_RESIZE. Each layer is resized to the
+ * full new terminal size. Applications needing per-layer resize policies
+ * should iterate g_layers directly. */
+extern void tui_layer_resize_all(int new_cols, int new_lines);
+
 /* ============================================================================
  * DrawContext Bridge
  * ============================================================================ */

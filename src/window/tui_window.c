@@ -17,6 +17,7 @@
 
 #include <cels-ncurses/tui_window.h>
 #include <ncurses.h>
+#include <panel.h>
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -129,6 +130,7 @@ static void tui_window_frame_loop(void) {
 
     while (g_running) {
         Engine_Progress(delta);
+        update_panels();
         doupdate();  /* flush all ncurses window changes */
         usleep((unsigned int)(delta * 1000000));
     }

@@ -163,6 +163,22 @@ void tui_layer_resize(TUI_Layer* layer, int w, int h) {
 }
 
 /* ============================================================================
+ * tui_layer_resize_all -- Resize every layer to new terminal dimensions
+ * ============================================================================
+ *
+ * Iterates all active layers and resizes each to the full new terminal size.
+ * This is the simplest resize policy (all layers are full-screen). Applications
+ * needing different behavior (fixed-size panels, proportional layouts) should
+ * iterate g_layers and call tui_layer_resize individually in their resize
+ * observer.
+ */
+void tui_layer_resize_all(int new_cols, int new_lines) {
+    for (int i = 0; i < g_layer_count; i++) {
+        tui_layer_resize(&g_layers[i], new_cols, new_lines);
+    }
+}
+
+/* ============================================================================
  * tui_layer_get_draw_context -- Bridge layer to Phase 2 drawing primitives
  * ============================================================================
  *
