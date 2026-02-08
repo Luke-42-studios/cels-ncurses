@@ -13,6 +13,7 @@
 
 #include "cels-ncurses/tui_input.h"
 #include "cels-ncurses/tui_window.h"
+#include "cels-ncurses/tui_layer.h"
 #include <ncurses.h>
 #include <flecs.h>
 #include <string.h>
@@ -88,6 +89,15 @@ static void tui_read_input_ncurses(void) {
                 *g_tui_running_ptr = 0;
             }
             return;  /* Do NOT set any input field -- immediate quit */
+
+        /* Terminal resize -- resize layers FIRST, then notify observers */
+        case KEY_RESIZE:
+            tui_layer_resize_all(COLS, LINES);
+            TUI_WindowState.width = COLS;
+            TUI_WindowState.height = LINES;
+            TUI_WindowState.state = WINDOW_STATE_RESIZING;
+            cels_state_notify_change(TUI_WindowStateID);
+            return;
 
         /* Numbers, function keys, raw characters */
         default:
