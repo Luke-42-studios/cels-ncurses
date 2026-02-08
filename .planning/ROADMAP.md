@@ -65,13 +65,12 @@ Plans:
   2. Developer can show/hide layers, raise/lower z-order, move layers to new positions, and resize layers -- all via the panel library
   3. Developer can obtain a TUI_DrawContext from any layer and draw into it using Phase 2 primitives
   4. On terminal resize (SIGWINCH detected via KEY_RESIZE), all layers are resized via wresize + replace_panel and WindowState dimensions are updated with observers notified
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 03-01: Layer create/destroy with PANEL backing and z-order
-- [ ] 03-02: Layer operations (show/hide, raise/lower, move, resize)
-- [ ] 03-03: Layer-to-DrawContext bridge
-- [ ] 03-04: Terminal resize handling (SIGWINCH, layer resize, observer notification)
+- [ ] 03-01-PLAN.md -- Layer types, manager globals, create/destroy with PANEL backing, CMake panelw linkage
+- [ ] 03-02-PLAN.md -- Layer operations (show/hide, raise/lower, move, resize) and DrawContext bridge
+- [ ] 03-03-PLAN.md -- Terminal resize handling (KEY_RESIZE, resize-all, observer notification) and frame loop update_panels
 
 ### Phase 4: Frame Pipeline
 **Goal**: Developer uses a begin/end frame lifecycle that orchestrates layer compositing with a single doupdate() per frame
@@ -111,12 +110,12 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 3/3 | ✓ Complete | 2026-02-08 |
-| 2. Drawing Primitives | 5/5 | ✓ Complete | 2026-02-08 |
-| 3. Layer System | 0/4 | Not started | - |
+| 1. Foundation | 3/3 | Complete | 2026-02-08 |
+| 2. Drawing Primitives | 5/5 | Complete | 2026-02-08 |
+| 3. Layer System | 0/3 | In progress | - |
 | 4. Frame Pipeline | 0/2 | Not started | - |
 | 5. Integration and Migration | 0/3 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-07*
-*Last updated: 2026-02-08 after Phase 2 completion*
+*Last updated: 2026-02-08 after Phase 3 planning*
