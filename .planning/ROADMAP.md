@@ -47,14 +47,14 @@ Plans:
   3. Developer can draw borders with single, double, or rounded corner styles, with independent per-side control
   4. Developer can push/pop scissor rectangles that correctly restrict drawing to the clipped region, including nested clips that intersect
   5. Developer can draw horizontal and vertical lines with box-drawing characters
-**Plans**: TBD
+**Plans:** 5 plans
 
 Plans:
-- [ ] 02-01: Filled and outlined rectangle drawing
-- [ ] 02-02: Text rendering (positioned and bounded)
-- [ ] 02-03: Border drawing with box-drawing characters and corner styles
-- [ ] 02-04: Scissor/clip region stack (push, pop, nesting)
-- [ ] 02-05: Horizontal and vertical line drawing
+- [ ] 02-01-PLAN.md -- Header with all Phase 2 types, filled and outlined rectangle drawing
+- [ ] 02-02-PLAN.md -- Text rendering with UTF-8 support and bounded text
+- [ ] 02-03-PLAN.md -- Per-side border drawing with corner logic
+- [ ] 02-04-PLAN.md -- Scissor/clip region stack (push, pop, reset, nesting)
+- [ ] 02-05-PLAN.md -- Horizontal and vertical line drawing
 
 ### Phase 3: Layer System
 **Goal**: Developer can manage named, z-ordered drawing surfaces backed by ncurses panels, with correct terminal resize behavior
