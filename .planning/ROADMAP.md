@@ -12,7 +12,7 @@ Transform the cels-ncurses module from its current stdscr-based renderer with em
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation** - Type system, color pair management, draw context, and locale setup
+- [x] **Phase 1: Foundation** - Type system, color pair management, draw context, and locale setup
 - [ ] **Phase 2: Drawing Primitives** - Rectangle, text, border, line, and scissor drawing functions
 - [ ] **Phase 3: Layer System** - Panel-backed named layers with z-ordering and terminal resize handling
 - [ ] **Phase 4: Frame Pipeline** - Begin/end frame lifecycle integrated with existing window loop
@@ -33,9 +33,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans:** 3 plans
 
 Plans:
-- [ ] 01-01-PLAN.md -- TUI_Rect, TUI_CellRect structs and float-to-cell mapping
-- [ ] 01-02-PLAN.md -- Dynamic color pair pool (alloc_pair), TUI_Color/TUI_Style, attribute application
-- [ ] 01-03-PLAN.md -- TUI_DrawContext struct and setlocale initialization
+- [x] 01-01-PLAN.md -- TUI_Rect, TUI_CellRect structs and float-to-cell mapping
+- [x] 01-02-PLAN.md -- Dynamic color pair pool (alloc_pair), TUI_Color/TUI_Style, attribute application
+- [x] 01-03-PLAN.md -- TUI_DrawContext struct and setlocale initialization
 
 ### Phase 2: Drawing Primitives
 **Goal**: Developer can draw any shape, text, or border that a Clay renderer would need, with clipping support
@@ -111,7 +111,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/3 | Planned | - |
+| 1. Foundation | 3/3 | ✓ Complete | 2026-02-08 |
 | 2. Drawing Primitives | 0/5 | Not started | - |
 | 3. Layer System | 0/4 | Not started | - |
 | 4. Frame Pipeline | 0/2 | Not started | - |
@@ -119,4 +119,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 ---
 *Roadmap created: 2026-02-07*
-*Last updated: 2026-02-07*
+*Last updated: 2026-02-08*

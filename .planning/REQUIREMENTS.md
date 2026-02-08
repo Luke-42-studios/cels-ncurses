@@ -7,13 +7,13 @@
 
 ### Foundation
 
-- [ ] **FNDN-01**: Developer can create a TUI_Style struct with foreground color, background color, and attribute flags (bold, dim, underline, reverse)
-- [ ] **FNDN-02**: Color system dynamically allocates ncurses color pairs from a pool, replacing hardcoded CP_* constants
-- [ ] **FNDN-03**: Color system uses wattr_set() for atomic attribute application (no attron/attroff state leaks)
-- [ ] **FNDN-04**: Developer can create a TUI_DrawContext that wraps an ncurses WINDOW* with position, dimensions, and clipping state
-- [ ] **FNDN-05**: TUI_Rect struct provides integer cell coordinates (x, y, w, h) for all drawing operations
-- [ ] **FNDN-06**: Float-to-cell coordinate mapping uses floorf for position and ceilf for dimensions (Clay compatibility)
-- [ ] **FNDN-07**: setlocale(LC_ALL, "") is called before initscr() to enable Unicode box-drawing characters
+- [x] **FNDN-01**: Developer can create a TUI_Style struct with foreground color, background color, and attribute flags (bold, dim, underline, reverse)
+- [x] **FNDN-02**: Color system dynamically allocates ncurses color pairs from a pool, replacing hardcoded CP_* constants
+- [x] **FNDN-03**: Color system uses wattr_set() for atomic attribute application (no attron/attroff state leaks)
+- [x] **FNDN-04**: Developer can create a TUI_DrawContext that wraps an ncurses WINDOW* with position, dimensions, and clipping state
+- [x] **FNDN-05**: TUI_Rect struct provides integer cell coordinates (x, y, w, h) for all drawing operations
+- [x] **FNDN-06**: Float-to-cell coordinate mapping uses floorf for position and ceilf for dimensions (Clay compatibility)
+- [x] **FNDN-07**: setlocale(LC_ALL, "") is called before initscr() to enable Unicode box-drawing characters
 
 ### Drawing Primitives
 
@@ -104,13 +104,13 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FNDN-01 | Phase 1 | Pending |
-| FNDN-02 | Phase 1 | Pending |
-| FNDN-03 | Phase 1 | Pending |
-| FNDN-04 | Phase 1 | Pending |
-| FNDN-05 | Phase 1 | Pending |
-| FNDN-06 | Phase 1 | Pending |
-| FNDN-07 | Phase 1 | Pending |
+| FNDN-01 | Phase 1 | Complete |
+| FNDN-02 | Phase 1 | Complete |
+| FNDN-03 | Phase 1 | Complete |
+| FNDN-04 | Phase 1 | Complete |
+| FNDN-05 | Phase 1 | Complete |
+| FNDN-06 | Phase 1 | Complete |
+| FNDN-07 | Phase 1 | Complete |
 | DRAW-01 | Phase 2 | Pending |
 | DRAW-02 | Phase 2 | Pending |
 | DRAW-03 | Phase 2 | Pending |
@@ -151,4 +151,4 @@
 
 ---
 *Requirements defined: 2026-02-07*
-*Last updated: 2026-02-07 after roadmap creation*
+*Last updated: 2026-02-08 after Phase 1 completion*
