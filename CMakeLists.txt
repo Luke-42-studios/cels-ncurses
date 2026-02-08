@@ -19,6 +19,7 @@ target_sources(cels-ncurses INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/input/tui_input.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/renderer/tui_renderer.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/tui_engine.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_color.c
 )
 
 target_include_directories(cels-ncurses INTERFACE
@@ -29,4 +30,5 @@ target_include_directories(cels-ncurses INTERFACE
 target_link_libraries(cels-ncurses INTERFACE
     ${CURSES_LIBRARIES}
     cels
+    m
 )
