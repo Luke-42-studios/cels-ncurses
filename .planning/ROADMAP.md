@@ -93,15 +93,14 @@ Plans:
 **Requirements**: MIGR-01, MIGR-02, MIGR-03, MIGR-04, MIGR-05
 **Success Criteria** (what must be TRUE):
   1. Canvas, Button, Slider, and toggle widget renderers are removed from the module and live in the example app
-  2. tui_components.h is no longer a public header of the module, and tui_renderer.c contains only CELS feature/provider registration
+  2. tui_components.h is no longer a public header of the module, and tui_renderer.c is deleted entirely
   3. Example app renders all its UI using the new graphics API primitives (rectangles, text, borders, layers)
   4. No code in the module or example app writes directly to stdscr after initialization -- all drawing goes through TUI_DrawContext via the graphics API
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 05-01: Extract app-specific rendering to example app
-- [ ] 05-02: Strip tui_renderer.c to CELS registration only
-- [ ] 05-03: Verify example app renders correctly with new API, no stdscr usage
+- [ ] 05-01-PLAN.md -- Create DrawContext-based widgets and app-level render provider in example app
+- [ ] 05-02-PLAN.md -- Strip module: delete renderer files, remove init_pair, remove overwrite bridge, add stdscr invariant
 
 ## Progress
 
@@ -114,8 +113,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 2. Drawing Primitives | 5/5 | Complete | 2026-02-08 |
 | 3. Layer System | 3/3 | Complete | 2026-02-08 |
 | 4. Frame Pipeline | 2/2 | Complete | 2026-02-08 |
-| 5. Integration and Migration | 0/3 | Not started | - |
+| 5. Integration and Migration | 0/2 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-07*
-*Last updated: 2026-02-08 after Phase 4 execution*
+*Last updated: 2026-02-08 after Phase 5 planning*
