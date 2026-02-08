@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-07)
 ## Current Position
 
 Phase: 2 of 5 (Drawing Primitives)
-Plan: 5 of 5 in current phase
+Plan: 4 of 5 in current phase
 Status: In progress
-Last activity: 2026-02-08 -- Completed 02-05-PLAN.md
+Last activity: 2026-02-08 -- Completed 02-04-PLAN.md
 
-Progress: [#####...............] 29% (5/17 plans)
+Progress: [######..............] 35% (6/17 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
+- Total plans completed: 6
 - Average duration: 2 min
-- Total execution time: 0.15 hours
+- Total execution time: 0.18 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1. Foundation | 3/3 | 5 min | 1.7 min |
-| 2. Drawing Primitives | 2/5 | 4 min | 2 min |
+| 2. Drawing Primitives | 3/5 | 6 min | 2 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (1 min), 01-02 (2 min), 01-03 (2 min), 02-01 (3 min), 02-05 (1 min)
+- Last 5 plans: 01-02 (2 min), 01-03 (2 min), 02-01 (3 min), 02-05 (1 min), 02-04 (2 min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -52,7 +52,8 @@ Recent decisions affecting current work:
 - TUI_DrawContext embeds single TUI_CellRect clip field (not a clip stack)
 - clip defaults to full drawable area on creation (scissor stack updates it in Phase 2)
 - WINDOW* is borrowed, not owned -- caller manages lifetime
-- _XOPEN_SOURCE 700 required for ncurses wide-char API (WACS_ macros, mvwadd_wch, setcchar, cchar_t) -- use in all .c files that need wide-char ncurses
+- _XOPEN_SOURCE 700 required for ncurses wide-char API (WACS_ macros, mvwadd_wch, setcchar, cchar_t) -- now set globally via CMakeLists.txt target_compile_definitions, do NOT add to .c files
+- Scissor stack: silent early return for overflow/underflow (no assert, matching project error handling convention)
 
 ### Pending Todos
 
@@ -82,6 +83,6 @@ Lessons from reviewing an upstream Clay ncurses renderer. Our architecture is st
 
 ## Session Continuity
 
-Last session: 2026-02-08T07:34:30Z
-Stopped at: Completed 02-05-PLAN.md
+Last session: 2026-02-08T07:35:47Z
+Stopped at: Completed 02-04-PLAN.md
 Resume file: None
