@@ -10,27 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-07)
 ## Current Position
 
 Phase: 2 of 5 (Drawing Primitives)
-Plan: 0 of 5 in current phase
-Status: Ready to plan
-Last activity: 2026-02-08 -- Phase 1 verified and complete
+Plan: 1 of 5 in current phase
+Status: In progress
+Last activity: 2026-02-08 -- Completed 02-01-PLAN.md
 
-Progress: [###.................] 18% (3/17 plans)
+Progress: [####................] 24% (4/17 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 1.7 min
-- Total execution time: 0.08 hours
+- Total plans completed: 4
+- Average duration: 2 min
+- Total execution time: 0.13 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1. Foundation | 3/3 | 5 min | 1.7 min |
+| 2. Drawing Primitives | 1/5 | 3 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (1 min), 01-02 (2 min), 01-03 (2 min)
+- Last 5 plans: 01-01 (1 min), 01-02 (2 min), 01-03 (2 min), 02-01 (3 min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -51,10 +52,28 @@ Recent decisions affecting current work:
 - TUI_DrawContext embeds single TUI_CellRect clip field (not a clip stack)
 - clip defaults to full drawable area on creation (scissor stack updates it in Phase 2)
 - WINDOW* is borrowed, not owned -- caller manages lifetime
+- _XOPEN_SOURCE 700 required for ncurses wide-char API (WACS_ macros, mvwadd_wch, setcchar, cchar_t) -- use in all .c files that need wide-char ncurses
 
 ### Pending Todos
 
 None yet.
+
+### Reference: Clay ncurses renderer PR (nicbarker/clay#569)
+
+Lessons from reviewing an upstream Clay ncurses renderer. Our architecture is stronger (layers, alloc_pair, wattr_set, cell-space clipping) but these specific techniques are worth adopting:
+
+**Phase 2 -- Text rendering (DRAW-03, DRAW-04):**
+- Wide-char text measurement: use `mbtowc()`/`wcwidth()` loop to get correct column width for multibyte UTF-8 strings. Cannot assume 1 byte = 1 column.
+- Bounded/clipped text rendering: when text is partially clipped, must skip N columns from left and take M columns -- non-trivial with wide chars. Track column offset per `wchar_t`, use `mvaddnwstr()` for the visible slice.
+
+**Phase 5 -- cels-clay bridge (MIGR-04):**
+- Clay uses logical "pixel" units (e.g., 8.0f width, 16.0f height per cell). The cels-clay module will need `CELL_WIDTH`/`CELL_HEIGHT` constants to convert `Clay_BoundingBox` floats into our `TUI_Rect` floats. This validates our float->cell conversion as the right abstraction boundary.
+
+**Anti-patterns confirmed (things we already avoid):**
+- Manual color pair cache with init_pair + linear search (we use alloc_pair with built-in LRU)
+- attron/attroff state leaks (we use wattr_set atomically)
+- mvinch to sample background color for text (our layer system eliminates this need)
+- Drawing everything to stdscr (our panel-backed layers give z-ordering)
 
 ### Blockers/Concerns
 
@@ -63,6 +82,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-08
-Stopped at: Phase 1 complete, verified, ready for Phase 2
+Last session: 2026-02-08T07:30:43Z
+Stopped at: Completed 02-01-PLAN.md
 Resume file: None
