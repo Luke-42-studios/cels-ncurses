@@ -229,3 +229,135 @@ void tui_draw_vline(TUI_DrawContext* ctx, int x, int y, int length,
     tui_style_apply(ctx->win, style);
     mvwvline_set(ctx->win, top, x, chars.vline, visible_len);
 }
+
+/* ============================================================================
+ * Border Drawing (DRAW-05, DRAW-06, DRAW-07)
+ * ============================================================================
+ *
+ * Per-side border drawing with corner logic. Corners are placed only when
+ * both adjacent sides are enabled; when only one adjacent side is present,
+ * that side's line character extends into the corner cell. Supports single,
+ * double, and rounded border styles via tui_border_chars_get().
+ *
+ * Uses per-cell loops with tui_cell_rect_contains (not mvwhline_set/
+ * mvwvline_set) because line segments exclude corner cells and each cell
+ * needs an individual clip check.
+ */
+
+void tui_draw_border(TUI_DrawContext* ctx, TUI_CellRect rect,
+                      uint8_t sides, TUI_BorderStyle border_style,
+                      TUI_Style style) {
+    if (rect.w < 2 || rect.h < 2) return;
+    if (sides == 0) return;
+
+    TUI_BorderChars chars = tui_border_chars_get(border_style);
+    tui_style_apply(ctx->win, style);
+
+    /* Corner positions */
+    int ul_x = rect.x;
+    int ul_y = rect.y;
+    int ur_x = rect.x + rect.w - 1;
+    int ur_y = rect.y;
+    int ll_x = rect.x;
+    int ll_y = rect.y + rect.h - 1;
+    int lr_x = rect.x + rect.w - 1;
+    int lr_y = rect.y + rect.h - 1;
+
+    /* Upper-left corner */
+    if ((sides & TUI_SIDE_TOP) && (sides & TUI_SIDE_LEFT)) {
+        if (tui_cell_rect_contains(ctx->clip, ul_x, ul_y)) {
+            mvwadd_wch(ctx->win, ul_y, ul_x, chars.ul);
+        }
+    } else if (sides & TUI_SIDE_TOP) {
+        if (tui_cell_rect_contains(ctx->clip, ul_x, ul_y)) {
+            mvwadd_wch(ctx->win, ul_y, ul_x, chars.hline);
+        }
+    } else if (sides & TUI_SIDE_LEFT) {
+        if (tui_cell_rect_contains(ctx->clip, ul_x, ul_y)) {
+            mvwadd_wch(ctx->win, ul_y, ul_x, chars.vline);
+        }
+    }
+
+    /* Upper-right corner */
+    if ((sides & TUI_SIDE_TOP) && (sides & TUI_SIDE_RIGHT)) {
+        if (tui_cell_rect_contains(ctx->clip, ur_x, ur_y)) {
+            mvwadd_wch(ctx->win, ur_y, ur_x, chars.ur);
+        }
+    } else if (sides & TUI_SIDE_TOP) {
+        if (tui_cell_rect_contains(ctx->clip, ur_x, ur_y)) {
+            mvwadd_wch(ctx->win, ur_y, ur_x, chars.hline);
+        }
+    } else if (sides & TUI_SIDE_RIGHT) {
+        if (tui_cell_rect_contains(ctx->clip, ur_x, ur_y)) {
+            mvwadd_wch(ctx->win, ur_y, ur_x, chars.vline);
+        }
+    }
+
+    /* Lower-left corner */
+    if ((sides & TUI_SIDE_BOTTOM) && (sides & TUI_SIDE_LEFT)) {
+        if (tui_cell_rect_contains(ctx->clip, ll_x, ll_y)) {
+            mvwadd_wch(ctx->win, ll_y, ll_x, chars.ll);
+        }
+    } else if (sides & TUI_SIDE_BOTTOM) {
+        if (tui_cell_rect_contains(ctx->clip, ll_x, ll_y)) {
+            mvwadd_wch(ctx->win, ll_y, ll_x, chars.hline);
+        }
+    } else if (sides & TUI_SIDE_LEFT) {
+        if (tui_cell_rect_contains(ctx->clip, ll_x, ll_y)) {
+            mvwadd_wch(ctx->win, ll_y, ll_x, chars.vline);
+        }
+    }
+
+    /* Lower-right corner */
+    if ((sides & TUI_SIDE_BOTTOM) && (sides & TUI_SIDE_RIGHT)) {
+        if (tui_cell_rect_contains(ctx->clip, lr_x, lr_y)) {
+            mvwadd_wch(ctx->win, lr_y, lr_x, chars.lr);
+        }
+    } else if (sides & TUI_SIDE_BOTTOM) {
+        if (tui_cell_rect_contains(ctx->clip, lr_x, lr_y)) {
+            mvwadd_wch(ctx->win, lr_y, lr_x, chars.hline);
+        }
+    } else if (sides & TUI_SIDE_RIGHT) {
+        if (tui_cell_rect_contains(ctx->clip, lr_x, lr_y)) {
+            mvwadd_wch(ctx->win, lr_y, lr_x, chars.vline);
+        }
+    }
+
+    /* Top side (line segment between corners) */
+    if (sides & TUI_SIDE_TOP) {
+        for (int col = rect.x + 1; col <= rect.x + rect.w - 2; col++) {
+            if (tui_cell_rect_contains(ctx->clip, col, rect.y)) {
+                mvwadd_wch(ctx->win, rect.y, col, chars.hline);
+            }
+        }
+    }
+
+    /* Bottom side (line segment between corners) */
+    if (sides & TUI_SIDE_BOTTOM) {
+        int bottom_y = rect.y + rect.h - 1;
+        for (int col = rect.x + 1; col <= rect.x + rect.w - 2; col++) {
+            if (tui_cell_rect_contains(ctx->clip, col, bottom_y)) {
+                mvwadd_wch(ctx->win, bottom_y, col, chars.hline);
+            }
+        }
+    }
+
+    /* Left side (line segment between corners) */
+    if (sides & TUI_SIDE_LEFT) {
+        for (int row = rect.y + 1; row <= rect.y + rect.h - 2; row++) {
+            if (tui_cell_rect_contains(ctx->clip, rect.x, row)) {
+                mvwadd_wch(ctx->win, row, rect.x, chars.vline);
+            }
+        }
+    }
+
+    /* Right side (line segment between corners) */
+    if (sides & TUI_SIDE_RIGHT) {
+        int right_x = rect.x + rect.w - 1;
+        for (int row = rect.y + 1; row <= rect.y + rect.h - 2; row++) {
+            if (tui_cell_rect_contains(ctx->clip, right_x, row)) {
+                mvwadd_wch(ctx->win, row, right_x, chars.vline);
+            }
+        }
+    }
+}
