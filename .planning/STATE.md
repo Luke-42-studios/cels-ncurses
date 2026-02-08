@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-07)
 ## Current Position
 
 Phase: 3 of 5 (Layer System)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-02-08 -- Completed 03-01-PLAN.md
+Last activity: 2026-02-08 -- Completed 03-02-PLAN.md
 
-Progress: [##########..........] 53% (9/17 plans)
+Progress: [###########.........] 59% (10/17 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
+- Total plans completed: 10
 - Average duration: 2 min
-- Total execution time: 0.25 hours
+- Total execution time: 0.28 hours
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: [##########..........] 53% (9/17 plans)
 |-------|-------|-------|----------|
 | 1. Foundation | 3/3 | 5 min | 1.7 min |
 | 2. Drawing Primitives | 5/5 | 9 min | 1.8 min |
-| 3. Layer System | 1/4 | 2 min | 2.0 min |
+| 3. Layer System | 2/4 | 4 min | 2.0 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-01 (2 min), 02-01 (3 min), 02-05 (1 min), 02-04 (2 min), 02-03 (1 min)
+- Last 5 plans: 03-02 (2 min), 03-01 (2 min), 02-01 (3 min), 02-05 (1 min), 02-04 (2 min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -59,6 +59,9 @@ Recent decisions affecting current work:
 - g_layers[TUI_LAYER_MAX=32] with extern linkage (declared in .h, defined in .c) -- validated INTERFACE library pattern
 - set_panel_userptr for PANEL* to TUI_Layer* reverse lookup
 - del_panel before delwin (correct cleanup order per ncurses docs)
+- move_panel (not mvwin) for layer repositioning -- mvwin bypasses panel tracking
+- wresize then replace_panel for resize -- replace_panel updates panel size bookkeeping
+- DrawContext from layer uses local (0,0) origin -- each panel WINDOW has own coordinate system
 
 ### Pending Todos
 
@@ -89,5 +92,5 @@ Lessons from reviewing an upstream Clay ncurses renderer. Our architecture is st
 ## Session Continuity
 
 Last session: 2026-02-08
-Stopped at: Completed 03-01-PLAN.md (layer types and lifecycle)
+Stopped at: Completed 03-02-PLAN.md (layer operations)
 Resume file: None
