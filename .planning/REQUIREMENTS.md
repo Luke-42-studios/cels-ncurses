@@ -23,10 +23,10 @@
 - [ ] **DRAW-04**: Developer can render bounded text that does not exceed a maximum column width (Clay text bounding)
 - [ ] **DRAW-05**: Developer can draw borders with per-side control (left, right, top, bottom independently)
 - [ ] **DRAW-06**: Developer can draw borders with single, double, or rounded corner styles
-- [ ] **DRAW-07**: Corner radius is treated as boolean per-corner — radius > 0 uses rounded Unicode box-drawing corners
+- [ ] **DRAW-07**: Corner radius is treated as boolean per-corner -- radius > 0 uses rounded Unicode box-drawing corners
 - [ ] **DRAW-08**: Developer can push a scissor/clip rectangle that restricts all subsequent drawing to that region
 - [ ] **DRAW-09**: Developer can pop a scissor/clip rectangle to restore the previous clipping region
-- [ ] **DRAW-10**: Scissor regions nest correctly — inner clip is intersection of parent and child clip rects
+- [ ] **DRAW-10**: Scissor regions nest correctly -- inner clip is intersection of parent and child clip rects
 - [ ] **DRAW-11**: Developer can draw horizontal and vertical lines with box-drawing characters
 
 ### Layer System
@@ -66,7 +66,7 @@
 
 ### Performance
 
-- **PERF-01**: Damage tracking / dirty rectangles — only redraw cells that changed since last frame
+- **PERF-01**: Damage tracking / dirty rectangles -- only redraw cells that changed since last frame
 - **PERF-02**: Double buffering with frame diff for minimal terminal I/O
 
 ### Enhanced Drawing
@@ -104,51 +104,51 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FNDN-01 | — | Pending |
-| FNDN-02 | — | Pending |
-| FNDN-03 | — | Pending |
-| FNDN-04 | — | Pending |
-| FNDN-05 | — | Pending |
-| FNDN-06 | — | Pending |
-| FNDN-07 | — | Pending |
-| DRAW-01 | — | Pending |
-| DRAW-02 | — | Pending |
-| DRAW-03 | — | Pending |
-| DRAW-04 | — | Pending |
-| DRAW-05 | — | Pending |
-| DRAW-06 | — | Pending |
-| DRAW-07 | — | Pending |
-| DRAW-08 | — | Pending |
-| DRAW-09 | — | Pending |
-| DRAW-10 | — | Pending |
-| DRAW-11 | — | Pending |
-| LAYR-01 | — | Pending |
-| LAYR-02 | — | Pending |
-| LAYR-03 | — | Pending |
-| LAYR-04 | — | Pending |
-| LAYR-05 | — | Pending |
-| LAYR-06 | — | Pending |
-| LAYR-07 | — | Pending |
-| LAYR-08 | — | Pending |
-| FRAM-01 | — | Pending |
-| FRAM-02 | — | Pending |
-| FRAM-03 | — | Pending |
-| FRAM-04 | — | Pending |
-| FRAM-05 | — | Pending |
-| RSZE-01 | — | Pending |
-| RSZE-02 | — | Pending |
-| RSZE-03 | — | Pending |
-| MIGR-01 | — | Pending |
-| MIGR-02 | — | Pending |
-| MIGR-03 | — | Pending |
-| MIGR-04 | — | Pending |
-| MIGR-05 | — | Pending |
+| FNDN-01 | Phase 1 | Pending |
+| FNDN-02 | Phase 1 | Pending |
+| FNDN-03 | Phase 1 | Pending |
+| FNDN-04 | Phase 1 | Pending |
+| FNDN-05 | Phase 1 | Pending |
+| FNDN-06 | Phase 1 | Pending |
+| FNDN-07 | Phase 1 | Pending |
+| DRAW-01 | Phase 2 | Pending |
+| DRAW-02 | Phase 2 | Pending |
+| DRAW-03 | Phase 2 | Pending |
+| DRAW-04 | Phase 2 | Pending |
+| DRAW-05 | Phase 2 | Pending |
+| DRAW-06 | Phase 2 | Pending |
+| DRAW-07 | Phase 2 | Pending |
+| DRAW-08 | Phase 2 | Pending |
+| DRAW-09 | Phase 2 | Pending |
+| DRAW-10 | Phase 2 | Pending |
+| DRAW-11 | Phase 2 | Pending |
+| LAYR-01 | Phase 3 | Pending |
+| LAYR-02 | Phase 3 | Pending |
+| LAYR-03 | Phase 3 | Pending |
+| LAYR-04 | Phase 3 | Pending |
+| LAYR-05 | Phase 3 | Pending |
+| LAYR-06 | Phase 3 | Pending |
+| LAYR-07 | Phase 3 | Pending |
+| LAYR-08 | Phase 3 | Pending |
+| RSZE-01 | Phase 3 | Pending |
+| RSZE-02 | Phase 3 | Pending |
+| RSZE-03 | Phase 3 | Pending |
+| FRAM-01 | Phase 4 | Pending |
+| FRAM-02 | Phase 4 | Pending |
+| FRAM-03 | Phase 4 | Pending |
+| FRAM-04 | Phase 4 | Pending |
+| FRAM-05 | Phase 4 | Pending |
+| MIGR-01 | Phase 5 | Pending |
+| MIGR-02 | Phase 5 | Pending |
+| MIGR-03 | Phase 5 | Pending |
+| MIGR-04 | Phase 5 | Pending |
+| MIGR-05 | Phase 5 | Pending |
 
 **Coverage:**
-- v1 requirements: 38 total
-- Mapped to phases: 0
-- Unmapped: 38
+- v1 requirements: 39 total
+- Mapped to phases: 39
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-07*
-*Last updated: 2026-02-07 after initial definition*
+*Last updated: 2026-02-07 after roadmap creation*
