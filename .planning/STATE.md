@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-07)
 
 **Core value:** Provide a low-level drawing primitive API that a future cels-clay module can target to render Clay UI layouts in the terminal
-**Current focus:** Phase 3 - Layer System
+**Current focus:** Phase 4 - Frame Pipeline
 
 ## Current Position
 
-Phase: 3 of 5 (Layer System)
-Plan: 3 of 4 in current phase
-Status: In progress
-Last activity: 2026-02-08 -- Completed 03-03-PLAN.md
+Phase: 4 of 5 (Frame Pipeline)
+Plan: 0 of 2 in current phase
+Status: Ready to plan
+Last activity: 2026-02-08 -- Phase 3 verified and complete
 
-Progress: [############........] 65% (11/17 plans)
+Progress: [##############......] 65% (11/17 plans)
 
 ## Performance Metrics
 
 **Velocity:**
 - Total plans completed: 11
 - Average duration: 2 min
-- Total execution time: 0.30 hours
+- Total execution time: 0.32 hours
 
 **By Phase:**
 
@@ -29,7 +29,7 @@ Progress: [############........] 65% (11/17 plans)
 |-------|-------|-------|----------|
 | 1. Foundation | 3/3 | 5 min | 1.7 min |
 | 2. Drawing Primitives | 5/5 | 9 min | 1.8 min |
-| 3. Layer System | 3/4 | 5 min | 1.7 min |
+| 3. Layer System | 3/3 | 5 min | 1.7 min |
 
 **Recent Trend:**
 - Last 5 plans: 03-03 (1 min), 03-02 (2 min), 03-01 (2 min), 02-01 (3 min), 02-05 (1 min)
@@ -89,11 +89,11 @@ Lessons from reviewing an upstream Clay ncurses renderer. Our architecture is st
 
 ### Blockers/Concerns
 
-- Phase 3 (Layer System) is highest risk: stdscr-to-panels migration must be complete, no partial adoption. Mixing stdscr with panels causes visual corruption.
-- INTERFACE library static globals: Layer manager global state needs extern declarations with single definition in one .c file. VALIDATED in 03-01 -- extern g_layers/g_layer_count compiles and links correctly.
+- Phase 3 risk RESOLVED: stdscr-to-panels migration complete. Frame loop uses update_panels() + doupdate(). INTERFACE library extern globals validated.
+- Phase 4 note: tui_frame_begin/end must avoid duplicate update_panels/doupdate calls since frame loop already has them.
 
 ## Session Continuity
 
 Last session: 2026-02-08
-Stopped at: Completed 03-03-PLAN.md (resize handling)
+Stopped at: Phase 3 complete, verified, ready for Phase 4
 Resume file: None

@@ -31,14 +31,14 @@
 
 ### Layer System
 
-- [ ] **LAYR-01**: Developer can create a named layer with position (x, y), dimensions (w, h), and z-order
-- [ ] **LAYR-02**: Developer can destroy a layer, freeing its ncurses WINDOW and PANEL resources
-- [ ] **LAYR-03**: Developer can show/hide a layer (hidden layers are skipped during compositing)
-- [ ] **LAYR-04**: Developer can raise or lower a layer in the z-order stack
-- [ ] **LAYR-05**: Developer can move a layer to a new position using move_panel (not mvwin)
-- [ ] **LAYR-06**: Developer can resize a layer (wresize + replace_panel)
-- [ ] **LAYR-07**: Developer can get a TUI_DrawContext from a layer for drawing into it
-- [ ] **LAYR-08**: Layers are backed by ncurses PANEL library for native z-ordered compositing
+- [x] **LAYR-01**: Developer can create a named layer with position (x, y), dimensions (w, h), and z-order
+- [x] **LAYR-02**: Developer can destroy a layer, freeing its ncurses WINDOW and PANEL resources
+- [x] **LAYR-03**: Developer can show/hide a layer (hidden layers are skipped during compositing)
+- [x] **LAYR-04**: Developer can raise or lower a layer in the z-order stack
+- [x] **LAYR-05**: Developer can move a layer to a new position using move_panel (not mvwin)
+- [x] **LAYR-06**: Developer can resize a layer (wresize + replace_panel)
+- [x] **LAYR-07**: Developer can get a TUI_DrawContext from a layer for drawing into it
+- [x] **LAYR-08**: Layers are backed by ncurses PANEL library for native z-ordered compositing
 
 ### Frame Pipeline
 
@@ -50,9 +50,9 @@
 
 ### Terminal Resize
 
-- [ ] **RSZE-01**: Terminal resize (SIGWINCH) is detected via KEY_RESIZE from wgetch in input loop
-- [ ] **RSZE-02**: On resize, all layer surfaces are resized (wresize + replace_panel for each)
-- [ ] **RSZE-03**: On resize, TUI_WindowState dimensions are updated and observers notified
+- [x] **RSZE-01**: Terminal resize (SIGWINCH) is detected via KEY_RESIZE from wgetch in input loop
+- [x] **RSZE-02**: On resize, all layer surfaces are resized (wresize + replace_panel for each)
+- [x] **RSZE-03**: On resize, TUI_WindowState dimensions are updated and observers notified
 
 ### Migration
 
@@ -122,17 +122,17 @@
 | DRAW-09 | Phase 2 | Complete |
 | DRAW-10 | Phase 2 | Complete |
 | DRAW-11 | Phase 2 | Complete |
-| LAYR-01 | Phase 3 | Pending |
-| LAYR-02 | Phase 3 | Pending |
-| LAYR-03 | Phase 3 | Pending |
-| LAYR-04 | Phase 3 | Pending |
-| LAYR-05 | Phase 3 | Pending |
-| LAYR-06 | Phase 3 | Pending |
-| LAYR-07 | Phase 3 | Pending |
-| LAYR-08 | Phase 3 | Pending |
-| RSZE-01 | Phase 3 | Pending |
-| RSZE-02 | Phase 3 | Pending |
-| RSZE-03 | Phase 3 | Pending |
+| LAYR-01 | Phase 3 | Complete |
+| LAYR-02 | Phase 3 | Complete |
+| LAYR-03 | Phase 3 | Complete |
+| LAYR-04 | Phase 3 | Complete |
+| LAYR-05 | Phase 3 | Complete |
+| LAYR-06 | Phase 3 | Complete |
+| LAYR-07 | Phase 3 | Complete |
+| LAYR-08 | Phase 3 | Complete |
+| RSZE-01 | Phase 3 | Complete |
+| RSZE-02 | Phase 3 | Complete |
+| RSZE-03 | Phase 3 | Complete |
 | FRAM-01 | Phase 4 | Pending |
 | FRAM-02 | Phase 4 | Pending |
 | FRAM-03 | Phase 4 | Pending |
@@ -151,4 +151,4 @@
 
 ---
 *Requirements defined: 2026-02-07*
-*Last updated: 2026-02-08 after Phase 2 completion*
+*Last updated: 2026-02-08 after Phase 3 completion*

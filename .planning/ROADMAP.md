@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Type system, color pair management, draw context, and locale setup
 - [x] **Phase 2: Drawing Primitives** - Rectangle, text, border, line, and scissor drawing functions
-- [ ] **Phase 3: Layer System** - Panel-backed named layers with z-ordering and terminal resize handling
+- [x] **Phase 3: Layer System** - Panel-backed named layers with z-ordering and terminal resize handling
 - [ ] **Phase 4: Frame Pipeline** - Begin/end frame lifecycle integrated with existing window loop
 - [ ] **Phase 5: Integration and Migration** - Extract app-specific code, wire up CELS provider to new API
 
@@ -68,9 +68,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 03-01-PLAN.md -- Layer types, manager globals, create/destroy with PANEL backing, CMake panelw linkage
-- [ ] 03-02-PLAN.md -- Layer operations (show/hide, raise/lower, move, resize) and DrawContext bridge
-- [ ] 03-03-PLAN.md -- Terminal resize handling (KEY_RESIZE, resize-all, observer notification) and frame loop update_panels
+- [x] 03-01-PLAN.md -- Layer types, manager globals, create/destroy with PANEL backing, CMake panelw linkage
+- [x] 03-02-PLAN.md -- Layer operations (show/hide, raise/lower, move, resize) and DrawContext bridge
+- [x] 03-03-PLAN.md -- Terminal resize handling (KEY_RESIZE, resize-all, observer notification) and frame loop update_panels
 
 ### Phase 4: Frame Pipeline
 **Goal**: Developer uses a begin/end frame lifecycle that orchestrates layer compositing with a single doupdate() per frame
@@ -112,10 +112,10 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete | 2026-02-08 |
 | 2. Drawing Primitives | 5/5 | Complete | 2026-02-08 |
-| 3. Layer System | 0/3 | In progress | - |
+| 3. Layer System | 3/3 | Complete | 2026-02-08 |
 | 4. Frame Pipeline | 0/2 | Not started | - |
 | 5. Integration and Migration | 0/3 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-07*
-*Last updated: 2026-02-08 after Phase 3 planning*
+*Last updated: 2026-02-08 after Phase 3 execution*
