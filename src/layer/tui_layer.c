@@ -58,6 +58,7 @@ TUI_Layer* tui_layer_create(const char* name, int x, int y, int w, int h) {
     layer->width = w;
     layer->height = h;
     layer->visible = true;
+    layer->dirty = false;
 
     g_layer_count++;
     return layer;
@@ -188,5 +189,6 @@ void tui_layer_resize_all(int new_cols, int new_lines) {
  * (does not own it).
  */
 TUI_DrawContext tui_layer_get_draw_context(TUI_Layer* layer) {
+    layer->dirty = true;
     return tui_draw_context_create(layer->win, 0, 0, layer->width, layer->height);
 }

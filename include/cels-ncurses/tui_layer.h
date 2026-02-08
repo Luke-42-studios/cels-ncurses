@@ -55,6 +55,7 @@ typedef struct TUI_Layer {
     int x, y;             /* Position (screen coordinates) */
     int width, height;    /* Dimensions */
     bool visible;         /* Visibility state */
+    bool dirty;           /* Auto-set by tui_layer_get_draw_context; cleared by tui_frame_begin */
 } TUI_Layer;
 
 /* ============================================================================
