@@ -1,16 +1,14 @@
 /*
  * TUI Engine Module - Single Entry Point
  *
- * Bundles all TUI providers (Window, Input, Renderer) into one module.
+ * Bundles TUI providers (Window, Input) and frame pipeline into one module.
  * Instead of manually including each provider header and calling init:
  *
  *   Before:
  *     #include <cels-ncurses/tui_window.h>
  *     #include <cels-ncurses/tui_input.h>
- *     #include <cels-ncurses/tui_renderer.h>
  *     CEL_Use(TUI_Window, .title = "App", .fps = 60);
  *     CEL_Use(TUI_Input);
- *     tui_renderer_init();
  *
  *   After:
  *     #include <cels-ncurses/tui_engine.h>
@@ -42,7 +40,6 @@
 
 #include <cels-ncurses/tui_window.h>
 #include <cels-ncurses/tui_input.h>
-#include <cels-ncurses/tui_renderer.h>
 #include <cels-ncurses/tui_frame.h>
 
 /* ===========================================

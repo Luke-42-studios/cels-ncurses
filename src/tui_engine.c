@@ -1,7 +1,7 @@
 /*
  * TUI Engine Module - Implementation
  *
- * Registers all TUI providers (Window, Input, Renderer) as a single module.
+ * Registers TUI providers (Window, Input) and initializes the frame pipeline.
  * Uses _CEL_DefineModule for idempotent initialization.
  *
  * Usage:
@@ -30,9 +30,6 @@ _CEL_DefineModule(TUI_Engine) {
 
     /* Register input provider (zero-config) */
     CEL_Use(TUI_Input);
-
-    /* Initialize renderer (Feature/Provides registrations) */
-    tui_renderer_init();
 
     /* Initialize frame pipeline: background layer + ECS systems */
     tui_frame_init();
