@@ -18,13 +18,13 @@
  *
  *   tui_scissor_reset(&ctx);
  *   tui_push_scissor(&ctx, outer_region);
- *   /* draw calls clipped to outer_region */
+ *   -- draw calls clipped to outer_region --
  *   tui_push_scissor(&ctx, inner_region);
- *   /* draw calls clipped to intersection of outer and inner */
+ *   -- draw calls clipped to intersection of outer and inner --
  *   tui_pop_scissor(&ctx);
- *   /* back to outer_region clipping */
+ *   -- back to outer_region clipping --
  *   tui_pop_scissor(&ctx);
- *   /* back to full drawable area */
+ *   -- back to full drawable area --
  */
 
 #ifndef CELS_NCURSES_TUI_SCISSOR_H
