@@ -81,11 +81,11 @@ Plans:
   2. Developer calls tui_frame_end() which composites all visible layers via update_panels() followed by exactly one doupdate()
   3. No drawing primitive internally calls wrefresh, wnoutrefresh, or doupdate -- all screen updates go through the frame pipeline
   4. Frame pipeline integrates with the existing TUI_Window frame loop, replacing the current wnoutrefresh(stdscr) pattern
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 04-01: tui_frame_begin and tui_frame_end implementation
-- [ ] 04-02: Integration with existing TUI_Window frame loop
+- [ ] 04-01-PLAN.md -- Frame pipeline core: tui_frame.h/c, dirty flag per layer, frame timing, background layer, ECS system callbacks
+- [ ] 04-02-PLAN.md -- Integration: wire into engine module, simplify frame loop, migrate renderer off stdscr, resize invalidation
 
 ### Phase 5: Integration and Migration
 **Goal**: Module contains only the graphics API -- all app-specific rendering lives in the example app using the new primitives
@@ -118,4 +118,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 ---
 *Roadmap created: 2026-02-07*
-*Last updated: 2026-02-08 after Phase 3 execution*
+*Last updated: 2026-02-08 after Phase 4 planning*
