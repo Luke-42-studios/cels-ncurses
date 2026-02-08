@@ -43,6 +43,7 @@
 #include <cels-ncurses/tui_window.h>
 #include <cels-ncurses/tui_input.h>
 #include <cels-ncurses/tui_renderer.h>
+#include <cels-ncurses/tui_frame.h>
 
 /* ===========================================
  * TUI Engine Context -- passed to root composition

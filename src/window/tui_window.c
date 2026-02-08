@@ -17,7 +17,6 @@
 
 #include <cels-ncurses/tui_window.h>
 #include <ncurses.h>
-#include <panel.h>
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -120,8 +119,8 @@ static void tui_window_frame_loop(void) {
 
     /* Fast-track to READY (TUI skips CREATED, SURFACE_READY) */
     TUI_WindowState.state = WINDOW_STATE_READY;
-    TUI_WindowState.width = 600;//g_tui_config.width > 0 ? g_tui_config.width : COLS;
-    TUI_WindowState.height = 800;//g_tui_config.height > 0 ? g_tui_config.height : LINES;
+    TUI_WindowState.width = g_tui_config.width > 0 ? g_tui_config.width : COLS;
+    TUI_WindowState.height = g_tui_config.height > 0 ? g_tui_config.height : LINES;
     TUI_WindowState.title = g_tui_config.title;
     TUI_WindowState.version = g_tui_config.version;
     TUI_WindowState.target_fps = (float)fps;
@@ -130,8 +129,6 @@ static void tui_window_frame_loop(void) {
 
     while (g_running) {
         Engine_Progress(delta);
-        update_panels();
-        doupdate();  /* flush all ncurses window changes */
         usleep((unsigned int)(delta * 1000000));
     }
 

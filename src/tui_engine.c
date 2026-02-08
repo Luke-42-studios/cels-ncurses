@@ -14,6 +14,7 @@
  */
 
 #include "cels-ncurses/tui_engine.h"
+#include "cels-ncurses/tui_frame.h"
 
 /* Module-level config (stored by TUI_Engine_use, read by init body) */
 static TUI_EngineConfig g_tui_config = {0};
@@ -32,6 +33,10 @@ _CEL_DefineModule(TUI_Engine) {
 
     /* Initialize renderer (Feature/Provides registrations) */
     tui_renderer_init();
+
+    /* Initialize frame pipeline: background layer + ECS systems */
+    tui_frame_init();
+    tui_frame_register_systems();
 
     /* If root function provided, call it with engine context */
     if (g_tui_config.root) {

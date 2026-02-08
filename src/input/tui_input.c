@@ -14,6 +14,7 @@
 #include "cels-ncurses/tui_input.h"
 #include "cels-ncurses/tui_window.h"
 #include "cels-ncurses/tui_layer.h"
+#include "cels-ncurses/tui_frame.h"
 #include <ncurses.h>
 #include <flecs.h>
 #include <string.h>
@@ -93,6 +94,7 @@ static void tui_read_input_ncurses(void) {
         /* Terminal resize -- resize layers FIRST, then notify observers */
         case KEY_RESIZE:
             tui_layer_resize_all(COLS, LINES);
+            tui_frame_invalidate_all();
             TUI_WindowState.width = COLS;
             TUI_WindowState.height = LINES;
             TUI_WindowState.state = WINDOW_STATE_RESIZING;
