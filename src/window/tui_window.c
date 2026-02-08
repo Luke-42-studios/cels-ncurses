@@ -24,6 +24,7 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <locale.h>
 
 /* ============================================================================
  * Static State
@@ -71,6 +72,9 @@ static void cleanup_endwin(void) {
 static void tui_window_startup(void) {
     signal(SIGINT, tui_sigint_handler);
     atexit(cleanup_endwin);
+
+    /* Enable Unicode box-drawing characters (MUST be before initscr) */
+    setlocale(LC_ALL, "");
 
     /* ncurses initialization */
     initscr();
