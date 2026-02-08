@@ -13,7 +13,7 @@ Transform the cels-ncurses module from its current stdscr-based renderer with em
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Type system, color pair management, draw context, and locale setup
-- [ ] **Phase 2: Drawing Primitives** - Rectangle, text, border, line, and scissor drawing functions
+- [x] **Phase 2: Drawing Primitives** - Rectangle, text, border, line, and scissor drawing functions
 - [ ] **Phase 3: Layer System** - Panel-backed named layers with z-ordering and terminal resize handling
 - [ ] **Phase 4: Frame Pipeline** - Begin/end frame lifecycle integrated with existing window loop
 - [ ] **Phase 5: Integration and Migration** - Extract app-specific code, wire up CELS provider to new API
@@ -50,11 +50,11 @@ Plans:
 **Plans:** 5 plans
 
 Plans:
-- [ ] 02-01-PLAN.md -- Header with all Phase 2 types, filled and outlined rectangle drawing
-- [ ] 02-02-PLAN.md -- Text rendering with UTF-8 support and bounded text
-- [ ] 02-03-PLAN.md -- Per-side border drawing with corner logic
-- [ ] 02-04-PLAN.md -- Scissor/clip region stack (push, pop, reset, nesting)
-- [ ] 02-05-PLAN.md -- Horizontal and vertical line drawing
+- [x] 02-01-PLAN.md -- Header with all Phase 2 types, filled and outlined rectangle drawing
+- [x] 02-02-PLAN.md -- Text rendering with UTF-8 support and bounded text
+- [x] 02-03-PLAN.md -- Per-side border drawing with corner logic
+- [x] 02-04-PLAN.md -- Scissor/clip region stack (push, pop, reset, nesting)
+- [x] 02-05-PLAN.md -- Horizontal and vertical line drawing
 
 ### Phase 3: Layer System
 **Goal**: Developer can manage named, z-ordered drawing surfaces backed by ncurses panels, with correct terminal resize behavior
@@ -112,11 +112,11 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | ✓ Complete | 2026-02-08 |
-| 2. Drawing Primitives | 0/5 | Not started | - |
+| 2. Drawing Primitives | 5/5 | ✓ Complete | 2026-02-08 |
 | 3. Layer System | 0/4 | Not started | - |
 | 4. Frame Pipeline | 0/2 | Not started | - |
 | 5. Integration and Migration | 0/3 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-07*
-*Last updated: 2026-02-08*
+*Last updated: 2026-02-08 after Phase 2 completion*

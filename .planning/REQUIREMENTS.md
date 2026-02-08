@@ -17,17 +17,17 @@
 
 ### Drawing Primitives
 
-- [ ] **DRAW-01**: Developer can draw a filled rectangle at (x, y) with given width, height, fill character, and style
-- [ ] **DRAW-02**: Developer can draw an outlined rectangle using box-drawing characters with configurable border style
-- [ ] **DRAW-03**: Developer can render text at a specific (x, y) position with a given style
-- [ ] **DRAW-04**: Developer can render bounded text that does not exceed a maximum column width (Clay text bounding)
-- [ ] **DRAW-05**: Developer can draw borders with per-side control (left, right, top, bottom independently)
-- [ ] **DRAW-06**: Developer can draw borders with single, double, or rounded corner styles
-- [ ] **DRAW-07**: Corner radius is treated as boolean per-corner -- radius > 0 uses rounded Unicode box-drawing corners
-- [ ] **DRAW-08**: Developer can push a scissor/clip rectangle that restricts all subsequent drawing to that region
-- [ ] **DRAW-09**: Developer can pop a scissor/clip rectangle to restore the previous clipping region
-- [ ] **DRAW-10**: Scissor regions nest correctly -- inner clip is intersection of parent and child clip rects
-- [ ] **DRAW-11**: Developer can draw horizontal and vertical lines with box-drawing characters
+- [x] **DRAW-01**: Developer can draw a filled rectangle at (x, y) with given width, height, fill character, and style
+- [x] **DRAW-02**: Developer can draw an outlined rectangle using box-drawing characters with configurable border style
+- [x] **DRAW-03**: Developer can render text at a specific (x, y) position with a given style
+- [x] **DRAW-04**: Developer can render bounded text that does not exceed a maximum column width (Clay text bounding)
+- [x] **DRAW-05**: Developer can draw borders with per-side control (left, right, top, bottom independently)
+- [x] **DRAW-06**: Developer can draw borders with single, double, or rounded corner styles
+- [x] **DRAW-07**: Corner radius is treated as boolean per-corner -- radius > 0 uses rounded Unicode box-drawing corners
+- [x] **DRAW-08**: Developer can push a scissor/clip rectangle that restricts all subsequent drawing to that region
+- [x] **DRAW-09**: Developer can pop a scissor/clip rectangle to restore the previous clipping region
+- [x] **DRAW-10**: Scissor regions nest correctly -- inner clip is intersection of parent and child clip rects
+- [x] **DRAW-11**: Developer can draw horizontal and vertical lines with box-drawing characters
 
 ### Layer System
 
@@ -111,17 +111,17 @@
 | FNDN-05 | Phase 1 | Complete |
 | FNDN-06 | Phase 1 | Complete |
 | FNDN-07 | Phase 1 | Complete |
-| DRAW-01 | Phase 2 | Pending |
-| DRAW-02 | Phase 2 | Pending |
-| DRAW-03 | Phase 2 | Pending |
-| DRAW-04 | Phase 2 | Pending |
-| DRAW-05 | Phase 2 | Pending |
-| DRAW-06 | Phase 2 | Pending |
-| DRAW-07 | Phase 2 | Pending |
-| DRAW-08 | Phase 2 | Pending |
-| DRAW-09 | Phase 2 | Pending |
-| DRAW-10 | Phase 2 | Pending |
-| DRAW-11 | Phase 2 | Pending |
+| DRAW-01 | Phase 2 | Complete |
+| DRAW-02 | Phase 2 | Complete |
+| DRAW-03 | Phase 2 | Complete |
+| DRAW-04 | Phase 2 | Complete |
+| DRAW-05 | Phase 2 | Complete |
+| DRAW-06 | Phase 2 | Complete |
+| DRAW-07 | Phase 2 | Complete |
+| DRAW-08 | Phase 2 | Complete |
+| DRAW-09 | Phase 2 | Complete |
+| DRAW-10 | Phase 2 | Complete |
+| DRAW-11 | Phase 2 | Complete |
 | LAYR-01 | Phase 3 | Pending |
 | LAYR-02 | Phase 3 | Pending |
 | LAYR-03 | Phase 3 | Pending |
@@ -151,4 +151,4 @@
 
 ---
 *Requirements defined: 2026-02-07*
-*Last updated: 2026-02-08 after Phase 1 completion*
+*Last updated: 2026-02-08 after Phase 2 completion*
