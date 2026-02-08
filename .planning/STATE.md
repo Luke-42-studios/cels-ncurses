@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-07)
 
 **Core value:** Provide a low-level drawing primitive API that a future cels-clay module can target to render Clay UI layouts in the terminal
-**Current focus:** Phase 4 - Frame Pipeline
+**Current focus:** Phase 5 - Integration and Migration
 
 ## Current Position
 
 Phase: 4 of 5 (Frame Pipeline)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-02-08 -- Completed 04-01-PLAN.md
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-02-08 -- Completed 04-02-PLAN.md
 
-Progress: [###############.....] 71% (12/17 plans)
+Progress: [################....] 81% (13/16 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
+- Total plans completed: 13
 - Average duration: 2 min
-- Total execution time: 0.35 hours
+- Total execution time: 0.38 hours
 
 **By Phase:**
 
@@ -30,10 +30,10 @@ Progress: [###############.....] 71% (12/17 plans)
 | 1. Foundation | 3/3 | 5 min | 1.7 min |
 | 2. Drawing Primitives | 5/5 | 9 min | 1.8 min |
 | 3. Layer System | 3/3 | 5 min | 1.7 min |
-| 4. Frame Pipeline | 1/2 | 2 min | 2.0 min |
+| 4. Frame Pipeline | 2/2 | 4 min | 2.0 min |
 
 **Recent Trend:**
-- Last 5 plans: 04-01 (2 min), 03-03 (1 min), 03-02 (2 min), 03-01 (2 min), 02-01 (3 min)
+- Last 5 plans: 04-02 (2 min), 04-01 (2 min), 03-03 (1 min), 03-02 (2 min), 03-01 (2 min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -72,12 +72,14 @@ Recent decisions affecting current work:
 - Background layer created at init and lowered to z=0 via tui_layer_lower
 - Frame timing via clock_gettime(CLOCK_MONOTONIC) for accurate delta_time and fps
 - ECS frame systems: FrameBegin at EcsPreStore, FrameEnd at EcsPostFrame
+- overwrite(stdscr, bg->win) bridge for renderer migration -- widgets still write to stdscr, full DrawContext migration deferred to Phase 5
+- Frame loop simplified: Engine_Progress + usleep only (no update_panels/doupdate in window loop)
+- tui_frame_init + tui_frame_register_systems wired in engine module after tui_renderer_init
+- KEY_RESIZE calls tui_frame_invalidate_all after tui_layer_resize_all
 
 ### Pending Todos
 
-- Plan 04-02: Remove duplicate update_panels/doupdate from tui_window_frame_loop (frame_end handles it)
-- Plan 04-02: Add tui_frame_invalidate_all call in KEY_RESIZE handler after resize
-- Plan 04-02: Migrate renderer off stdscr to use background layer DrawContext
+None -- Phase 4 complete.
 
 ### Reference: Clay ncurses renderer PR (nicbarker/clay#569)
 
@@ -98,11 +100,12 @@ Lessons from reviewing an upstream Clay ncurses renderer. Our architecture is st
 
 ### Blockers/Concerns
 
-- Phase 3 risk RESOLVED: stdscr-to-panels migration complete. Frame loop uses update_panels() + doupdate(). INTERFACE library extern globals validated.
-- Phase 4 note: tui_frame_begin/end must avoid duplicate update_panels/doupdate calls since frame loop already has them. Plan 04-02 will remove the duplicates from tui_window_frame_loop.
+- Phase 3 risk RESOLVED: stdscr-to-panels migration complete. INTERFACE library extern globals validated.
+- Phase 4 RESOLVED: duplicate update_panels/doupdate removed from tui_window_frame_loop. Frame_end is the single compositing point.
+- Phase 5 note: widgets still write to stdscr via mvprintw, bridged to background layer via overwrite(). Phase 5 migrates widgets to DrawContext directly.
 
 ## Session Continuity
 
-Last session: 2026-02-08T18:27:22Z
-Stopped at: Completed 04-01-PLAN.md (frame pipeline core)
+Last session: 2026-02-08T18:30:57Z
+Stopped at: Completed 04-02-PLAN.md (frame pipeline integration) -- Phase 4 complete
 Resume file: None
