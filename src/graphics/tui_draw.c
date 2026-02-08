@@ -180,3 +180,52 @@ void tui_draw_border_rect(TUI_DrawContext* ctx, TUI_CellRect rect,
         }
     }
 }
+
+/* ============================================================================
+ * Line Drawing (DRAW-11)
+ * ============================================================================
+ *
+ * Horizontal and vertical lines using box-drawing characters from
+ * tui_border_chars_get(). Lines are clipped against ctx->clip before drawing.
+ * Uses ncurses built-in mvwhline_set/mvwvline_set for efficiency.
+ */
+
+void tui_draw_hline(TUI_DrawContext* ctx, int x, int y, int length,
+                     TUI_BorderStyle border_style, TUI_Style style) {
+    if (length <= 0) return;
+
+    /* Clip vertically: if row is outside clip region, nothing to draw */
+    if (y < ctx->clip.y || y >= ctx->clip.y + ctx->clip.h) return;
+
+    /* Clip horizontally */
+    int left = (x > ctx->clip.x) ? x : ctx->clip.x;
+    int right_end = x + length;
+    int clip_right = ctx->clip.x + ctx->clip.w;
+    int right = (right_end < clip_right) ? right_end : clip_right;
+    int visible_len = right - left;
+    if (visible_len <= 0) return;
+
+    TUI_BorderChars chars = tui_border_chars_get(border_style);
+    tui_style_apply(ctx->win, style);
+    mvwhline_set(ctx->win, y, left, chars.hline, visible_len);
+}
+
+void tui_draw_vline(TUI_DrawContext* ctx, int x, int y, int length,
+                     TUI_BorderStyle border_style, TUI_Style style) {
+    if (length <= 0) return;
+
+    /* Clip horizontally: if column is outside clip region, nothing to draw */
+    if (x < ctx->clip.x || x >= ctx->clip.x + ctx->clip.w) return;
+
+    /* Clip vertically */
+    int top = (y > ctx->clip.y) ? y : ctx->clip.y;
+    int bottom_end = y + length;
+    int clip_bottom = ctx->clip.y + ctx->clip.h;
+    int bottom = (bottom_end < clip_bottom) ? bottom_end : clip_bottom;
+    int visible_len = bottom - top;
+    if (visible_len <= 0) return;
+
+    TUI_BorderChars chars = tui_border_chars_get(border_style);
+    tui_style_apply(ctx->win, style);
+    mvwvline_set(ctx->win, top, x, chars.vline, visible_len);
+}
