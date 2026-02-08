@@ -15,9 +15,6 @@
  * as an ECS system running during Engine_Progress().
  */
 
-#define _POSIX_C_SOURCE 199309L
-#define _DEFAULT_SOURCE
-
 #include <cels-ncurses/tui_window.h>
 #include <ncurses.h>
 #include <unistd.h>

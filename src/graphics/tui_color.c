@@ -10,9 +10,6 @@
  * Static variables are per-consumer translation unit.
  */
 
-#define _POSIX_C_SOURCE 199309L
-#define _DEFAULT_SOURCE
-
 #include "cels-ncurses/tui_color.h"
 #include <ncurses.h>
 #include <stdint.h>

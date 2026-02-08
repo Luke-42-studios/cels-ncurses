@@ -28,6 +28,11 @@ target_include_directories(cels-ncurses INTERFACE
     ${CURSES_INCLUDE_DIRS}
 )
 
+target_compile_definitions(cels-ncurses INTERFACE
+    _XOPEN_SOURCE=700
+    _DEFAULT_SOURCE
+)
+
 target_link_libraries(cels-ncurses INTERFACE
     ${CURSES_LIBRARIES}
     cels

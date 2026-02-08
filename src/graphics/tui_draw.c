@@ -15,9 +15,6 @@
  * Static variables are per-consumer translation unit.
  */
 
-#define _XOPEN_SOURCE 700
-#define _DEFAULT_SOURCE
-
 #include "cels-ncurses/tui_draw.h"
 #include <stdbool.h>
 
