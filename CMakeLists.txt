@@ -24,6 +24,7 @@ target_sources(cels-ncurses INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_draw.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_scissor.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/layer/tui_layer.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/frame/tui_frame.c
 )
 
 target_include_directories(cels-ncurses INTERFACE
