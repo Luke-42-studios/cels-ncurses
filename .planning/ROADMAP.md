@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation** - Type system, color pair management, draw context, and locale setup
 - [x] **Phase 2: Drawing Primitives** - Rectangle, text, border, line, and scissor drawing functions
 - [x] **Phase 3: Layer System** - Panel-backed named layers with z-ordering and terminal resize handling
-- [ ] **Phase 4: Frame Pipeline** - Begin/end frame lifecycle integrated with existing window loop
+- [x] **Phase 4: Frame Pipeline** - Begin/end frame lifecycle integrated with existing window loop
 - [ ] **Phase 5: Integration and Migration** - Extract app-specific code, wire up CELS provider to new API
 
 ## Phase Details
@@ -84,8 +84,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 04-01-PLAN.md -- Frame pipeline core: tui_frame.h/c, dirty flag per layer, frame timing, background layer, ECS system callbacks
-- [ ] 04-02-PLAN.md -- Integration: wire into engine module, simplify frame loop, migrate renderer off stdscr, resize invalidation
+- [x] 04-01-PLAN.md -- Frame pipeline core: tui_frame.h/c, dirty flag per layer, frame timing, background layer, ECS system callbacks
+- [x] 04-02-PLAN.md -- Integration: wire into engine module, simplify frame loop, migrate renderer off stdscr, resize invalidation
 
 ### Phase 5: Integration and Migration
 **Goal**: Module contains only the graphics API -- all app-specific rendering lives in the example app using the new primitives
@@ -113,9 +113,9 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 1. Foundation | 3/3 | Complete | 2026-02-08 |
 | 2. Drawing Primitives | 5/5 | Complete | 2026-02-08 |
 | 3. Layer System | 3/3 | Complete | 2026-02-08 |
-| 4. Frame Pipeline | 0/2 | Not started | - |
+| 4. Frame Pipeline | 2/2 | Complete | 2026-02-08 |
 | 5. Integration and Migration | 0/3 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-07*
-*Last updated: 2026-02-08 after Phase 4 planning*
+*Last updated: 2026-02-08 after Phase 4 execution*

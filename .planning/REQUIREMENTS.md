@@ -42,11 +42,11 @@
 
 ### Frame Pipeline
 
-- [ ] **FRAM-01**: Developer calls tui_frame_begin() to clear all layers and reset drawing state
-- [ ] **FRAM-02**: Developer calls tui_frame_end() which calls update_panels() to composite all layers
-- [ ] **FRAM-03**: doupdate() is called exactly once per frame after tui_frame_end() (in existing frame loop)
-- [ ] **FRAM-04**: Drawing primitives never call wrefresh/wnoutrefresh/doupdate internally
-- [ ] **FRAM-05**: Frame pipeline integrates with existing TUI_Window frame loop (replaces current wnoutrefresh(stdscr) pattern)
+- [x] **FRAM-01**: Developer calls tui_frame_begin() to clear all layers and reset drawing state
+- [x] **FRAM-02**: Developer calls tui_frame_end() which calls update_panels() to composite all layers
+- [x] **FRAM-03**: doupdate() is called exactly once per frame after tui_frame_end() (in existing frame loop)
+- [x] **FRAM-04**: Drawing primitives never call wrefresh/wnoutrefresh/doupdate internally
+- [x] **FRAM-05**: Frame pipeline integrates with existing TUI_Window frame loop (replaces current wnoutrefresh(stdscr) pattern)
 
 ### Terminal Resize
 
@@ -133,11 +133,11 @@
 | RSZE-01 | Phase 3 | Complete |
 | RSZE-02 | Phase 3 | Complete |
 | RSZE-03 | Phase 3 | Complete |
-| FRAM-01 | Phase 4 | Pending |
-| FRAM-02 | Phase 4 | Pending |
-| FRAM-03 | Phase 4 | Pending |
-| FRAM-04 | Phase 4 | Pending |
-| FRAM-05 | Phase 4 | Pending |
+| FRAM-01 | Phase 4 | Complete |
+| FRAM-02 | Phase 4 | Complete |
+| FRAM-03 | Phase 4 | Complete |
+| FRAM-04 | Phase 4 | Complete |
+| FRAM-05 | Phase 4 | Complete |
 | MIGR-01 | Phase 5 | Pending |
 | MIGR-02 | Phase 5 | Pending |
 | MIGR-03 | Phase 5 | Pending |
@@ -151,4 +151,4 @@
 
 ---
 *Requirements defined: 2026-02-07*
-*Last updated: 2026-02-08 after Phase 3 completion*
+*Last updated: 2026-02-08 after Phase 4 completion*
