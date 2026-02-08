@@ -31,8 +31,8 @@
  *       InitSystems();
  *   }
  *
- *   CEL_RootComposition(AppUI, TUI_EngineContext) {
- *       TUI_WindowState_t* win = CEL_ObserveById(ctx.windowState, TUI_WindowState_t);
+ *   CEL_Root(AppUI, TUI_EngineContext) {
+ *       TUI_WindowState_t* win = CEL_WatchId(ctx.windowState, TUI_WindowState_t);
  *       ...
  *   }
  */
@@ -49,10 +49,10 @@
  * ===========================================
  *
  * Contains state IDs from the engine. Root composition
- * uses CEL_ObserveById to get typed state pointers.
+ * uses CEL_WatchId to get typed state pointers.
  */
 typedef struct TUI_EngineContext {
-    cels_entity_t windowState;   /* ID to observe window state via CEL_ObserveById */
+    cels_entity_t windowState;   /* ID to observe window state via CEL_WatchId */
 } TUI_EngineContext;
 
 /* ===========================================

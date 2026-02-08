@@ -13,10 +13,10 @@
  *       windowState = CEL_Use(TUI_Window, .title = "My App", .fps = 60);
  *   }
  *
- *   CEL_RootComposition(AppUI) {
- *       TUI_WindowState_t* win = CEL_Observe(TUI_WindowState);
+ *   CEL_Root(AppUI) {
+ *       TUI_WindowState_t* win = CEL_Watch(TUI_WindowState);
  *       if (win->state == WINDOW_STATE_READY) {
- *           CEL_Init(MainMenu) {}
+ *           CEL_Call(MainMenu) {}
  *       }
  *   }
  */
@@ -48,7 +48,7 @@ typedef enum WindowState {
  * TUI_WindowState -- Observable provider state
  * ===========================================
  *
- * Use CEL_Observe(TUI_WindowState) in CEL_RootComposition to react to window changes.
+ * Use CEL_Watch(TUI_WindowState) in CEL_Root to react to window changes.
  * The pointer returned by CEL_Use(TUI_Window, ...) points to this same state.
  */
 typedef struct TUI_WindowState_t {

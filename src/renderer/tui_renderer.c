@@ -6,9 +6,9 @@
  * with ncurses mvprintw/attron/COLOR_PAIR.
  *
  * Architecture:
- *   CEL_DefineFeature(Renderable, ...) - declares a render capability
- *   CEL_Feature(Canvas, Renderable)    - Canvas supports Renderable
- *   CEL_Provides(TUI, Renderable, Canvas, callback) - TUI implements it
+ *   _CEL_DefineFeature(Renderable, ...) - declares a render capability
+ *   _CEL_Feature(Canvas, Renderable)    - Canvas supports Renderable
+ *   _CEL_Provides(TUI, Renderable, Canvas, callback) - TUI implements it
  *
  * NOTE: This file compiles in the CONSUMER's context (INTERFACE library).
  * components.h resolves via the consumer's include paths.
@@ -25,7 +25,7 @@
  * Feature Definition
  * ============================================================================ */
 
-CEL_DefineFeature(Renderable, .phase = CELS_Phase_OnStore, .priority = 0);
+_CEL_DefineFeature(Renderable, .phase = CELS_Phase_OnStore, .priority = 0);
 
 /* ============================================================================
  * Resolution Labels (for slider rendering)
@@ -65,7 +65,7 @@ static GraphicsSettings* find_graphics_settings(ecs_world_t* world) {
  * Render Provider Callback
  * ============================================================================
  *
- * Single coordinated render callback registered via CEL_Provides().
+ * Single coordinated render callback registered via _CEL_Provides().
  * Iterates Canvas entities and renders the full screen for each Canvas,
  * querying Selectable entities to determine rendering order.
  *
@@ -222,9 +222,9 @@ static void tui_prov_render_screen(CELS_Iter* it) {
 
 void tui_renderer_init(void) {
     /* Declare relationships -- macros handle feature + component registration */
-    CEL_Feature(Canvas, Renderable);
-    CEL_Provides(TUI, Renderable, Canvas, tui_prov_render_screen);
+    _CEL_Feature(Canvas, Renderable);
+    _CEL_Provides(TUI, Renderable, Canvas, tui_prov_render_screen);
 
     /* Components consumed by the render callback */
-    CEL_ProviderConsumes(Text, ClickArea, Selectable, Range, GraphicsSettings);
+    _CEL_ProviderConsumes(Text, ClickArea, Selectable, Range, GraphicsSettings);
 }

@@ -2,13 +2,13 @@
  * TUI Engine Module - Implementation
  *
  * Registers all TUI providers (Window, Input, Renderer) as a single module.
- * Uses CEL_DefineModule for idempotent initialization.
+ * Uses _CEL_DefineModule for idempotent initialization.
  *
  * Usage:
  *   TUI_Engine_use(config) -- configure, init, and call root composition
  *
  * The root composition receives TUI_EngineContext with state IDs so it can
- * use CEL_ObserveById instead of storing raw pointers.
+ * use CEL_WatchId instead of storing raw pointers.
  *
  * NOTE: This file compiles in the CONSUMER's context (INTERFACE library).
  */
@@ -19,7 +19,7 @@
 static TUI_EngineConfig g_tui_config = {0};
 static bool g_config_set = false;
 
-CEL_DefineModule(TUI_Engine) {
+_CEL_DefineModule(TUI_Engine) {
     /* Register window provider with config (or defaults) */
     CEL_Use(TUI_Window,
         .title = g_tui_config.title ? g_tui_config.title : "CELS App",
