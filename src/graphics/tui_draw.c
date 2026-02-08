@@ -17,6 +17,8 @@
 
 #include "cels-ncurses/tui_draw.h"
 #include <stdbool.h>
+#include <stdlib.h>
+#include <wchar.h>
 
 /* ============================================================================
  * Rounded Corner cchar_t Initialization
@@ -360,4 +362,98 @@ void tui_draw_border(TUI_DrawContext* ctx, TUI_CellRect rect,
             }
         }
     }
+}
+
+/* ============================================================================
+ * Text Drawing (DRAW-03, DRAW-04)
+ * ============================================================================
+ *
+ * Positioned text with UTF-8 support via mbstowcs() and column-accurate
+ * clipping via wcwidth(). Wide characters (CJK, 2-column) that straddle
+ * clip boundaries are skipped entirely to prevent display corruption.
+ *
+ * Uses a stack-allocated wchar_t buffer (256 elements) for typical strings,
+ * with malloc fallback for longer text. Rendering uses mvwaddnwstr() which
+ * takes an element count (not column count).
+ */
+
+void tui_draw_text(TUI_DrawContext* ctx, int x, int y,
+                    const char* text, TUI_Style style) {
+    if (text == NULL) return;
+
+    /* Clip vertically: row must be within clip region */
+    if (y < ctx->clip.y || y >= ctx->clip.y + ctx->clip.h) return;
+
+    /* UTF-8 to wchar_t conversion */
+    wchar_t wbuf_stack[256];
+    wchar_t* wbuf = wbuf_stack;
+    int wlen;
+
+    size_t needed = mbstowcs(NULL, text, 0);
+    if (needed == (size_t)-1) return;  /* Invalid UTF-8 */
+
+    if (needed >= 256) {
+        wbuf = malloc((needed + 1) * sizeof(wchar_t));
+        if (wbuf == NULL) return;
+    }
+
+    wlen = (int)mbstowcs(wbuf, text, needed + 1);
+    if (wlen <= 0) {
+        if (wbuf != wbuf_stack) free(wbuf);
+        return;
+    }
+
+    /* Column-accurate horizontal clipping */
+    int clip_left = ctx->clip.x;
+    int clip_right = ctx->clip.x + ctx->clip.w;
+
+    int col = x;           /* Current column position */
+    int start_idx = -1;    /* First wchar_t index in visible range */
+    int end_idx = wlen;    /* One past last wchar_t index in visible range */
+    int draw_x = x;        /* Column where rendering actually starts */
+
+    for (int i = 0; i < wlen; i++) {
+        int cw = wcwidth(wbuf[i]);
+        if (cw < 0) cw = 0;  /* Non-printable: treat as zero-width */
+
+        if (start_idx == -1) {
+            /* Haven't found the start of visible region yet */
+            if (col + cw > clip_left) {
+                /* This character starts or extends into visible region */
+                if (col < clip_left) {
+                    /* Wide char straddles left clip boundary -- skip it */
+                    col += cw;
+                    continue;
+                }
+                start_idx = i;
+                draw_x = col;
+            }
+        }
+
+        if (col >= clip_right) {
+            end_idx = i;
+            break;
+        }
+
+        /* Check if this character extends past the right clip boundary */
+        if (col + cw > clip_right && start_idx != -1) {
+            /* Wide char straddles right clip boundary -- exclude it */
+            end_idx = i;
+            break;
+        }
+
+        col += cw;
+    }
+
+    /* If no visible characters found, nothing to draw */
+    if (start_idx == -1) {
+        if (wbuf != wbuf_stack) free(wbuf);
+        return;
+    }
+
+    /* Render the visible slice */
+    tui_style_apply(ctx->win, style);
+    mvwaddnwstr(ctx->win, y, draw_x, &wbuf[start_idx], end_idx - start_idx);
+
+    if (wbuf != wbuf_stack) free(wbuf);
 }
