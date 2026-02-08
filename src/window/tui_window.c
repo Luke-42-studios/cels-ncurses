@@ -6,7 +6,7 @@
  *
  * Responsibilities:
  *   - ncurses initialization (initscr, cbreak, keypad, nodelay)
- *   - Color pair setup for TUI widgets
+ *   - Color system setup (start_color, use_default_colors, assume_default_colors)
  *   - Frame loop with configurable FPS timing
  *   - WindowLifecycle state machine (fast-tracks NONE -> READY for TUI)
  *   - Clean shutdown: CLOSING -> CLOSED on quit, endwin() cleanup
@@ -90,15 +90,14 @@ static void tui_window_startup(void) {
         start_color();
         use_default_colors();
         assume_default_colors(-1, -1);  /* terminal theme compatibility */
-
-        /* Color pairs for TUI widgets */
-        init_pair(1, COLOR_YELLOW, -1);  /* Selected items */
-        init_pair(2, COLOR_CYAN, -1);    /* Headers */
-        init_pair(3, COLOR_GREEN, -1);   /* ON state */
-        init_pair(4, COLOR_RED, -1);     /* OFF state */
-        init_pair(5, COLOR_WHITE, -1);   /* Normal text (bright) */
-        init_pair(6, -1, -1);            /* Dim text (default on default, use A_DIM) */
     }
+
+    /* INVARIANT: No code in this module calls mvprintw(), printw(),
+     * addstr(), addch(), or any ncurses function that implicitly targets
+     * stdscr for drawing. All drawing goes through TUI_DrawContext via
+     * tui_draw_* functions. stdscr is retained only for input:
+     * keypad(stdscr), nodelay(stdscr), wgetch(stdscr).
+     * Violation check: grep -rn 'mvprintw\|printw\|addstr\|addch' src/ */
 }
 
 /* ============================================================================
