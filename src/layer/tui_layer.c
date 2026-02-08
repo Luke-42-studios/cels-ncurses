@@ -92,3 +92,54 @@ void tui_layer_destroy(TUI_Layer* layer) {
     }
     g_layer_count--;
 }
+
+/* ============================================================================
+ * tui_layer_show -- Make a layer visible in panel compositing
+ * ============================================================================ */
+void tui_layer_show(TUI_Layer* layer) {
+    if (!layer || !layer->panel) return;
+    show_panel(layer->panel);
+    layer->visible = true;
+}
+
+/* ============================================================================
+ * tui_layer_hide -- Exclude a layer from panel compositing
+ * ============================================================================ */
+void tui_layer_hide(TUI_Layer* layer) {
+    if (!layer || !layer->panel) return;
+    hide_panel(layer->panel);
+    layer->visible = false;
+}
+
+/* ============================================================================
+ * tui_layer_raise -- Move layer to top of z-order stack
+ * ============================================================================ */
+void tui_layer_raise(TUI_Layer* layer) {
+    if (!layer || !layer->panel) return;
+    top_panel(layer->panel);
+}
+
+/* ============================================================================
+ * tui_layer_lower -- Move layer to bottom of z-order stack
+ * ============================================================================ */
+void tui_layer_lower(TUI_Layer* layer) {
+    if (!layer || !layer->panel) return;
+    bottom_panel(layer->panel);
+}
+
+/* ============================================================================
+ * tui_layer_move -- Reposition layer on screen
+ * ============================================================================
+ *
+ * Uses move_panel() to keep panel position tracking in sync.
+ * NEVER use mvwin() on panel-managed windows -- it bypasses the panel
+ * library and causes visual corruption.
+ *
+ * move_panel parameter order: (panel, starty, startx)
+ */
+void tui_layer_move(TUI_Layer* layer, int x, int y) {
+    if (!layer || !layer->panel) return;
+    move_panel(layer->panel, y, x);
+    layer->x = x;
+    layer->y = y;
+}

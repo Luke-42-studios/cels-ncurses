@@ -86,4 +86,47 @@ extern TUI_Layer* tui_layer_create(const char* name, int x, int y, int w, int h)
  */
 extern void tui_layer_destroy(TUI_Layer* layer);
 
+/* ============================================================================
+ * Visibility
+ * ============================================================================ */
+
+/*
+ * Show a hidden layer. Calls show_panel() to include the layer in
+ * panel compositing. Sets layer->visible = true.
+ */
+extern void tui_layer_show(TUI_Layer* layer);
+
+/*
+ * Hide a visible layer. Calls hide_panel() to exclude the layer from
+ * panel compositing. Sets layer->visible = false.
+ */
+extern void tui_layer_hide(TUI_Layer* layer);
+
+/* ============================================================================
+ * Z-Order
+ * ============================================================================ */
+
+/*
+ * Raise a layer to the top of the z-order stack.
+ * Calls top_panel() -- the layer will be drawn last (on top of all others).
+ */
+extern void tui_layer_raise(TUI_Layer* layer);
+
+/*
+ * Lower a layer to the bottom of the z-order stack.
+ * Calls bottom_panel() -- the layer will be drawn first (behind all others).
+ */
+extern void tui_layer_lower(TUI_Layer* layer);
+
+/* ============================================================================
+ * Position
+ * ============================================================================ */
+
+/*
+ * Move a layer to a new screen position.
+ * Uses move_panel() (NOT mvwin) to keep panel position tracking in sync.
+ * Updates layer->x and layer->y.
+ */
+extern void tui_layer_move(TUI_Layer* layer, int x, int y);
+
 #endif /* CELS_NCURSES_TUI_LAYER_H */
