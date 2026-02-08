@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-07)
 ## Current Position
 
 Phase: 4 of 5 (Frame Pipeline)
-Plan: 0 of 2 in current phase
-Status: Ready to plan
-Last activity: 2026-02-08 -- Phase 3 verified and complete
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-02-08 -- Completed 04-01-PLAN.md
 
-Progress: [##############......] 65% (11/17 plans)
+Progress: [###############.....] 71% (12/17 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 11
+- Total plans completed: 12
 - Average duration: 2 min
-- Total execution time: 0.32 hours
+- Total execution time: 0.35 hours
 
 **By Phase:**
 
@@ -30,9 +30,10 @@ Progress: [##############......] 65% (11/17 plans)
 | 1. Foundation | 3/3 | 5 min | 1.7 min |
 | 2. Drawing Primitives | 5/5 | 9 min | 1.8 min |
 | 3. Layer System | 3/3 | 5 min | 1.7 min |
+| 4. Frame Pipeline | 1/2 | 2 min | 2.0 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-03 (1 min), 03-02 (2 min), 03-01 (2 min), 02-01 (3 min), 02-05 (1 min)
+- Last 5 plans: 04-01 (2 min), 03-03 (1 min), 03-02 (2 min), 03-01 (2 min), 02-01 (3 min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -55,7 +56,7 @@ Recent decisions affecting current work:
 - WINDOW* is borrowed, not owned -- caller manages lifetime
 - _XOPEN_SOURCE 700 required for ncurses wide-char API (WACS_ macros, mvwadd_wch, setcchar, cchar_t) -- now set globally via CMakeLists.txt target_compile_definitions, do NOT add to .c files
 - Scissor stack: silent early return for overflow/underflow (no assert, matching project error handling convention)
-- TUI_Layer struct: name[64], PANEL*, WINDOW*, x, y, width, height, visible -- panel-backed with swap-remove compaction
+- TUI_Layer struct: name[64], PANEL*, WINDOW*, x, y, width, height, visible, dirty -- panel-backed with swap-remove compaction
 - g_layers[TUI_LAYER_MAX=32] with extern linkage (declared in .h, defined in .c) -- validated INTERFACE library pattern
 - set_panel_userptr for PANEL* to TUI_Layer* reverse lookup
 - del_panel before delwin (correct cleanup order per ncurses docs)
@@ -65,10 +66,18 @@ Recent decisions affecting current work:
 - tui_layer_resize_all resizes every layer to full terminal size; apps needing per-layer policies iterate g_layers directly
 - Resize ordering: resize all layers FIRST, then update WindowState, then notify observers (prevents stale-dimension draws)
 - Frame loop uses update_panels() + doupdate() -- panel library handles overlap resolution and refresh ordering
+- werase (not wclear) for dirty layer clearing -- avoids flicker from clearok
+- wattr_set(A_NORMAL, 0, NULL) style reset on dirty layers at frame_begin
+- Auto-dirty on DrawContext access (tui_layer_get_draw_context sets layer->dirty = true)
+- Background layer created at init and lowered to z=0 via tui_layer_lower
+- Frame timing via clock_gettime(CLOCK_MONOTONIC) for accurate delta_time and fps
+- ECS frame systems: FrameBegin at EcsPreStore, FrameEnd at EcsPostFrame
 
 ### Pending Todos
 
-None yet.
+- Plan 04-02: Remove duplicate update_panels/doupdate from tui_window_frame_loop (frame_end handles it)
+- Plan 04-02: Add tui_frame_invalidate_all call in KEY_RESIZE handler after resize
+- Plan 04-02: Migrate renderer off stdscr to use background layer DrawContext
 
 ### Reference: Clay ncurses renderer PR (nicbarker/clay#569)
 
@@ -90,10 +99,10 @@ Lessons from reviewing an upstream Clay ncurses renderer. Our architecture is st
 ### Blockers/Concerns
 
 - Phase 3 risk RESOLVED: stdscr-to-panels migration complete. Frame loop uses update_panels() + doupdate(). INTERFACE library extern globals validated.
-- Phase 4 note: tui_frame_begin/end must avoid duplicate update_panels/doupdate calls since frame loop already has them.
+- Phase 4 note: tui_frame_begin/end must avoid duplicate update_panels/doupdate calls since frame loop already has them. Plan 04-02 will remove the duplicates from tui_window_frame_loop.
 
 ## Session Continuity
 
-Last session: 2026-02-08
-Stopped at: Phase 3 complete, verified, ready for Phase 4
+Last session: 2026-02-08T18:27:22Z
+Stopped at: Completed 04-01-PLAN.md (frame pipeline core)
 Resume file: None
