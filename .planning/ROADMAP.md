@@ -30,12 +30,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Developer can create a TUI_DrawContext wrapping a WINDOW* with position, dimensions, and clipping state that serves as the target for all future draw calls
   4. TUI_Rect provides integer cell coordinates and float-to-cell mapping uses floorf for position and ceilf for dimensions
   5. Unicode box-drawing characters render correctly (setlocale called before initscr)
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 01-01: TUI_Style, TUI_Rect structs and float-to-cell mapping
-- [ ] 01-02: Dynamic color pair pool and attribute application
-- [ ] 01-03: TUI_DrawContext struct and locale initialization
+- [ ] 01-01-PLAN.md -- TUI_Rect, TUI_CellRect structs and float-to-cell mapping
+- [ ] 01-02-PLAN.md -- Dynamic color pair pool (alloc_pair), TUI_Color/TUI_Style, attribute application
+- [ ] 01-03-PLAN.md -- TUI_DrawContext struct and setlocale initialization
 
 ### Phase 2: Drawing Primitives
 **Goal**: Developer can draw any shape, text, or border that a Clay renderer would need, with clipping support
@@ -111,7 +111,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/3 | Not started | - |
+| 1. Foundation | 0/3 | Planned | - |
 | 2. Drawing Primitives | 0/5 | Not started | - |
 | 3. Layer System | 0/4 | Not started | - |
 | 4. Frame Pipeline | 0/2 | Not started | - |
