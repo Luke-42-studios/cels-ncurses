@@ -457,3 +457,22 @@ void tui_draw_text(TUI_DrawContext* ctx, int x, int y,
 
     if (wbuf != wbuf_stack) free(wbuf);
 }
+
+void tui_draw_text_bounded(TUI_DrawContext* ctx, int x, int y,
+                            const char* text, int max_cols,
+                            TUI_Style style) {
+    if (max_cols <= 0) return;
+
+    /* Create a bounding rect for the text area */
+    TUI_CellRect text_bounds = { .x = x, .y = y, .w = max_cols, .h = 1 };
+
+    /* Temporarily narrow the clip to the intersection of current clip and text bounds */
+    TUI_CellRect saved_clip = ctx->clip;
+    ctx->clip = tui_cell_rect_intersect(ctx->clip, text_bounds);
+
+    /* Delegate to tui_draw_text which will clip against the narrowed region */
+    tui_draw_text(ctx, x, y, text, style);
+
+    /* Restore original clip */
+    ctx->clip = saved_clip;
+}
