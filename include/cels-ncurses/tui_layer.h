@@ -29,6 +29,8 @@
 #include <panel.h>
 #include <stdbool.h>
 
+#include "cels-ncurses/tui_draw_context.h"
+
 /* ============================================================================
  * Constants
  * ============================================================================ */
@@ -128,5 +130,28 @@ extern void tui_layer_lower(TUI_Layer* layer);
  * Updates layer->x and layer->y.
  */
 extern void tui_layer_move(TUI_Layer* layer, int x, int y);
+
+/* ============================================================================
+ * Resize
+ * ============================================================================ */
+
+/*
+ * Resize a layer's window to new dimensions.
+ * Calls wresize() then replace_panel() to update the panel's internal
+ * size bookkeeping. Updates layer->width and layer->height.
+ */
+extern void tui_layer_resize(TUI_Layer* layer, int w, int h);
+
+/* ============================================================================
+ * DrawContext Bridge
+ * ============================================================================ */
+
+/*
+ * Get a TUI_DrawContext for drawing into a layer with Phase 2 primitives.
+ * Returns a context with LOCAL coordinates: (0,0) is the top-left of the
+ * layer's window, not the screen. The DrawContext borrows the layer's
+ * WINDOW (does not own it) -- the layer manages WINDOW lifetime.
+ */
+extern TUI_DrawContext tui_layer_get_draw_context(TUI_Layer* layer);
 
 #endif /* CELS_NCURSES_TUI_LAYER_H */

@@ -143,3 +143,34 @@ void tui_layer_move(TUI_Layer* layer, int x, int y) {
     layer->x = x;
     layer->y = y;
 }
+
+/* ============================================================================
+ * tui_layer_resize -- Change layer dimensions
+ * ============================================================================
+ *
+ * wresize() changes the window dimensions in place. replace_panel() MUST
+ * be called afterwards to update the panel's internal size bookkeeping,
+ * even though the WINDOW pointer has not changed.
+ *
+ * wresize parameter order: (win, lines, cols)
+ */
+void tui_layer_resize(TUI_Layer* layer, int w, int h) {
+    if (!layer || !layer->win || !layer->panel) return;
+    wresize(layer->win, h, w);
+    replace_panel(layer->panel, layer->win);
+    layer->width = w;
+    layer->height = h;
+}
+
+/* ============================================================================
+ * tui_layer_get_draw_context -- Bridge layer to Phase 2 drawing primitives
+ * ============================================================================
+ *
+ * Returns a TUI_DrawContext with LOCAL coordinates: (0,0) is the top-left
+ * of the layer's own WINDOW, not the screen. Each panel-backed window has
+ * its own coordinate system. The DrawContext borrows the layer's WINDOW
+ * (does not own it).
+ */
+TUI_DrawContext tui_layer_get_draw_context(TUI_Layer* layer) {
+    return tui_draw_context_create(layer->win, 0, 0, layer->width, layer->height);
+}
