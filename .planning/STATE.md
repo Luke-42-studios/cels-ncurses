@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-07)
 ## Current Position
 
 Phase: 5 of 5 (Integration and Migration)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-02-08 -- Completed 05-01-PLAN.md
+Last activity: 2026-02-08 -- Completed 05-02-PLAN.md
 
-Progress: [#################...] 88% (14/16 plans)
+Progress: [##################..] 94% (15/16 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14
+- Total plans completed: 15
 - Average duration: 2 min
-- Total execution time: 0.43 hours
+- Total execution time: 0.47 hours
 
 **By Phase:**
 
@@ -31,10 +31,10 @@ Progress: [#################...] 88% (14/16 plans)
 | 2. Drawing Primitives | 5/5 | 9 min | 1.8 min |
 | 3. Layer System | 3/3 | 5 min | 1.7 min |
 | 4. Frame Pipeline | 2/2 | 4 min | 2.0 min |
-| 5. Integration | 1/3 | 3 min | 3.0 min |
+| 5. Integration | 2/3 | 5 min | 2.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 05-01 (3 min), 04-02 (2 min), 04-01 (2 min), 03-03 (1 min), 03-02 (2 min)
+- Last 5 plans: 05-02 (2 min), 05-01 (3 min), 04-02 (2 min), 04-01 (2 min), 03-03 (1 min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -73,18 +73,19 @@ Recent decisions affecting current work:
 - Background layer created at init and lowered to z=0 via tui_layer_lower
 - Frame timing via clock_gettime(CLOCK_MONOTONIC) for accurate delta_time and fps
 - ECS frame systems: FrameBegin at EcsPreStore, FrameEnd at EcsPostFrame
-- overwrite(stdscr, bg->win) bridge for renderer migration -- widgets still write to stdscr, full DrawContext migration deferred to Phase 5
 - Frame loop simplified: Engine_Progress + usleep only (no update_panels/doupdate in window loop)
-- tui_frame_init + tui_frame_register_systems wired in engine module after tui_renderer_init
+- tui_frame_init + tui_frame_register_systems wired in engine module (renderer init removed)
 - KEY_RESIZE calls tui_frame_invalidate_all after tui_layer_resize_all
 - Widget render functions use explicit (x, y) coordinates with caller-managed layout (no g_render_row global)
 - theme_init() with static bool guard for runtime TUI_Style initialization (tui_color_rgb not constexpr)
 - App-level render provider registered via _CEL_DefineFeature + _CEL_Provides (same pattern as module renderer)
-- Both old module renderer and new app renderer temporarily coexist (Plan 02 removes old)
+- Module contains zero app-specific code -- rendering fully owned by app
+- init_pair() removed from module; all color pairs via alloc_pair/tui_color_rgb()
+- stdscr invariant: module draws only via TUI_DrawContext, stdscr retained for input only
 
 ### Pending Todos
 
-None -- Plan 05-01 complete, Plan 02 next.
+None -- Plan 05-02 complete, Plan 03 next.
 
 ### Reference: Clay ncurses renderer PR (nicbarker/clay#569)
 
@@ -107,10 +108,10 @@ Lessons from reviewing an upstream Clay ncurses renderer. Our architecture is st
 
 - Phase 3 risk RESOLVED: stdscr-to-panels migration complete. INTERFACE library extern globals validated.
 - Phase 4 RESOLVED: duplicate update_panels/doupdate removed from tui_window_frame_loop. Frame_end is the single compositing point.
-- Phase 5 note: App-level DrawContext widgets created (05-01). Old module renderer still active. Plan 02 removes module renderer files and wires app renderer exclusively.
+- Phase 5 RESOLVED: Module renderer stripped (05-02). Module is pure graphics backend. App owns all rendering.
 
 ## Session Continuity
 
 Last session: 2026-02-08
-Stopped at: Completed 05-01-PLAN.md (widget extraction + render provider)
+Stopped at: Completed 05-02-PLAN.md (module renderer stripped, pure graphics backend)
 Resume file: None
