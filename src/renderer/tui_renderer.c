@@ -17,6 +17,7 @@
 #include "cels-ncurses/tui_renderer.h"
 #include "cels-ncurses/tui_window.h"
 #include "cels-ncurses/tui_components.h"
+#include "cels-ncurses/tui_frame.h"
 #include <cels/cels.h>
 #include <flecs.h>
 #include "components.h"
@@ -70,7 +71,8 @@ static GraphicsSettings* find_graphics_settings(ecs_world_t* world) {
  * querying Selectable entities to determine rendering order.
  *
  * Uses ncurses functions exclusively -- no printf or ANSI escapes.
- * wnoutrefresh(stdscr) at end; doupdate() in window frame loop.
+ * Widgets draw to stdscr, then overwrite() copies to background layer.
+ * Frame_end composites via update_panels() + doupdate().
  */
 
 static int g_render_frame = 0;
@@ -140,8 +142,14 @@ static void tui_prov_render_screen(CELS_Iter* it) {
         last_vsync = gfx->vsync;
     }
 
-    /* Clear screen and reset render row */
-    erase();
+    /* Get background layer and mark dirty for compositing */
+    TUI_Layer* bg = tui_frame_get_background();
+    if (!bg) return;
+    TUI_DrawContext draw_ctx = tui_layer_get_draw_context(bg);
+    (void)draw_ctx;
+
+    /* Clear stdscr (widgets still write here via mvprintw) and reset render row */
+    werase(stdscr);
     tui_render_reset_row();
 
     /* Render Canvas header */
@@ -212,8 +220,9 @@ static void tui_prov_render_screen(CELS_Iter* it) {
     /* Window info box */
     tui_render_info_box(TUI_WindowState.title, TUI_WindowState.version);
 
-    /* Mark stdscr as needing refresh -- doupdate() in frame loop flushes */
-    wnoutrefresh(stdscr);
+    /* Bridge: copy stdscr content into background layer's panel window.
+     * Frame_end composites all panels via update_panels() + doupdate(). */
+    overwrite(stdscr, bg->win);
 }
 
 /* ============================================================================
