@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Drawing Primitives** - Rectangle, text, border, line, and scissor drawing functions
 - [x] **Phase 3: Layer System** - Panel-backed named layers with z-ordering and terminal resize handling
 - [x] **Phase 4: Frame Pipeline** - Begin/end frame lifecycle integrated with existing window loop
-- [ ] **Phase 5: Integration and Migration** - Extract app-specific code, wire up CELS provider to new API
+- [x] **Phase 5: Integration and Migration** - Extract app-specific code, wire up CELS provider to new API
 
 ## Phase Details
 
@@ -99,8 +99,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 05-01-PLAN.md -- Create DrawContext-based widgets and app-level render provider in example app
-- [ ] 05-02-PLAN.md -- Strip module: delete renderer files, remove init_pair, remove overwrite bridge, add stdscr invariant
+- [x] 05-01-PLAN.md -- Create DrawContext-based widgets and app-level render provider in example app
+- [x] 05-02-PLAN.md -- Strip module: delete renderer files, remove init_pair, remove overwrite bridge, add stdscr invariant
 
 ## Progress
 
@@ -113,8 +113,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 2. Drawing Primitives | 5/5 | Complete | 2026-02-08 |
 | 3. Layer System | 3/3 | Complete | 2026-02-08 |
 | 4. Frame Pipeline | 2/2 | Complete | 2026-02-08 |
-| 5. Integration and Migration | 0/2 | Not started | - |
+| 5. Integration and Migration | 2/2 | Complete | 2026-02-08 |
 
 ---
 *Roadmap created: 2026-02-07*
-*Last updated: 2026-02-08 after Phase 5 planning*
+*Last updated: 2026-02-08 after Phase 5 completion*

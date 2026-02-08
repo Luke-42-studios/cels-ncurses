@@ -56,11 +56,11 @@
 
 ### Migration
 
-- [ ] **MIGR-01**: App-specific rendering code (Canvas, Button, Slider, toggle widget renderers) is moved from module to example app
-- [ ] **MIGR-02**: tui_components.h is removed from the module's public headers
-- [ ] **MIGR-03**: tui_renderer.c is stripped to CELS feature/provider registration only (no app-specific logic)
-- [ ] **MIGR-04**: Example app uses new graphics API primitives for all its rendering
-- [ ] **MIGR-05**: All drawing targets WINDOW* via the graphics API (no direct stdscr usage after initialization)
+- [x] **MIGR-01**: App-specific rendering code (Canvas, Button, Slider, toggle widget renderers) is moved from module to example app
+- [x] **MIGR-02**: tui_components.h is removed from the module's public headers
+- [x] **MIGR-03**: tui_renderer.c is stripped to CELS feature/provider registration only (no app-specific logic)
+- [x] **MIGR-04**: Example app uses new graphics API primitives for all its rendering
+- [x] **MIGR-05**: All drawing targets WINDOW* via the graphics API (no direct stdscr usage after initialization)
 
 ## v2 Requirements
 
@@ -138,11 +138,11 @@
 | FRAM-03 | Phase 4 | Complete |
 | FRAM-04 | Phase 4 | Complete |
 | FRAM-05 | Phase 4 | Complete |
-| MIGR-01 | Phase 5 | Pending |
-| MIGR-02 | Phase 5 | Pending |
-| MIGR-03 | Phase 5 | Pending |
-| MIGR-04 | Phase 5 | Pending |
-| MIGR-05 | Phase 5 | Pending |
+| MIGR-01 | Phase 5 | Complete |
+| MIGR-02 | Phase 5 | Complete |
+| MIGR-03 | Phase 5 | Complete |
+| MIGR-04 | Phase 5 | Complete |
+| MIGR-05 | Phase 5 | Complete |
 
 **Coverage:**
 - v1 requirements: 39 total
@@ -151,4 +151,4 @@
 
 ---
 *Requirements defined: 2026-02-07*
-*Last updated: 2026-02-08 after Phase 4 completion*
+*Last updated: 2026-02-08 after Phase 5 completion*
