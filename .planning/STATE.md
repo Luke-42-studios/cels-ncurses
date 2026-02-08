@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-07)
 ## Current Position
 
 Phase: 3 of 5 (Layer System)
-Plan: 0 of 4 in current phase
-Status: Ready to plan
-Last activity: 2026-02-08 -- Phase 2 verified and complete
+Plan: 1 of 4 in current phase
+Status: In progress
+Last activity: 2026-02-08 -- Completed 03-01-PLAN.md
 
-Progress: [#########...........] 47% (8/17 plans)
+Progress: [##########..........] 53% (9/17 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
+- Total plans completed: 9
 - Average duration: 2 min
-- Total execution time: 0.22 hours
+- Total execution time: 0.25 hours
 
 **By Phase:**
 
@@ -29,9 +29,10 @@ Progress: [#########...........] 47% (8/17 plans)
 |-------|-------|-------|----------|
 | 1. Foundation | 3/3 | 5 min | 1.7 min |
 | 2. Drawing Primitives | 5/5 | 9 min | 1.8 min |
+| 3. Layer System | 1/4 | 2 min | 2.0 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (3 min), 02-05 (1 min), 02-04 (2 min), 02-03 (1 min), 02-02 (2 min)
+- Last 5 plans: 03-01 (2 min), 02-01 (3 min), 02-05 (1 min), 02-04 (2 min), 02-03 (1 min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -54,6 +55,10 @@ Recent decisions affecting current work:
 - WINDOW* is borrowed, not owned -- caller manages lifetime
 - _XOPEN_SOURCE 700 required for ncurses wide-char API (WACS_ macros, mvwadd_wch, setcchar, cchar_t) -- now set globally via CMakeLists.txt target_compile_definitions, do NOT add to .c files
 - Scissor stack: silent early return for overflow/underflow (no assert, matching project error handling convention)
+- TUI_Layer struct: name[64], PANEL*, WINDOW*, x, y, width, height, visible -- panel-backed with swap-remove compaction
+- g_layers[TUI_LAYER_MAX=32] with extern linkage (declared in .h, defined in .c) -- validated INTERFACE library pattern
+- set_panel_userptr for PANEL* to TUI_Layer* reverse lookup
+- del_panel before delwin (correct cleanup order per ncurses docs)
 
 ### Pending Todos
 
@@ -79,10 +84,10 @@ Lessons from reviewing an upstream Clay ncurses renderer. Our architecture is st
 ### Blockers/Concerns
 
 - Phase 3 (Layer System) is highest risk: stdscr-to-panels migration must be complete, no partial adoption. Mixing stdscr with panels causes visual corruption.
-- INTERFACE library static globals: Layer manager global state needs extern declarations with single definition in one .c file. Needs validation during Phase 3.
+- INTERFACE library static globals: Layer manager global state needs extern declarations with single definition in one .c file. VALIDATED in 03-01 -- extern g_layers/g_layer_count compiles and links correctly.
 
 ## Session Continuity
 
 Last session: 2026-02-08
-Stopped at: Phase 2 complete, verified, ready for Phase 3
+Stopped at: Completed 03-01-PLAN.md (layer types and lifecycle)
 Resume file: None
