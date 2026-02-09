@@ -65,16 +65,3 @@ target_compile_definitions(draw_test PRIVATE _XOPEN_SOURCE=700 _DEFAULT_SOURCE)
 target_link_libraries(draw_test PRIVATE ${CURSES_LIBRARIES} ${PANEL_LIBRARY} m)
 set_target_properties(draw_test PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED ON)
 
-# ============================================================================
-# Minimal CELS ncurses example (full framework, hello-world)
-# ============================================================================
-add_executable(minimal
-    ${CMAKE_CURRENT_SOURCE_DIR}/examples/minimal.c
-)
-target_link_libraries(minimal PRIVATE
-    cels
-    cels-widgets
-    cels-ncurses
-    flecs::flecs_static
-)
-set_target_properties(minimal PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED ON)
