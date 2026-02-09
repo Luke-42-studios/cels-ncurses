@@ -48,7 +48,9 @@
 typedef enum TUI_BorderStyle {
     TUI_BORDER_SINGLE,      /* WACS_HLINE / WACS_VLINE / WACS_*CORNER */
     TUI_BORDER_DOUBLE,      /* WACS_D_HLINE / WACS_D_VLINE / WACS_D_*CORNER */
-    TUI_BORDER_ROUNDED      /* WACS_HLINE / WACS_VLINE / custom arc corners */
+    TUI_BORDER_ROUNDED,     /* WACS_HLINE / WACS_VLINE / custom arc corners */
+    TUI_BORDER_HEAVY,       /* Heavy-weight lines (falls back to SINGLE if unsupported) */
+    TUI_BORDER_NONE         /* No border drawn (early return in draw functions) */
 } TUI_BorderStyle;
 
 /*

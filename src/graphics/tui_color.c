@@ -78,6 +78,9 @@ static attr_t tui_attrs_to_ncurses(uint32_t flags) {
     if (flags & TUI_ATTR_DIM)       a |= A_DIM;
     if (flags & TUI_ATTR_UNDERLINE) a |= A_UNDERLINE;
     if (flags & TUI_ATTR_REVERSE)   a |= A_REVERSE;
+#ifdef A_ITALIC
+    if (flags & TUI_ATTR_ITALIC)   a |= A_ITALIC;
+#endif
     return a;
 }
 

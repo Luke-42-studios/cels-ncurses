@@ -83,6 +83,33 @@ TUI_BorderChars tui_border_chars_get(TUI_BorderStyle border_style) {
             chars.ll    = &g_round_ll;
             chars.lr    = &g_round_lr;
             break;
+        case TUI_BORDER_HEAVY:
+#ifdef WACS_T_HLINE
+            chars.hline = WACS_T_HLINE;
+            chars.vline = WACS_T_VLINE;
+            chars.ul    = WACS_T_ULCORNER;
+            chars.ur    = WACS_T_URCORNER;
+            chars.ll    = WACS_T_LLCORNER;
+            chars.lr    = WACS_T_LRCORNER;
+#else
+            /* Fall back to SINGLE if heavy line chars unavailable */
+            chars.hline = WACS_HLINE;
+            chars.vline = WACS_VLINE;
+            chars.ul    = WACS_ULCORNER;
+            chars.ur    = WACS_URCORNER;
+            chars.ll    = WACS_LLCORNER;
+            chars.lr    = WACS_LRCORNER;
+#endif
+            break;
+        case TUI_BORDER_NONE:
+            /* Return SINGLE as fallback -- callers should early-return for NONE */
+            chars.hline = WACS_HLINE;
+            chars.vline = WACS_VLINE;
+            chars.ul    = WACS_ULCORNER;
+            chars.ur    = WACS_URCORNER;
+            chars.ll    = WACS_LLCORNER;
+            chars.lr    = WACS_LRCORNER;
+            break;
         case TUI_BORDER_SINGLE: /* fall through */
         default:
             chars.hline = WACS_HLINE;
@@ -131,6 +158,7 @@ void tui_draw_fill_rect(TUI_DrawContext* ctx, TUI_CellRect rect,
 void tui_draw_border_rect(TUI_DrawContext* ctx, TUI_CellRect rect,
                            TUI_BorderStyle border_style, TUI_Style style) {
     if (rect.w < 2 || rect.h < 2) return;
+    if (border_style == TUI_BORDER_NONE) return;
 
     TUI_BorderChars chars = tui_border_chars_get(border_style);
     tui_style_apply(ctx->win, style);
@@ -251,6 +279,7 @@ void tui_draw_border(TUI_DrawContext* ctx, TUI_CellRect rect,
                       TUI_Style style) {
     if (rect.w < 2 || rect.h < 2) return;
     if (sides == 0) return;
+    if (border_style == TUI_BORDER_NONE) return;
 
     TUI_BorderChars chars = tui_border_chars_get(border_style);
     tui_style_apply(ctx->win, style);

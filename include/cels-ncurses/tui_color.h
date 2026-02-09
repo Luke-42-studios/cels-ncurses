@@ -60,6 +60,7 @@ typedef struct TUI_Color {
 #define TUI_ATTR_DIM       0x02
 #define TUI_ATTR_UNDERLINE 0x04
 #define TUI_ATTR_REVERSE   0x08
+#define TUI_ATTR_ITALIC    0x10
 
 /* ============================================================================
  * Style Type
