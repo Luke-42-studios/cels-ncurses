@@ -1,2 +1,0 @@
-/home/cachy/workspaces/libs/cels/modules/cels-ncurses/build/CMakeFiles/edit_cache.dir
-/home/cachy/workspaces/libs/cels/modules/cels-ncurses/build/CMakeFiles/rebuild_cache.dir
