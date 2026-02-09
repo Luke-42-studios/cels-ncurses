@@ -1,20 +1,12 @@
 /*
- * TUI Window Provider - ncurses Implementation
+ * TUI Window Provider - ncurses Implementation (Backend Descriptor)
  *
- * Implements the TUI_Window provider that owns the terminal frame loop.
- * Uses ncurses for terminal management (replaces raw termios approach).
- *
- * Responsibilities:
- *   - ncurses initialization (initscr, cbreak, keypad, nodelay)
- *   - Color system setup (start_color, use_default_colors, assume_default_colors)
- *   - Frame loop with configurable FPS timing
- *   - WindowLifecycle state machine (fast-tracks NONE -> READY for TUI)
- *   - Clean shutdown: CLOSING -> CLOSED on quit, endwin() cleanup
- *
- * NOTE: This provider does NOT read input. Input is handled by TUI_Input
- * as an ECS system running during Engine_Progress().
+ * Implements the CELS_BackendDesc hook interface for ncurses TUI.
+ * Core CELS owns the main loop; this module provides 6 hooks:
+ *   startup, shutdown, frame_begin, frame_end, should_quit, get_delta_time
  */
 
+#define _POSIX_C_SOURCE 199309L
 #include <cels-ncurses/tui_window.h>
 #include <ncurses.h>
 #include <unistd.h>
@@ -22,12 +14,12 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <locale.h>
+#include <time.h>
 
 /* ============================================================================
  * Static State
  * ============================================================================ */
 
-/* Provider observable state (extern'd in tui_window.h) */
 TUI_WindowState_t TUI_WindowState = {0};
 cels_entity_t TUI_WindowStateID = 0;
 
@@ -38,6 +30,14 @@ void TUI_WindowState_ensure(void) {
 static TUI_Window g_tui_config;
 static volatile int g_running = 1;
 static int g_ncurses_active = 0;
+
+/* Standard window state for CELS_BackendDesc */
+static CELS_WindowState g_window_state = {0};
+
+/* Timing state */
+static struct timespec g_frame_start = {0};
+static struct timespec g_prev_frame_start = {0};
+static float g_delta_time = 1.0f / 60.0f;
 
 /* ============================================================================
  * Signal Handler
@@ -60,105 +60,159 @@ static void cleanup_endwin(void) {
 }
 
 /* ============================================================================
- * Provider Startup (registered via cels_register_startup)
- * ============================================================================
- *
- * Initializes ncurses terminal mode with full key support and colors.
- * Called by cels_run_providers() before the frame loop starts.
- */
-static void tui_window_startup(void) {
+ * Backend Hook: startup()
+ * ============================================================================ */
+
+static void tui_hook_startup(void) {
     signal(SIGINT, tui_sigint_handler);
     atexit(cleanup_endwin);
 
-    /* Enable Unicode box-drawing characters (MUST be before initscr) */
     setlocale(LC_ALL, "");
 
-    /* ncurses initialization */
     initscr();
     g_ncurses_active = 1;
-    cbreak();                    /* char-at-a-time mode (replaces raw termios) */
-    noecho();                    /* don't echo typed characters */
-    keypad(stdscr, TRUE);        /* enable function key decoding */
-    curs_set(0);                 /* hide cursor */
-    nodelay(stdscr, TRUE);       /* non-blocking getch() */
-
-    /* Fast escape key response (default ~1000ms is too slow) */
+    cbreak();
+    noecho();
+    keypad(stdscr, TRUE);
+    curs_set(0);
+    nodelay(stdscr, TRUE);
     ESCDELAY = 25;
 
-    /* Color setup */
     if (has_colors()) {
         start_color();
         use_default_colors();
-        assume_default_colors(-1, -1);  /* terminal theme compatibility */
+        assume_default_colors(-1, -1);
     }
 
-    /* INVARIANT: No code in this module calls mvprintw(), printw(),
-     * addstr(), addch(), or any ncurses function that implicitly targets
-     * stdscr for drawing. All drawing goes through TUI_DrawContext via
-     * tui_draw_* functions. stdscr is retained only for input:
-     * keypad(stdscr), nodelay(stdscr), wgetch(stdscr).
-     * Violation check: grep -rn 'mvprintw\|printw\|addstr\|addch' src/ */
-}
-
-/* ============================================================================
- * Provider Frame Loop (registered via cels_register_frame_loop)
- * ============================================================================
- *
- * Owns the main loop: calls Engine_Progress, handles timing.
- * Input is read by TUI_Input ECS system during Engine_Progress.
- * Manages WindowLifecycle state transitions:
- *   - Fast-tracks to READY on start (TUI skips CREATED, SURFACE_READY)
- *   - Transitions CLOSING -> CLOSED on quit
- *
- * Called by cels_run_providers() -- blocks until window closes.
- */
-static void tui_window_frame_loop(void) {
     int fps = g_tui_config.fps > 0 ? g_tui_config.fps : 60;
-    float delta = 1.0f / (float)fps;
+    g_delta_time = 1.0f / (float)fps;
 
-    /* Fast-track to READY (TUI skips CREATED, SURFACE_READY) */
+    /* Populate legacy TUI_WindowState */
     TUI_WindowState.state = WINDOW_STATE_READY;
     TUI_WindowState.width = g_tui_config.width > 0 ? g_tui_config.width : COLS;
     TUI_WindowState.height = g_tui_config.height > 0 ? g_tui_config.height : LINES;
     TUI_WindowState.title = g_tui_config.title;
     TUI_WindowState.version = g_tui_config.version;
     TUI_WindowState.target_fps = (float)fps;
-    TUI_WindowState.delta_time = delta;
+    TUI_WindowState.delta_time = g_delta_time;
     cels_state_notify_change(TUI_WindowStateID);
 
-    while (g_running) {
-        Engine_Progress(delta);
-        usleep((unsigned int)(delta * 1000000));
-    }
+    /* Populate standard CELS_WindowState */
+    g_window_state.lifecycle = CELS_WINDOW_READY;
+    g_window_state.width = TUI_WindowState.width;
+    g_window_state.height = TUI_WindowState.height;
+    g_window_state.title = TUI_WindowState.title;
+    g_window_state.target_fps = TUI_WindowState.target_fps;
+    g_window_state.delta_time = g_delta_time;
+    g_window_state.backend_data = NULL;
+}
 
-    /* Transition: CLOSING -> CLOSED */
+/* ============================================================================
+ * Backend Hook: shutdown()
+ * ============================================================================ */
+
+static void tui_hook_shutdown(void) {
+    /* Legacy state transition */
     TUI_WindowState.state = WINDOW_STATE_CLOSING;
     cels_state_notify_change(TUI_WindowStateID);
     TUI_WindowState.state = WINDOW_STATE_CLOSED;
+
+    /* Standard state transition */
+    g_window_state.lifecycle = CELS_WINDOW_CLOSING;
+    if (g_ncurses_active && !isendwin()) {
+        endwin();
+        g_ncurses_active = 0;
+    }
+    g_window_state.lifecycle = CELS_WINDOW_CLOSED;
 }
+
+/* ============================================================================
+ * Backend Hook: frame_begin()
+ * ============================================================================ */
+
+static void tui_hook_frame_begin(void) {
+    /* Timing */
+    g_prev_frame_start = g_frame_start;
+    clock_gettime(CLOCK_MONOTONIC, &g_frame_start);
+    if (g_prev_frame_start.tv_sec != 0) {
+        g_delta_time = (float)(g_frame_start.tv_sec - g_prev_frame_start.tv_sec) +
+                       (float)(g_frame_start.tv_nsec - g_prev_frame_start.tv_nsec) / 1e9f;
+    }
+
+    /* Update timing in both state structs */
+    TUI_WindowState.delta_time = g_delta_time;
+    g_window_state.delta_time = g_delta_time;
+}
+
+/* ============================================================================
+ * Backend Hook: frame_end()
+ * ============================================================================ */
+
+static void tui_hook_frame_end(void) {
+    /* FPS throttle */
+    int fps = g_tui_config.fps > 0 ? g_tui_config.fps : 60;
+    float target_delta = 1.0f / (float)fps;
+
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    float elapsed = (float)(now.tv_sec - g_frame_start.tv_sec) +
+                    (float)(now.tv_nsec - g_frame_start.tv_nsec) / 1e9f;
+
+    if (elapsed < target_delta) {
+        float remaining = target_delta - elapsed;
+        usleep((unsigned int)(remaining * 1000000));
+    }
+}
+
+/* ============================================================================
+ * Backend Hook: should_quit()
+ * ============================================================================ */
+
+static bool tui_hook_should_quit(void) {
+    return !g_running;
+}
+
+/* ============================================================================
+ * Backend Hook: get_delta_time()
+ * ============================================================================ */
+
+static float tui_hook_get_delta_time(void) {
+    return g_delta_time;
+}
+
+/* ============================================================================
+ * Backend Descriptor (static, lives for application lifetime)
+ * ============================================================================ */
+
+static CELS_BackendDesc tui_backend_desc = {
+    .name = "TUI",
+    .hooks = {
+        .startup        = tui_hook_startup,
+        .shutdown       = tui_hook_shutdown,
+        .frame_begin    = tui_hook_frame_begin,
+        .frame_end      = tui_hook_frame_end,
+        .should_quit    = tui_hook_should_quit,
+        .get_delta_time = tui_hook_get_delta_time,
+    },
+    .window_state = &g_window_state,
+};
 
 /* ============================================================================
  * TUI_Window_use -- Provider Registration
- * ============================================================================
- *
- * Called by Use(TUI_Window, .title = "X", .fps = 60) inside Build() block.
- * Stores config and registers startup + frame_loop hooks with CELS runtime.
- */
+ * ============================================================================ */
+
 TUI_WindowState_t* TUI_Window_use(TUI_Window config) {
     g_tui_config = config;
     TUI_WindowState_ensure();
-    cels_register_startup(tui_window_startup);
-    cels_register_frame_loop(tui_window_frame_loop);
+    cels_backend_register(&tui_backend_desc);
     return &TUI_WindowState;
 }
 
-/* ============================================================================
- * Quit Signal Access
- * ============================================================================
- *
- * Returns pointer to g_running flag so TUI_Input can signal quit on Q key.
- */
-
 volatile int* tui_window_get_running_ptr(void) {
     return &g_running;
+}
+
+/* Access standard window state (for input provider resize handling) */
+CELS_WindowState* tui_window_get_standard_state(void) {
+    return &g_window_state;
 }

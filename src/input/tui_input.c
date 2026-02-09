@@ -91,15 +91,38 @@ static void tui_read_input_ncurses(void) {
             }
             return;  /* Do NOT set any input field -- immediate quit */
 
-        /* Terminal resize -- resize layers FIRST, then notify observers */
-        case KEY_RESIZE:
+        /* Terminal resize -- drain queued resize events (window manager sends
+         * many during a drag), then process only the final dimensions. */
+        case KEY_RESIZE: {
+            /* Drain additional KEY_RESIZE events queued during rapid drag */
+            int next;
+            while ((next = wgetch(stdscr)) == KEY_RESIZE) { /* consume */ }
+            if (next != ERR) ungetch(next);  /* put back non-resize key */
+
+            /* Skip if dimensions are invalid (can happen mid-animation) */
+            if (COLS < 4 || LINES < 4) {
+                cels_input_set(ctx, &input);
+                return;
+            }
+
+            fprintf(stderr, "[resize] COLS=%d LINES=%d (was %dx%d)\n",
+                    COLS, LINES, TUI_WindowState.width, TUI_WindowState.height);
+
             tui_layer_resize_all(COLS, LINES);
             tui_frame_invalidate_all();
+            clearok(curscr, TRUE);
             TUI_WindowState.width = COLS;
             TUI_WindowState.height = LINES;
-            TUI_WindowState.state = WINDOW_STATE_RESIZING;
+            /* Also update standard window state */
+            CELS_WindowState* ws = tui_window_get_standard_state();
+            if (ws) {
+                ws->width = COLS;
+                ws->height = LINES;
+            }
             cels_state_notify_change(TUI_WindowStateID);
+            cels_input_set(ctx, &input);  /* Set clean (zeroed) input */
             return;
+        }
 
         /* Numbers, function keys, raw characters */
         default:

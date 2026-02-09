@@ -16,7 +16,7 @@
  *   CEL_Root(AppUI) {
  *       TUI_WindowState_t* win = CEL_Watch(TUI_WindowState);
  *       if (win->state == WINDOW_STATE_READY) {
- *           CEL_Call(MainMenu) {}
+ *           CEL_Init(MainMenu) {}
  *       }
  *   }
  */
@@ -86,5 +86,8 @@ extern TUI_WindowState_t* TUI_Window_use(TUI_Window config);
 
 /* Get pointer to g_running flag for quit signaling from input provider */
 extern volatile int* tui_window_get_running_ptr(void);
+
+/* Access the standard CELS_WindowState for this backend */
+extern CELS_WindowState* tui_window_get_standard_state(void);
 
 #endif /* CELS_NCURSES_TUI_WINDOW_H */
