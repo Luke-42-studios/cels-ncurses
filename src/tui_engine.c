@@ -2,7 +2,7 @@
  * TUI Engine Module - Implementation
  *
  * Registers TUI providers (Window, Input) and initializes the frame pipeline.
- * Uses _CEL_DefineModule for idempotent initialization.
+ * Uses CEL_Module for idempotent initialization.
  *
  * Usage:
  *   TUI_Engine_use(config) -- configure, init, and call root composition
@@ -20,7 +20,14 @@
 static TUI_EngineConfig g_tui_config = {0};
 static bool g_config_set = false;
 
-_CEL_DefineModule(TUI_Engine) {
+CEL_Module(TUI_Engine) {
+    CEL_ModuleProvides(Window);
+    CEL_ModuleProvides(Input);
+    CEL_ModuleProvides(FramePipeline);
+
+    /* Set active backend for provider filtering */
+    cels_set_active_backend("TUI");
+
     /* Register window provider with config (or defaults) */
     CEL_Use(TUI_Window,
         .title = g_tui_config.title ? g_tui_config.title : "CELS App",
