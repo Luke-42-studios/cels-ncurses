@@ -60,9 +60,9 @@ extern TUI_FrameState g_frame_state;
  * ============================================================================ */
 
 /*
- * Initialize the frame pipeline. Creates a default fullscreen background
- * layer at z=0 (bottom of z-order stack). Must be called after ncurses
- * initialization (COLS and LINES must be valid).
+ * Initialize the frame pipeline. Background layer creation is deferred to
+ * the first tui_frame_begin() call when ncurses is guaranteed active.
+ * Safe to call before initscr().
  */
 extern void tui_frame_init(void);
 
@@ -89,12 +89,14 @@ extern void tui_frame_end(void);
  */
 extern void tui_frame_invalidate_all(void);
 
+#ifdef CELS_HAS_ECS
 /*
  * Register frame pipeline ECS systems.
  * - TUI_FrameBeginSystem at EcsPreStore (runs before renderer at OnStore)
  * - TUI_FrameEndSystem at EcsPostFrame (runs after renderer at OnStore)
  */
 extern void tui_frame_register_systems(void);
+#endif
 
 /*
  * Get the default background layer (created by tui_frame_init).

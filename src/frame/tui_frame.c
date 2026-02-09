@@ -22,8 +22,11 @@
 #include <panel.h>
 #include <time.h>
 #include <assert.h>
+#include <signal.h>
+#ifdef CELS_HAS_ECS
 #include <cels/cels.h>
 #include <flecs.h>
+#endif
 
 /* ============================================================================
  * Global State (extern declaration in tui_frame.h)
@@ -53,20 +56,33 @@ static float timespec_diff_sec(struct timespec end, struct timespec start) {
 }
 
 /* ============================================================================
- * tui_frame_init -- Create background layer, initialize state
+ * tui_frame_init -- Initialize frame state, defer background layer creation
  * ============================================================================
  *
- * Creates a fullscreen background layer at z=0 (bottom of z-order stack).
- * Must be called after ncurses initialization so COLS and LINES are valid.
- * Zero-initializes g_frame_state.
+ * Zero-initializes g_frame_state and marks the background layer for deferred
+ * creation. The actual layer is created on the first tui_frame_begin() call,
+ * when ncurses is guaranteed to be initialized (COLS/LINES valid).
  */
+static bool g_frame_initialized = false;
+
 void tui_frame_init(void) {
+    g_frame_state = (TUI_FrameState){0};
+    g_background_layer = NULL;
+    g_frame_initialized = true;
+}
+
+/*
+ * Create background layer on first frame_begin (deferred from tui_frame_init).
+ * Called once, after ncurses initscr() has set COLS and LINES.
+ */
+static void tui_frame_ensure_background(void) {
+    if (g_background_layer) return;
+    if (COLS <= 0 || LINES <= 0) return;
+
     g_background_layer = tui_layer_create("background", 0, 0, COLS, LINES);
     if (g_background_layer) {
         tui_layer_lower(g_background_layer);
     }
-
-    g_frame_state = (TUI_FrameState){0};
 }
 
 /* ============================================================================
@@ -84,6 +100,9 @@ void tui_frame_init(void) {
  */
 void tui_frame_begin(void) {
     assert(!g_frame_state.in_frame && "Nested tui_frame_begin() calls");
+
+    /* Deferred background layer creation (needs ncurses to be active) */
+    tui_frame_ensure_background();
 
     /* Frame timing */
     g_prev_frame_start = g_frame_start;
@@ -105,6 +124,14 @@ void tui_frame_begin(void) {
         }
     }
 
+    /* Block SIGWINCH during rendering to prevent ncurses corruption.
+     * SIGWINCH arriving mid-doupdate/update_panels corrupts internal state.
+     * Unblocked in tui_frame_end() so getch() can receive KEY_RESIZE. */
+    sigset_t winch_set;
+    sigemptyset(&winch_set);
+    sigaddset(&winch_set, SIGWINCH);
+    sigprocmask(SIG_BLOCK, &winch_set, NULL);
+
     g_frame_state.in_frame = true;
 }
 
@@ -125,6 +152,12 @@ void tui_frame_end(void) {
 
     update_panels();
     doupdate();
+
+    /* Unblock SIGWINCH so the next getch() can receive KEY_RESIZE */
+    sigset_t winch_set;
+    sigemptyset(&winch_set);
+    sigaddset(&winch_set, SIGWINCH);
+    sigprocmask(SIG_UNBLOCK, &winch_set, NULL);
 }
 
 /* ============================================================================
@@ -148,6 +181,7 @@ TUI_Layer* tui_frame_get_background(void) {
     return g_background_layer;
 }
 
+#ifdef CELS_HAS_ECS
 /* ============================================================================
  * ECS System Callbacks
  * ============================================================================
@@ -209,3 +243,4 @@ void tui_frame_register_systems(void) {
         ecs_system_init(world, &sys_desc);
     }
 }
+#endif /* CELS_HAS_ECS */

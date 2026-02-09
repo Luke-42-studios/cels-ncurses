@@ -24,6 +24,7 @@ target_sources(cels-ncurses INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_scissor.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/layer/tui_layer.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/frame/tui_frame.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/widgets/tui_widgets.c
 )
 
 target_include_directories(cels-ncurses INTERFACE
@@ -34,6 +35,7 @@ target_include_directories(cels-ncurses INTERFACE
 target_compile_definitions(cels-ncurses INTERFACE
     _XOPEN_SOURCE=700
     _DEFAULT_SOURCE
+    CELS_HAS_ECS
 )
 
 target_link_libraries(cels-ncurses INTERFACE
@@ -51,6 +53,8 @@ add_executable(draw_test
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_color.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_draw.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_scissor.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/layer/tui_layer.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/frame/tui_frame.c
 )
 target_include_directories(draw_test PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
