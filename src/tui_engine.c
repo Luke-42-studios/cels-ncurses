@@ -1,13 +1,13 @@
 /*
- * TUI Engine Module - Implementation
+ * Engine Module - Implementation
  *
  * Registers TUI providers (Window, Input) and initializes the frame pipeline.
  * Uses CEL_Module for idempotent initialization.
  *
  * Usage:
- *   TUI_Engine_use(config) -- configure, init, and call root composition
+ *   Engine_use(config) -- configure, init, and call root composition
  *
- * The root composition receives TUI_EngineContext with state IDs so it can
+ * The root composition receives Engine_Context with state IDs so it can
  * use CEL_WatchId instead of storing raw pointers.
  *
  * NOTE: This file compiles in the CONSUMER's context (INTERFACE library).
@@ -16,11 +16,11 @@
 #include "cels-ncurses/tui_engine.h"
 #include "cels-ncurses/tui_frame.h"
 
-/* Module-level config (stored by TUI_Engine_use, read by init body) */
-static TUI_EngineConfig g_tui_config = {0};
+/* Module-level config (stored by Engine_use, read by init body) */
+static Engine_Config g_engine_config = {0};
 static bool g_config_set = false;
 
-CEL_Module(TUI_Engine) {
+CEL_Module(Engine) {
     CEL_ModuleProvides(Window);
     CEL_ModuleProvides(Input);
     CEL_ModuleProvides(FramePipeline);
@@ -30,9 +30,9 @@ CEL_Module(TUI_Engine) {
 
     /* Register window provider with config (or defaults) */
     CEL_Use(TUI_Window,
-        .title = g_tui_config.title ? g_tui_config.title : "CELS App",
-        .version = g_tui_config.version ? g_tui_config.version : "0.0.0",
-        .fps = g_tui_config.fps > 0 ? g_tui_config.fps : 60
+        .title = g_engine_config.title ? g_engine_config.title : "CELS App",
+        .version = g_engine_config.version ? g_engine_config.version : "0.0.0",
+        .fps = g_engine_config.fps > 0 ? g_engine_config.fps : 60
     );
 
     /* Register input provider (zero-config) */
@@ -43,26 +43,26 @@ CEL_Module(TUI_Engine) {
     tui_frame_register_systems();
 
     /* If root function provided, call it with engine context */
-    if (g_tui_config.root) {
+    if (g_engine_config.root) {
         /* Get window state ID from the registered pointer */
         cels_entity_t win_state_id = cels_state_register_ptr(
-            "TUI_WindowState", &TUI_WindowState, sizeof(TUI_WindowState_t));
+            "Engine_WindowState", &Engine_WindowState, sizeof(Engine_WindowState_t));
 
         /* Store real ID so tui_window_frame_loop can notify_change correctly */
-        TUI_WindowStateID = win_state_id;
+        Engine_WindowStateID = win_state_id;
 
-        TUI_EngineContext ctx;
+        Engine_Context ctx;
         ctx.windowState = win_state_id;
 
-        g_tui_config.root(ctx);
+        g_engine_config.root(ctx);
     }
 }
 
-void TUI_Engine_use(TUI_EngineConfig config) {
+void Engine_use(Engine_Config config) {
     /* Store config for module init body */
-    g_tui_config = config;
+    g_engine_config = config;
     g_config_set = true;
 
     /* Trigger module initialization (idempotent) */
-    TUI_Engine_init();
+    Engine_init();
 }

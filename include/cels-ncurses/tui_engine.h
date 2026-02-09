@@ -1,5 +1,5 @@
 /*
- * TUI Engine Module - Single Entry Point
+ * Engine Module - Single Entry Point
  *
  * Bundles TUI providers (Window, Input) and frame pipeline into one module.
  * Instead of manually including each provider header and calling init:
@@ -12,14 +12,14 @@
  *
  *   After:
  *     #include <cels-ncurses/tui_engine.h>
- *     TUI_Engine_use((TUI_EngineConfig){
+ *     Engine_use((Engine_Config){
  *         .title = "CELS Demo", .version = "0.9.4.1", .fps = 60,
  *         .root = AppUI
  *     });
  *
  * Usage (with root composition):
  *   CEL_Build(App) {
- *       TUI_Engine_use((TUI_EngineConfig){
+ *       Engine_use((Engine_Config){
  *           .title = "CELS Demo",
  *           .version = "0.9.4.1",
  *           .fps = 60,
@@ -29,8 +29,8 @@
  *       InitSystems();
  *   }
  *
- *   CEL_Root(AppUI, TUI_EngineContext) {
- *       TUI_WindowState_t* win = CEL_WatchId(ctx.windowState, TUI_WindowState_t);
+ *   CEL_Root(AppUI, Engine_Context) {
+ *       Engine_WindowState_t* win = CEL_WatchId(ctx.windowState, Engine_WindowState_t);
  *       ...
  *   }
  */
@@ -43,36 +43,45 @@
 #include <cels-ncurses/tui_frame.h>
 
 /* ===========================================
- * TUI Engine Context -- passed to root composition
+ * Engine_Context -- passed to root composition
  * ===========================================
  *
  * Contains state IDs from the engine. Root composition
  * uses CEL_WatchId to get typed state pointers.
  */
-typedef struct TUI_EngineContext {
+typedef struct Engine_Context {
     cels_entity_t windowState;   /* ID to observe window state via CEL_WatchId */
-} TUI_EngineContext;
+} Engine_Context;
 
 /* ===========================================
- * TUI Engine Module Config
+ * Engine_Config -- module configuration
  * ===========================================
  *
- * Configuration struct for TUI_Engine_use().
+ * Configuration struct for Engine_use().
  * Fields are forwarded to TUI_Window provider.
- * .root receives TUI_EngineContext with state IDs.
+ * .root receives Engine_Context with state IDs.
  */
-typedef struct TUI_EngineConfig {
+typedef struct Engine_Config {
     const char* title;      /* Window title (default: "CELS App") */
     const char* version;    /* App version for info display (default: "0.0.0") */
     int fps;                /* Target frames per second (default: 60) */
-    void (*root)(TUI_EngineContext ctx);  /* Root composition init function */
-} TUI_EngineConfig;
+    void (*root)(Engine_Context ctx);  /* Root composition init function */
+} Engine_Config;
 
 /* Module entity ID and init function */
-extern cels_entity_t TUI_Engine;
-extern void TUI_Engine_init(void);
+extern cels_entity_t Engine;
+extern void Engine_init(void);
 
 /* Module use with config -- initializes engine and calls root composition */
-extern void TUI_Engine_use(TUI_EngineConfig config);
+extern void Engine_use(Engine_Config config);
+
+/* ============================================================================
+ * Backward Compatibility (v0.2 -> v0.3)
+ * ============================================================================ */
+typedef Engine_Context TUI_EngineContext;
+typedef Engine_Config TUI_EngineConfig;
+#define TUI_Engine_use Engine_use
+#define TUI_Engine_init Engine_init
+#define TUI_Engine Engine
 
 #endif /* CELS_NCURSES_TUI_ENGINE_H */

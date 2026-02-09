@@ -20,11 +20,11 @@
  * Static State
  * ============================================================================ */
 
-TUI_WindowState_t TUI_WindowState = {0};
-cels_entity_t TUI_WindowStateID = 0;
+Engine_WindowState_t Engine_WindowState = {0};
+cels_entity_t Engine_WindowStateID = 0;
 
-void TUI_WindowState_ensure(void) {
-    if (TUI_WindowStateID == 0) TUI_WindowStateID = cels_state_register("TUI_WindowState");
+void Engine_WindowState_ensure(void) {
+    if (Engine_WindowStateID == 0) Engine_WindowStateID = cels_state_register("Engine_WindowState");
 }
 
 static TUI_Window g_tui_config;
@@ -87,22 +87,22 @@ static void tui_hook_startup(void) {
     int fps = g_tui_config.fps > 0 ? g_tui_config.fps : 60;
     g_delta_time = 1.0f / (float)fps;
 
-    /* Populate legacy TUI_WindowState */
-    TUI_WindowState.state = WINDOW_STATE_READY;
-    TUI_WindowState.width = g_tui_config.width > 0 ? g_tui_config.width : COLS;
-    TUI_WindowState.height = g_tui_config.height > 0 ? g_tui_config.height : LINES;
-    TUI_WindowState.title = g_tui_config.title;
-    TUI_WindowState.version = g_tui_config.version;
-    TUI_WindowState.target_fps = (float)fps;
-    TUI_WindowState.delta_time = g_delta_time;
-    cels_state_notify_change(TUI_WindowStateID);
+    /* Populate Engine_WindowState */
+    Engine_WindowState.state = WINDOW_STATE_READY;
+    Engine_WindowState.width = g_tui_config.width > 0 ? g_tui_config.width : COLS;
+    Engine_WindowState.height = g_tui_config.height > 0 ? g_tui_config.height : LINES;
+    Engine_WindowState.title = g_tui_config.title;
+    Engine_WindowState.version = g_tui_config.version;
+    Engine_WindowState.target_fps = (float)fps;
+    Engine_WindowState.delta_time = g_delta_time;
+    cels_state_notify_change(Engine_WindowStateID);
 
     /* Populate standard CELS_WindowState */
     g_window_state.lifecycle = CELS_WINDOW_READY;
-    g_window_state.width = TUI_WindowState.width;
-    g_window_state.height = TUI_WindowState.height;
-    g_window_state.title = TUI_WindowState.title;
-    g_window_state.target_fps = TUI_WindowState.target_fps;
+    g_window_state.width = Engine_WindowState.width;
+    g_window_state.height = Engine_WindowState.height;
+    g_window_state.title = Engine_WindowState.title;
+    g_window_state.target_fps = Engine_WindowState.target_fps;
     g_window_state.delta_time = g_delta_time;
     g_window_state.backend_data = NULL;
 }
@@ -112,10 +112,10 @@ static void tui_hook_startup(void) {
  * ============================================================================ */
 
 static void tui_hook_shutdown(void) {
-    /* Legacy state transition */
-    TUI_WindowState.state = WINDOW_STATE_CLOSING;
-    cels_state_notify_change(TUI_WindowStateID);
-    TUI_WindowState.state = WINDOW_STATE_CLOSED;
+    /* State transition */
+    Engine_WindowState.state = WINDOW_STATE_CLOSING;
+    cels_state_notify_change(Engine_WindowStateID);
+    Engine_WindowState.state = WINDOW_STATE_CLOSED;
 
     /* Standard state transition */
     g_window_state.lifecycle = CELS_WINDOW_CLOSING;
@@ -140,7 +140,7 @@ static void tui_hook_frame_begin(void) {
     }
 
     /* Update timing in both state structs */
-    TUI_WindowState.delta_time = g_delta_time;
+    Engine_WindowState.delta_time = g_delta_time;
     g_window_state.delta_time = g_delta_time;
 }
 
@@ -201,11 +201,11 @@ static CELS_BackendDesc tui_backend_desc = {
  * TUI_Window_use -- Provider Registration
  * ============================================================================ */
 
-TUI_WindowState_t* TUI_Window_use(TUI_Window config) {
+Engine_WindowState_t* TUI_Window_use(TUI_Window config) {
     g_tui_config = config;
-    TUI_WindowState_ensure();
+    Engine_WindowState_ensure();
     cels_backend_register(&tui_backend_desc);
-    return &TUI_WindowState;
+    return &Engine_WindowState;
 }
 
 volatile int* tui_window_get_running_ptr(void) {
