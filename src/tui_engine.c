@@ -15,6 +15,8 @@
 
 #include "cels-ncurses/tui_engine.h"
 #include "cels-ncurses/tui_frame.h"
+#include <cels-clay/clay_engine.h>
+#include <cels-clay/clay_ncurses_renderer.h>
 
 /* Module-level config (stored by Engine_use, read by init body) */
 static Engine_Config g_engine_config = {0};
@@ -65,4 +67,48 @@ void Engine_use(Engine_Config config) {
 
     /* Trigger module initialization (idempotent) */
     Engine_init();
+}
+
+/* ============================================================================
+ * CelsNcurses Module -- absorbs Engine + Clay + Renderer init
+ * ============================================================================
+ *
+ * CEL_BuildHas(CelsNcurses) calls CelsNcurses_init() which internally:
+ *   1. Reads CEL_RunConfig for title/version/fps/root
+ *   2. Calls Engine_use() (which initializes Window + Input + frame pipeline)
+ *   3. Calls Clay_Engine_use() (Clay layout engine)
+ *   4. Calls clay_ncurses_renderer_init() (ncurses Clay renderer)
+ *   5. Registers root composition via cfg->root() if specified
+ */
+CEL_Module(CelsNcurses) {
+    CEL_ModuleProvides(Window);
+    CEL_ModuleProvides(Input);
+    CEL_ModuleProvides(Renderer);
+    CEL_ModuleProvides(FrameLoop);
+
+    /* Read run config (stored by CEL_Run macro before CELS_BuildInit) */
+    const CEL_RunConfig* cfg = _cels_get_run_config();
+
+    /* Initialize engine -- pass .root = NULL because CEL_RunConfig.root is
+       void(*)(void) (1-arg CEL_Root), not void(*)(Engine_Context) (2-arg).
+       Engine_use expects the 2-arg form. We handle the 1-arg root separately. */
+    Engine_use((Engine_Config){
+        .title = cfg->title ? cfg->title : "CELS App",
+        .version = cfg->version ? cfg->version : "0.0.0",
+        .fps = cfg->fps > 0 ? cfg->fps : 60,
+        .root = NULL
+    });
+
+    /* Initialize Clay layout engine */
+    Clay_Engine_use(NULL);
+
+    /* Initialize ncurses renderer */
+    clay_ncurses_renderer_init(NULL);
+
+    /* Register root composition if specified in CEL_RunConfig.
+       cfg->root points to AppUI (function pointer to AppUI_init),
+       which calls cels_root_composition_register(). */
+    if (cfg->root) {
+        cfg->root();
+    }
 }

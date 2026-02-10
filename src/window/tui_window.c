@@ -8,6 +8,7 @@
 
 #define _POSIX_C_SOURCE 199309L
 #include <cels-ncurses/tui_window.h>
+#include <flecs.h>
 #include <ncurses.h>
 #include <unistd.h>
 #include <signal.h>
@@ -30,6 +31,9 @@ void Engine_WindowState_ensure(void) {
 static TUI_Window g_tui_config;
 static volatile int g_running = 1;
 static int g_ncurses_active = 0;
+
+/* CEL_Window singleton entity for new CEL_Query/CEL_Watch pattern */
+static cels_entity_t g_cel_window_entity = 0;
 
 /* Standard window state for CELS_BackendDesc */
 static CELS_WindowState g_window_state = {0};
@@ -97,6 +101,21 @@ static void tui_hook_startup(void) {
     Engine_WindowState.delta_time = g_delta_time;
     cels_state_notify_change(Engine_WindowStateID);
 
+    /* Create CEL_Window singleton entity for new CEL_Query/CEL_Watch pattern */
+    CEL_Window_ensure();  /* Register CEL_Window component type */
+    {
+        CELS_Context* ctx = cels_get_context();
+        ecs_world_t* world = cels_get_world(ctx);
+        g_cel_window_entity = (cels_entity_t)ecs_entity(world, { .name = "CEL_Window" });
+        ecs_set_id(world, (ecs_entity_t)g_cel_window_entity, (ecs_entity_t)CEL_WindowID,
+                   sizeof(CEL_Window), &(CEL_Window){
+                       .ready = true,
+                       .width = Engine_WindowState.width,
+                       .height = Engine_WindowState.height
+                   });
+        cels_component_notify_change(CEL_WindowID);
+    }
+
     /* Populate standard CELS_WindowState */
     g_window_state.lifecycle = CELS_WINDOW_READY;
     g_window_state.width = Engine_WindowState.width;
@@ -142,6 +161,30 @@ static void tui_hook_frame_begin(void) {
     /* Update timing in both state structs */
     Engine_WindowState.delta_time = g_delta_time;
     g_window_state.delta_time = g_delta_time;
+
+    /* Update CEL_Window singleton each frame */
+    if (g_cel_window_entity != 0) {
+        int new_w = COLS;
+        int new_h = LINES;
+        /* Only update + notify if dimensions actually changed */
+        if (new_w != Engine_WindowState.width || new_h != Engine_WindowState.height) {
+            Engine_WindowState.width = new_w;
+            Engine_WindowState.height = new_h;
+            g_window_state.width = new_w;
+            g_window_state.height = new_h;
+
+            CEL_Window win_data = {
+                .ready = true,
+                .width = new_w,
+                .height = new_h
+            };
+            ecs_world_t* world = cels_get_world(cels_get_context());
+            ecs_set_id(world, (ecs_entity_t)g_cel_window_entity, (ecs_entity_t)CEL_WindowID,
+                       sizeof(CEL_Window), &win_data);
+            cels_component_notify_change(CEL_WindowID);
+            cels_state_notify_change(Engine_WindowStateID);
+        }
+    }
 }
 
 /* ============================================================================
