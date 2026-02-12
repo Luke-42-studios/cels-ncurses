@@ -70,7 +70,8 @@ static void tui_read_input_ncurses(void) {
         case '\n': case '\r': case KEY_ENTER:
             input.button_accept = true; break;
         case 27:  /* Escape */
-            input.button_cancel = true; break;
+            input.button_cancel = true;
+            input.raw_key = 27; input.has_raw_key = true; break;
 
         /* Extended navigation */
         case '\t':
@@ -114,18 +115,14 @@ static void tui_read_input_ncurses(void) {
             fprintf(stderr, "[resize] COLS=%d LINES=%d (was %dx%d)\n",
                     COLS, LINES, TUI_WindowState.width, TUI_WindowState.height);
 
+            /* Backend-specific cleanup: resize ncurses layers and invalidate.
+             * Dimension state (Engine_WindowState, CEL_Window) is NOT updated
+             * here -- tui_hook_frame_begin() is the single authority for
+             * dimension updates. This keeps the pattern portable: each
+             * backend's frame_begin polls dimensions and updates CEL_Window. */
             tui_layer_resize_all(COLS, LINES);
             tui_frame_invalidate_all();
             clearok(curscr, TRUE);
-            TUI_WindowState.width = COLS;
-            TUI_WindowState.height = LINES;
-            /* Also update standard window state */
-            CELS_WindowState* ws = tui_window_get_standard_state();
-            if (ws) {
-                ws->width = COLS;
-                ws->height = LINES;
-            }
-            cels_state_notify_change(TUI_WindowStateID);
             cels_input_set(ctx, &input);  /* Set clean (zeroed) input */
             return;
         }
