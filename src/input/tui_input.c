@@ -19,6 +19,12 @@
 #include <flecs.h>
 #include <string.h>
 
+/* Custom key codes for Ctrl+Arrow (above KEY_MAX, below INT_MAX) */
+#define CELS_KEY_CTRL_UP    600
+#define CELS_KEY_CTRL_DOWN  601
+#define CELS_KEY_CTRL_RIGHT 602
+#define CELS_KEY_CTRL_LEFT  603
+
 /* ============================================================================
  * Static State
  * ============================================================================ */
@@ -124,6 +130,12 @@ static void tui_read_input_ncurses(void) {
             return;
         }
 
+        /* Ctrl+Arrow keys (custom key codes via define_key) */
+        case CELS_KEY_CTRL_UP:    input.raw_key = CELS_KEY_CTRL_UP;    input.has_raw_key = true; break;
+        case CELS_KEY_CTRL_DOWN:  input.raw_key = CELS_KEY_CTRL_DOWN;  input.has_raw_key = true; break;
+        case CELS_KEY_CTRL_LEFT:  input.raw_key = CELS_KEY_CTRL_LEFT;  input.has_raw_key = true; break;
+        case CELS_KEY_CTRL_RIGHT: input.raw_key = CELS_KEY_CTRL_RIGHT; input.has_raw_key = true; break;
+
         /* Numbers, function keys, raw characters */
         default:
             if (ch >= '0' && ch <= '9') {
@@ -168,6 +180,12 @@ void TUI_Input_use(TUI_Input config) {
 
     /* Get running pointer from window provider for quit signaling */
     g_tui_running_ptr = tui_window_get_running_ptr();
+
+    /* Register xterm-compatible Ctrl+Arrow escape sequences */
+    define_key("\033[1;5A", CELS_KEY_CTRL_UP);
+    define_key("\033[1;5B", CELS_KEY_CTRL_DOWN);
+    define_key("\033[1;5C", CELS_KEY_CTRL_RIGHT);
+    define_key("\033[1;5D", CELS_KEY_CTRL_LEFT);
 
     /* Register ECS system at OnLoad phase
      * Same pattern as CELS_LifecycleSystem in cels.cpp */
