@@ -60,11 +60,11 @@ static void tui_read_input_ncurses(void) {
         case KEY_LEFT:  input.axis_left[0] = -1.0f; break;
         case KEY_RIGHT: input.axis_left[0] =  1.0f; break;
 
-        /* WASD (raw character) */
-        case 'w': case 'W': input.axis_left[1] = -1.0f; break;
-        case 's': case 'S': input.axis_left[1] =  1.0f; break;
-        case 'a': case 'A': input.axis_left[0] = -1.0f; break;
-        case 'd': case 'D': input.axis_left[0] =  1.0f; break;
+        /* WASD (raw character + axis) */
+        case 'w': case 'W': input.axis_left[1] = -1.0f; input.raw_key = ch; input.has_raw_key = true; break;
+        case 's': case 'S': input.axis_left[1] =  1.0f; input.raw_key = ch; input.has_raw_key = true; break;
+        case 'a': case 'A': input.axis_left[0] = -1.0f; input.raw_key = ch; input.has_raw_key = true; break;
+        case 'd': case 'D': input.axis_left[0] =  1.0f; input.raw_key = ch; input.has_raw_key = true; break;
 
         /* Action buttons */
         case '\n': case '\r': case KEY_ENTER:
