@@ -42,4 +42,12 @@ typedef struct TUI_Input {
 /* Provider registration function (called by Use() macro) */
 extern void TUI_Input_use(TUI_Input config);
 
+/*
+ * Quit guard: when set, 'q'/'Q' calls the guard function before quitting.
+ * If guard returns true, the key is passed through as raw_key instead of
+ * triggering quit. Used by cels-widgets to suppress quit when text input
+ * is active.
+ */
+extern void tui_input_set_quit_guard(bool (*guard_fn)(void));
+
 #endif /* CELS_NCURSES_TUI_INPUT_H */

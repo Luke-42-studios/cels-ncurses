@@ -25,12 +25,21 @@
 #define CELS_KEY_CTRL_RIGHT 602
 #define CELS_KEY_CTRL_LEFT  603
 
+/* Custom key codes for Shift+Arrow (text selection support) */
+#define CELS_KEY_SHIFT_LEFT  604
+#define CELS_KEY_SHIFT_RIGHT 605
+
 /* ============================================================================
  * Static State
  * ============================================================================ */
 
 /* Pointer to g_running in tui_window.c -- used to signal quit on Q key */
 static volatile int* g_tui_running_ptr = NULL;
+
+/* Quit guard callback -- when set and returns true, 'q'/'Q' passes through
+ * as raw_key instead of triggering application quit. Used by cels-widgets
+ * to suppress quit when text input is active. */
+static bool (*g_quit_guard_fn)(void) = NULL;
 
 /* ============================================================================
  * Input Reading
@@ -91,8 +100,14 @@ static void tui_read_input_ncurses(void) {
         case KEY_DC:
             input.key_delete = true; break;
 
-        /* Quit key -- signals window to close */
+        /* Quit key -- signals window to close (unless quit guard suppresses) */
         case 'q': case 'Q':
+            if (g_quit_guard_fn && g_quit_guard_fn()) {
+                /* Quit suppressed (e.g., text input active) -- pass as raw_key */
+                input.raw_key = ch;
+                input.has_raw_key = true;
+                break;
+            }
             if (g_tui_running_ptr) {
                 *g_tui_running_ptr = 0;
             }
@@ -132,6 +147,10 @@ static void tui_read_input_ncurses(void) {
         case CELS_KEY_CTRL_DOWN:  input.raw_key = CELS_KEY_CTRL_DOWN;  input.has_raw_key = true; break;
         case CELS_KEY_CTRL_LEFT:  input.raw_key = CELS_KEY_CTRL_LEFT;  input.has_raw_key = true; break;
         case CELS_KEY_CTRL_RIGHT: input.raw_key = CELS_KEY_CTRL_RIGHT; input.has_raw_key = true; break;
+
+        /* Shift+Arrow keys (for future text selection) */
+        case CELS_KEY_SHIFT_LEFT:  input.raw_key = CELS_KEY_SHIFT_LEFT;  input.has_raw_key = true; break;
+        case CELS_KEY_SHIFT_RIGHT: input.raw_key = CELS_KEY_SHIFT_RIGHT; input.has_raw_key = true; break;
 
         /* Numbers, function keys, raw characters */
         default:
@@ -184,6 +203,10 @@ void TUI_Input_use(TUI_Input config) {
     define_key("\033[1;5C", CELS_KEY_CTRL_RIGHT);
     define_key("\033[1;5D", CELS_KEY_CTRL_LEFT);
 
+    /* Register xterm-compatible Shift+Arrow escape sequences */
+    define_key("\033[1;2D", CELS_KEY_SHIFT_LEFT);
+    define_key("\033[1;2C", CELS_KEY_SHIFT_RIGHT);
+
     /* Register ECS system at OnLoad phase
      * Same pattern as CELS_LifecycleSystem in cels.cpp */
     ecs_world_t* world = cels_get_world(cels_get_context());
@@ -199,4 +222,12 @@ void TUI_Input_use(TUI_Input config) {
     sys_desc.entity = ecs_entity_init(world, &entity_desc);
     sys_desc.callback = tui_input_system_callback;
     ecs_system_init(world, &sys_desc);
+}
+
+/* ============================================================================
+ * Quit Guard API
+ * ============================================================================ */
+
+void tui_input_set_quit_guard(bool (*guard_fn)(void)) {
+    g_quit_guard_fn = guard_fn;
 }
