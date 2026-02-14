@@ -17,6 +17,7 @@
 #include "cels-ncurses/tui_frame.h"
 #include <ncurses.h>
 #include <flecs.h>
+#include <stdio.h>
 #include <string.h>
 
 /* Custom key codes for Ctrl+Arrow (above KEY_MAX, below INT_MAX) */
@@ -40,6 +41,22 @@ static volatile int* g_tui_running_ptr = NULL;
  * as raw_key instead of triggering application quit. Used by cels-widgets
  * to suppress quit when text input is active. */
 static bool (*g_quit_guard_fn)(void) = NULL;
+
+/* ============================================================================
+ * Pause Mode -- F1 freezes the frame loop for text selection/copy
+ *
+ * Keeps ncurses active (preserves the screen) but switches getch to
+ * blocking mode so the frame loop stalls.  The last rendered frame stays
+ * on screen and the user can select/copy text with their terminal
+ * (mouse select, Ctrl+Shift+C in Kitty, etc.).  Any key resumes.
+ * ============================================================================ */
+
+static void tui_pause(void) {
+    /* Switch to blocking input -- frame loop stalls here */
+    nodelay(stdscr, FALSE);
+    wgetch(stdscr);  /* Block until any key */
+    nodelay(stdscr, TRUE);
+}
 
 /* ============================================================================
  * Input Reading
@@ -152,12 +169,18 @@ static void tui_read_input_ncurses(void) {
         case CELS_KEY_SHIFT_LEFT:  input.raw_key = CELS_KEY_SHIFT_LEFT;  input.has_raw_key = true; break;
         case CELS_KEY_SHIFT_RIGHT: input.raw_key = CELS_KEY_SHIFT_RIGHT; input.has_raw_key = true; break;
 
+        /* F1 -- Pause for text selection/copy */
+        case KEY_F(1):
+            tui_pause();
+            cels_input_set(ctx, &input);  /* Clean frame after resume */
+            return;
+
         /* Numbers, function keys, raw characters */
         default:
             if (ch >= '0' && ch <= '9') {
                 input.key_number = ch - '0';
                 input.has_number = true;
-            } else if (ch >= KEY_F(1) && ch <= KEY_F(12)) {
+            } else if (ch >= KEY_F(2) && ch <= KEY_F(12)) {
                 input.key_function = ch - KEY_F(0);
                 input.has_function = true;
             } else {

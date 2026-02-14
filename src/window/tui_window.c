@@ -124,6 +124,16 @@ static void tui_hook_startup(void) {
     g_window_state.target_fps = Engine_WindowState.target_fps;
     g_window_state.delta_time = g_delta_time;
     g_window_state.backend_data = NULL;
+
+    /* Populate CELS_Window in context (used by cels_window_get in systems) */
+    {
+        CELS_Window cw = {
+            .width = Engine_WindowState.width,
+            .height = Engine_WindowState.height,
+            .title = Engine_WindowState.title
+        };
+        cels_window_set(cels_get_context(), &cw);
+    }
 }
 
 /* ============================================================================
@@ -183,6 +193,10 @@ static void tui_hook_frame_begin(void) {
                        sizeof(CEL_Window), &win_data);
             cels_component_notify_change(CEL_WindowID);
             cels_state_notify_change(Engine_WindowStateID);
+
+            /* Keep CELS_Window in context in sync for cels_window_get() */
+            CELS_Window cw = { .width = new_w, .height = new_h, .title = Engine_WindowState.title };
+            cels_window_set(cels_get_context(), &cw);
         }
     }
 }
