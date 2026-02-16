@@ -27,9 +27,6 @@ CEL_Module(Engine) {
     CEL_ModuleProvides(Input);
     CEL_ModuleProvides(FramePipeline);
 
-    /* Set active backend for provider filtering */
-    cels_set_active_backend("TUI");
-
     /* Register window provider with config (or defaults) */
     CEL_Use(TUI_Window,
         .title = g_engine_config.title ? g_engine_config.title : "CELS App",

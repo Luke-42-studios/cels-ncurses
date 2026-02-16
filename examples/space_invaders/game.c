@@ -383,7 +383,7 @@ CEL_System(EnemyShootSystem,
 
 /* --- Collision System --- */
 CEL_System(CollisionSystem,
-    .phase = CELS_Phase_PostUpdate
+    .phase = CELS_Phase_OnUpdate
 ) {
     (void)it;
     CELS_Context* ctx = cels_get_context();
@@ -566,7 +566,7 @@ CEL_System(CollisionSystem,
 
 /* --- Cleanup System --- */
 CEL_System(CleanupSystem,
-    .phase = CELS_Phase_PostUpdate
+    .phase = CELS_Phase_OnUpdate
 ) {
     (void)it;
     CELS_Context* ctx = cels_get_context();

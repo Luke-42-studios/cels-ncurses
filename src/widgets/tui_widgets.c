@@ -23,11 +23,7 @@
 #include <string.h>
 #include <stdio.h>
 
-/* ============================================================================
- * Feature Definition
- * ============================================================================ */
-
-_CEL_DefineFeature(Renderable, .phase = CELS_Phase_OnRender);
+/* Feature/Provider system retired in v0.4 -- render systems registered directly */
 
 /* ============================================================================
  * Theme -- Semantic styles for widget rendering
@@ -650,43 +646,52 @@ static void render_list_item(CELS_Iter* it) {
  * ============================================================================ */
 
 void tui_widgets_register(void) {
-    /* Declare features */
-    _CEL_Feature(W_TabBar, Renderable);
-    _CEL_Feature(W_TabContent, Renderable);
-    _CEL_Feature(W_StatusBar, Renderable);
-    _CEL_Feature(W_Button, Renderable);
-    _CEL_Feature(W_Slider, Renderable);
-    _CEL_Feature(W_Text, Renderable);
-    _CEL_Feature(W_InfoBox, Renderable);
-    _CEL_Feature(W_Canvas, Renderable);
-    _CEL_Feature(W_Hint, Renderable);
-    _CEL_Feature(W_Toggle, Renderable);
-    _CEL_Feature(W_Cycle, Renderable);
-    _CEL_Feature(W_RadioButton, Renderable);
-    _CEL_Feature(W_RadioGroup, Renderable);
-    _CEL_Feature(W_ListView, Renderable);
-    _CEL_Feature(W_ListItem, Renderable);
+    /* Ensure all widget component IDs are registered */
+    W_TabBar_ensure();
+    W_TabContent_ensure();
+    W_StatusBar_ensure();
+    W_Button_ensure();
+    W_Slider_ensure();
+    W_Text_ensure();
+    W_InfoBox_ensure();
+    W_Canvas_ensure();
+    W_Hint_ensure();
+    W_Toggle_ensure();
+    W_Cycle_ensure();
+    W_RadioButton_ensure();
+    W_RadioGroup_ensure();
+    W_ListView_ensure();
+    W_ListItem_ensure();
 
-    /* Register providers */
-    _CEL_Provides(TUI, Renderable, W_TabBar, render_tab_bar);
-    _CEL_Provides(TUI, Renderable, W_TabContent, render_tab_content);
-    _CEL_Provides(TUI, Renderable, W_StatusBar, render_status_bar);
-    _CEL_Provides(TUI, Renderable, W_Canvas, render_canvas);
-    _CEL_Provides(TUI, Renderable, W_Button, render_button);
-    _CEL_Provides(TUI, Renderable, W_Slider, render_slider);
-    _CEL_Provides(TUI, Renderable, W_Text, render_text);
-    _CEL_Provides(TUI, Renderable, W_InfoBox, render_info_box);
-    _CEL_Provides(TUI, Renderable, W_Hint, render_hint);
-    _CEL_Provides(TUI, Renderable, W_Toggle, render_toggle);
-    _CEL_Provides(TUI, Renderable, W_Cycle, render_cycle);
-    _CEL_Provides(TUI, Renderable, W_RadioButton, render_radio_button);
-    _CEL_Provides(TUI, Renderable, W_RadioGroup, render_radio_group);
-    _CEL_Provides(TUI, Renderable, W_ListView, render_list_view);
-    _CEL_Provides(TUI, Renderable, W_ListItem, render_list_item);
-
-    /* Declare consumed components */
-    _CEL_ProviderConsumes(W_TabBar, W_TabContent, W_StatusBar, W_Button,
-                          W_Slider, W_Text, W_InfoBox, W_Canvas);
-    _CEL_ProviderConsumes(W_Hint, W_Toggle, W_Cycle, W_RadioButton,
-                          W_RadioGroup, W_ListView, W_ListItem);
+    /* Register render systems directly (Feature/Provider retired in v0.4) */
+    cels_entity_t tab_ids[]     = { W_TabBarID };
+    cels_system_declare("TUI_Render_TabBar",     CELS_Phase_OnRender, render_tab_bar,     tab_ids, 1);
+    cels_entity_t tabc_ids[]    = { W_TabContentID };
+    cels_system_declare("TUI_Render_TabContent",  CELS_Phase_OnRender, render_tab_content,  tabc_ids, 1);
+    cels_entity_t sb_ids[]      = { W_StatusBarID };
+    cels_system_declare("TUI_Render_StatusBar",   CELS_Phase_OnRender, render_status_bar,   sb_ids, 1);
+    cels_entity_t can_ids[]     = { W_CanvasID };
+    cels_system_declare("TUI_Render_Canvas",      CELS_Phase_OnRender, render_canvas,       can_ids, 1);
+    cels_entity_t btn_ids[]     = { W_ButtonID };
+    cels_system_declare("TUI_Render_Button",      CELS_Phase_OnRender, render_button,       btn_ids, 1);
+    cels_entity_t sld_ids[]     = { W_SliderID };
+    cels_system_declare("TUI_Render_Slider",      CELS_Phase_OnRender, render_slider,       sld_ids, 1);
+    cels_entity_t txt_ids[]     = { W_TextID };
+    cels_system_declare("TUI_Render_Text",        CELS_Phase_OnRender, render_text,         txt_ids, 1);
+    cels_entity_t ib_ids[]      = { W_InfoBoxID };
+    cels_system_declare("TUI_Render_InfoBox",     CELS_Phase_OnRender, render_info_box,     ib_ids, 1);
+    cels_entity_t hnt_ids[]     = { W_HintID };
+    cels_system_declare("TUI_Render_Hint",        CELS_Phase_OnRender, render_hint,         hnt_ids, 1);
+    cels_entity_t tog_ids[]     = { W_ToggleID };
+    cels_system_declare("TUI_Render_Toggle",      CELS_Phase_OnRender, render_toggle,       tog_ids, 1);
+    cels_entity_t cyc_ids[]     = { W_CycleID };
+    cels_system_declare("TUI_Render_Cycle",       CELS_Phase_OnRender, render_cycle,        cyc_ids, 1);
+    cels_entity_t rb_ids[]      = { W_RadioButtonID };
+    cels_system_declare("TUI_Render_RadioButton", CELS_Phase_OnRender, render_radio_button, rb_ids, 1);
+    cels_entity_t rg_ids[]      = { W_RadioGroupID };
+    cels_system_declare("TUI_Render_RadioGroup",  CELS_Phase_OnRender, render_radio_group,  rg_ids, 1);
+    cels_entity_t lv_ids[]      = { W_ListViewID };
+    cels_system_declare("TUI_Render_ListView",    CELS_Phase_OnRender, render_list_view,    lv_ids, 1);
+    cels_entity_t li_ids[]      = { W_ListItemID };
+    cels_system_declare("TUI_Render_ListItem",    CELS_Phase_OnRender, render_list_item,    li_ids, 1);
 }

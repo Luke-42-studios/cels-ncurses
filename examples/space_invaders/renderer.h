@@ -1,7 +1,7 @@
 /*
- * Space Invaders - Render Provider
+ * Space Invaders - Renderer
  *
- * Single render callback registered via _CEL_Provides() at CELS_Phase_OnStore.
+ * Single render callback registered as a system at OnRender phase.
  * Draws all game entities by iterating Position + Sprite via ecs_each_id().
  * Also draws HUD, title screen, and game-over screen.
  *
@@ -23,11 +23,7 @@
 #include <stdio.h>
 #include "components.h"
 
-/* ============================================================================
- * Feature Definition
- * ============================================================================ */
-
-_CEL_DefineFeature(GameRenderable, .phase = CELS_Phase_OnStore, .priority = 0);
+/* Feature/Provider system retired in v0.4 -- render registered as direct system */
 
 /* ============================================================================
  * Style Palette
@@ -251,9 +247,17 @@ static void si_render_screen(CELS_Iter* it) {
  * ============================================================================ */
 
 static inline void si_renderer_init(void) {
-    _CEL_Feature(GameCanvas, GameRenderable);
-    _CEL_Provides(TUI, GameRenderable, GameCanvas, si_render_screen);
-    _CEL_ProviderConsumes(Position, Sprite, PlayerTag, EnemyTag, BulletTag, ShieldBlock);
+    /* Register render system directly (Feature/Provider retired in v0.4) */
+    GameCanvas_ensure();
+    Position_ensure();
+    Sprite_ensure();
+    PlayerTag_ensure();
+    EnemyTag_ensure();
+    BulletTag_ensure();
+    ShieldBlock_ensure();
+    cels_entity_t comp_ids[] = { GameCanvasID };
+    cels_system_declare("SI_RenderScreen", CELS_Phase_OnRender,
+                        si_render_screen, comp_ids, 1);
 }
 
 #endif /* SPACE_INVADERS_RENDERER_H */
