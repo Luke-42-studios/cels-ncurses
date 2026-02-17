@@ -668,7 +668,7 @@ static void spawn_game_entities(void) {
                 CEL_Has(Velocity, .dx = 0, .dy = 0);
                 {
                     Sprite _spr = { .ch = {ch[0], '\0'}, .style_id = style_id };
-                    cels_component_add(cels_get_context(), Sprite_ensure(), &_spr, sizeof(Sprite));
+                    cels_component_add(cels_get_context(), SpriteID, &_spr, sizeof(Sprite));
                 }
                 CEL_Has(EnemyTag, .type = row, .points = points, .col = col, .row = row);
             }

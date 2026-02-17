@@ -63,7 +63,7 @@ typedef struct Engine_WindowState_t {
 
 extern Engine_WindowState_t Engine_WindowState;
 extern cels_entity_t Engine_WindowStateID;
-extern void Engine_WindowState_ensure(void);
+extern void Engine_WindowState_register(void);
 
 /* ===========================================
  * TUI_Window Provider Config
@@ -96,6 +96,6 @@ extern CELS_WindowState* tui_window_get_standard_state(void);
 typedef Engine_WindowState_t TUI_WindowState_t;
 #define TUI_WindowState Engine_WindowState
 #define TUI_WindowStateID Engine_WindowStateID
-#define TUI_WindowState_ensure Engine_WindowState_ensure
+#define TUI_WindowState_register Engine_WindowState_register
 
 #endif /* CELS_NCURSES_TUI_WINDOW_H */

@@ -647,21 +647,21 @@ static void render_list_item(CELS_Iter* it) {
 
 void tui_widgets_register(void) {
     /* Ensure all widget component IDs are registered */
-    W_TabBar_ensure();
-    W_TabContent_ensure();
-    W_StatusBar_ensure();
-    W_Button_ensure();
-    W_Slider_ensure();
-    W_Text_ensure();
-    W_InfoBox_ensure();
-    W_Canvas_ensure();
-    W_Hint_ensure();
-    W_Toggle_ensure();
-    W_Cycle_ensure();
-    W_RadioButton_ensure();
-    W_RadioGroup_ensure();
-    W_ListView_ensure();
-    W_ListItem_ensure();
+    CEL_Register(W_TabBar);
+    CEL_Register(W_TabContent);
+    CEL_Register(W_StatusBar);
+    CEL_Register(W_Button);
+    CEL_Register(W_Slider);
+    CEL_Register(W_Text);
+    CEL_Register(W_InfoBox);
+    CEL_Register(W_Canvas);
+    CEL_Register(W_Hint);
+    CEL_Register(W_Toggle);
+    CEL_Register(W_Cycle);
+    CEL_Register(W_RadioButton);
+    CEL_Register(W_RadioGroup);
+    CEL_Register(W_ListView);
+    CEL_Register(W_ListItem);
 
     /* Register render systems directly (Feature/Provider retired in v0.4) */
     cels_entity_t tab_ids[]     = { W_TabBarID };

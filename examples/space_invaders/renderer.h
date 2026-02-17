@@ -248,13 +248,13 @@ static void si_render_screen(CELS_Iter* it) {
 
 static inline void si_renderer_init(void) {
     /* Register render system directly (Feature/Provider retired in v0.4) */
-    GameCanvas_ensure();
-    Position_ensure();
-    Sprite_ensure();
-    PlayerTag_ensure();
-    EnemyTag_ensure();
-    BulletTag_ensure();
-    ShieldBlock_ensure();
+    CEL_Register(GameCanvas);
+    CEL_Register(Position);
+    CEL_Register(Sprite);
+    CEL_Register(PlayerTag);
+    CEL_Register(EnemyTag);
+    CEL_Register(BulletTag);
+    CEL_Register(ShieldBlock);
     cels_entity_t comp_ids[] = { GameCanvasID };
     cels_system_declare("SI_RenderScreen", CELS_Phase_OnRender,
                         si_render_screen, comp_ids, 1);

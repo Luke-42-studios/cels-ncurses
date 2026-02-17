@@ -24,7 +24,7 @@
 Engine_WindowState_t Engine_WindowState = {0};
 cels_entity_t Engine_WindowStateID = 0;
 
-void Engine_WindowState_ensure(void) {
+void Engine_WindowState_register(void) {
     if (Engine_WindowStateID == 0) Engine_WindowStateID = cels_state_register("Engine_WindowState");
 }
 
@@ -102,7 +102,7 @@ static void tui_hook_startup(void) {
     cels_state_notify_change(Engine_WindowStateID);
 
     /* Create CEL_Window singleton entity for new CEL_Query/CEL_Watch pattern */
-    CEL_Window_ensure();  /* Register CEL_Window component type */
+    CEL_Window_register();  /* Register CEL_Window component type */
     {
         CELS_Context* ctx = cels_get_context();
         ecs_world_t* world = cels_get_world(ctx);
@@ -260,7 +260,7 @@ static CELS_BackendDesc tui_backend_desc = {
 
 Engine_WindowState_t* TUI_Window_use(TUI_Window config) {
     g_tui_config = config;
-    Engine_WindowState_ensure();
+    Engine_WindowState_register();
     cels_backend_register(&tui_backend_desc);
     return &Engine_WindowState;
 }
