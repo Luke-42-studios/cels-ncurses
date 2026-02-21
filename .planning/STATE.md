@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-20)
 
 **Core value:** Provide a low-level drawing primitive API that a future cels-clay module can target to render Clay UI layouts in the terminal
-**Current focus:** Phase 6 - Mouse Input (v1.1 Enhanced Rendering)
+**Current focus:** Phase 6 - Mouse Input COMPLETE, ready for Phase 7 - True Color
 
 ## Current Position
 
-Phase: 6 of 10 (Mouse Input)
-Plan: 1 of 2
-Status: In progress
-Last activity: 2026-02-21 -- Completed 06-01-PLAN.md
+Phase: 6 of 10 (Mouse Input) -- COMPLETE
+Plan: 2 of 2
+Status: Phase complete
+Last activity: 2026-02-21 -- Completed 06-02-PLAN.md
 
-Progress: [###########.........] 55% (v1.0 complete, v1.1 1/10 plans)
+Progress: [############........] 60% (v1.0 complete, v1.1 2/10 plans)
 
 ## Performance Metrics
 
@@ -24,9 +24,9 @@ Progress: [###########.........] 55% (v1.0 complete, v1.1 1/10 plans)
 - Total execution time: 0.50 hours
 
 **v1.1 Velocity:**
-- Total plans completed: 1
-- Average duration: 4 min
-- Total execution time: 4 min
+- Total plans completed: 2
+- Average duration: 3.5 min
+- Total execution time: 7 min
 
 ## Accumulated Context
 
@@ -43,6 +43,8 @@ Recent decisions affecting current work:
 - [06-01]: mouseinterval(0) disables click detection -- raw press/release only
 - [06-01]: No printf escape sequences -- mousemask() only for now
 - [06-01]: Backward compat typedef CELS_Input = TUI_InputState for gradual migration
+- [06-02]: Keep cels/backend.h include in game.c -- still needed for ECS context functions
+- [06-02]: Remove CELS_Context* ctx only when solely used for cels_input_get(ctx)
 
 ### Pending Todos
 
@@ -56,10 +58,10 @@ Lessons from reviewing an upstream Clay ncurses renderer. Relevant for v1.1+:
 
 ### Blockers/Concerns
 
-- Pre-existing: tui_window.h references CELS_WindowState type removed from cels core (Phase 26 refactoring). Does not block mouse input work but affects full project build.
+- Pre-existing: tui_window.h references CELS_WindowState type removed from cels core (Phase 26 refactoring). Does not block Phase 7 work but affects full project build.
 
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 06-01-PLAN.md (mouse input foundation)
+Stopped at: Completed 06-02-PLAN.md (Phase 6 complete)
 Resume file: None
