@@ -704,3 +704,188 @@ void tui_draw_halfblock_fill_rect(TUI_DrawContext* ctx,
         }
     }
 }
+
+/* ============================================================================
+ * Sub-Cell Drawing -- Quadrant Mode
+ * ============================================================================
+ *
+ * Quadrant mode: 2x2 virtual pixels per terminal cell.
+ * Uses a 16-entry lookup table mapping 4-bit quadrant mask to Unicode
+ * codepoints (U+2596-U+259F range plus block element fallbacks).
+ * Two-color constraint: fg for filled quadrants, bg for empty quadrants.
+ */
+
+/* All 16 quadrant combinations mapped to Unicode codepoints */
+static const wchar_t QUADRANT_CHARS[16] = {
+    L' ',    /* 0b0000 = empty */
+    0x2598,  /* 0b0001 = UL */
+    0x259D,  /* 0b0010 = UR */
+    0x2580,  /* 0b0011 = UL+UR (upper half block) */
+    0x2596,  /* 0b0100 = LL */
+    0x258C,  /* 0b0101 = UL+LL (left half block) */
+    0x259E,  /* 0b0110 = UR+LL */
+    0x259B,  /* 0b0111 = UL+UR+LL */
+    0x2597,  /* 0b1000 = LR */
+    0x259A,  /* 0b1001 = UL+LR */
+    0x2590,  /* 0b1010 = UR+LR (right half block) */
+    0x259C,  /* 0b1011 = UL+UR+LR */
+    0x2584,  /* 0b1100 = LL+LR (lower half block) */
+    0x2599,  /* 0b1101 = UL+LL+LR */
+    0x259F,  /* 0b1110 = UR+LL+LR */
+    0x2588,  /* 0b1111 = full block */
+};
+
+/* ----------------------------------------------------------------------------
+ * quadrant_bit -- Convert (sub_x, sub_y) to quadrant bit
+ *
+ * Bit layout: bit0=UL(0,0), bit1=UR(1,0), bit2=LL(0,1), bit3=LR(1,1)
+ * --------------------------------------------------------------------------*/
+static inline uint8_t quadrant_bit(int sx, int sy) {
+    return (uint8_t)(1 << (sy * 2 + sx));
+}
+
+/* ----------------------------------------------------------------------------
+ * subcell_write_quadrant -- Write one quadrant cell to ncurses
+ *
+ * Reads the shadow buffer state and constructs the appropriate cchar_t,
+ * then writes via mvwadd_wch. Follows the setcchar + tui_style_apply +
+ * mvwadd_wch pattern.
+ * --------------------------------------------------------------------------*/
+static void subcell_write_quadrant(TUI_DrawContext* ctx,
+                                     TUI_SubCellBuffer* buf,
+                                     int cell_x, int cell_y) {
+    TUI_SubCell* cell = &buf->cells[cell_y * buf->width + cell_x];
+    if (cell->mode != TUI_SUBCELL_QUADRANT) return;
+
+    uint8_t mask = cell->quadrant.mask;
+    if (mask == 0) return; /* All empty, nothing to draw */
+
+    wchar_t wc[2] = { 0, L'\0' };
+    TUI_Style style = { .fg = TUI_COLOR_DEFAULT, .bg = TUI_COLOR_DEFAULT, .attrs = TUI_ATTR_NORMAL };
+
+    if (mask == 0x0F) {
+        /* All filled: use full block with fg = fg (same color both halves) */
+        wc[0] = 0x2588;
+        style.fg = cell->quadrant.fg;
+        style.bg = cell->quadrant.fg;
+    } else {
+        /* Partial: look up character, fg = filled quadrants, bg = empty quadrants */
+        wc[0] = QUADRANT_CHARS[mask];
+        style.fg = cell->quadrant.fg;
+        style.bg = cell->quadrant.bg;
+    }
+
+    cchar_t cc;
+    setcchar(&cc, wc, A_NORMAL, 0, NULL);
+    tui_style_apply(ctx->win, style);
+    mvwadd_wch(ctx->win, cell_y, cell_x, &cc);
+}
+
+/* ----------------------------------------------------------------------------
+ * tui_draw_quadrant_plot -- Plot a single virtual pixel at quadrant resolution
+ *
+ * px / 2 = cell_x, py / 2 = cell_y.
+ * (px % 2, py % 2) selects one of four quadrants.
+ * style.fg is the pixel color. Last-write-wins for fg color.
+ * --------------------------------------------------------------------------*/
+void tui_draw_quadrant_plot(TUI_DrawContext* ctx, int px, int py,
+                              TUI_Style style) {
+    TUI_SubCellBuffer* buf = subcell_ensure_buffer(ctx);
+    if (!buf) return;
+
+    int cell_x = px / 2;
+    int cell_y = py / 2;
+    int sub_x = px % 2;
+    int sub_y = py % 2;
+
+    /* Bounds check against buffer dimensions */
+    if (cell_x < 0 || cell_x >= buf->width) return;
+    if (cell_y < 0 || cell_y >= buf->height) return;
+
+    /* Scissor clip at cell level */
+    if (!tui_cell_rect_contains(ctx->clip, cell_x, cell_y)) return;
+
+    TUI_SubCell* cell = &buf->cells[cell_y * buf->width + cell_x];
+
+    /* Mode mixing: last mode wins */
+    if (cell->mode != TUI_SUBCELL_QUADRANT) {
+        memset(cell, 0, sizeof(TUI_SubCell));
+        cell->mode = TUI_SUBCELL_QUADRANT;
+        cell->quadrant.bg = TUI_COLOR_DEFAULT;
+    }
+
+    /* Set the quadrant bit */
+    cell->quadrant.mask |= quadrant_bit(sub_x, sub_y);
+
+    /* Last-write-wins for fg color */
+    cell->quadrant.fg = style.fg;
+
+    /* Write through to ncurses */
+    subcell_write_quadrant(ctx, buf, cell_x, cell_y);
+}
+
+/* ----------------------------------------------------------------------------
+ * tui_draw_quadrant_fill_rect -- Fill a rectangular pixel region at quadrant
+ *                                 resolution (2x2 virtual pixels per cell)
+ *
+ * (px, py) = top-left pixel, (pw, ph) = pixel dimensions.
+ * style.fg is the fill color. Iterates in cell coordinates for efficiency.
+ * --------------------------------------------------------------------------*/
+void tui_draw_quadrant_fill_rect(TUI_DrawContext* ctx,
+                                   int px, int py, int pw, int ph,
+                                   TUI_Style style) {
+    if (pw <= 0 || ph <= 0) return;
+
+    TUI_SubCellBuffer* buf = subcell_ensure_buffer(ctx);
+    if (!buf) return;
+
+    /* Convert pixel rect to cell coordinate range */
+    int cell_x_min = px / 2;
+    int cell_x_max = (px + pw - 1) / 2;
+    int cell_y_min = py / 2;
+    int cell_y_max = (py + ph - 1) / 2;
+
+    /* Clamp to buffer bounds */
+    if (cell_x_min < 0) cell_x_min = 0;
+    if (cell_y_min < 0) cell_y_min = 0;
+    if (cell_x_max >= buf->width) cell_x_max = buf->width - 1;
+    if (cell_y_max >= buf->height) cell_y_max = buf->height - 1;
+
+    /* Pixel rect boundaries */
+    int px_end = px + pw;
+    int py_end = py + ph;
+
+    for (int cy = cell_y_min; cy <= cell_y_max; cy++) {
+        for (int cx = cell_x_min; cx <= cell_x_max; cx++) {
+            /* Scissor clip at cell level */
+            if (!tui_cell_rect_contains(ctx->clip, cx, cy)) continue;
+
+            TUI_SubCell* cell = &buf->cells[cy * buf->width + cx];
+
+            /* Mode mixing: last mode wins */
+            if (cell->mode != TUI_SUBCELL_QUADRANT) {
+                memset(cell, 0, sizeof(TUI_SubCell));
+                cell->mode = TUI_SUBCELL_QUADRANT;
+                cell->quadrant.bg = TUI_COLOR_DEFAULT;
+            }
+
+            /* Determine which quadrants the pixel rect covers in this cell */
+            for (int sy = 0; sy < 2; sy++) {
+                for (int sx = 0; sx < 2; sx++) {
+                    int pixel_x = cx * 2 + sx;
+                    int pixel_y = cy * 2 + sy;
+                    if (pixel_x >= px && pixel_x < px_end &&
+                        pixel_y >= py && pixel_y < py_end) {
+                        cell->quadrant.mask |= quadrant_bit(sx, sy);
+                    }
+                }
+            }
+
+            /* Set fg color */
+            cell->quadrant.fg = style.fg;
+
+            /* Write through to ncurses (once per cell) */
+            subcell_write_quadrant(ctx, buf, cx, cy);
+        }
+    }
+}

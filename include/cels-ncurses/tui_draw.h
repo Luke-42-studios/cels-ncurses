@@ -199,6 +199,32 @@ extern void tui_draw_halfblock_fill_rect(TUI_DrawContext* ctx,
                                           TUI_Style style);
 
 /* ============================================================================
+ * Sub-Cell Drawing — Quadrant Mode
+ * ============================================================================
+ *
+ * Quadrant mode: 2x2 virtual pixels per terminal cell.
+ * pixel_x / 2 = cell_x, pixel_y / 2 = cell_y.
+ * (pixel_x % 2, pixel_y % 2) selects one of four quadrants: UL(0,0) UR(1,0) LL(0,1) LR(1,1).
+ * Uses 16-entry lookup table mapping 4-bit mask to Unicode codepoints
+ * (U+2596-U+259F range plus block element fallbacks for space, half blocks, full block).
+ * Two-color constraint: each cell has fg (filled quadrants) and bg (empty quadrants).
+ * Requires layer-backed DrawContext (ctx->subcell_buf != NULL).
+ */
+
+/* Plot a single virtual pixel at (px, py) in quadrant coordinates.
+ * px/2 = cell column, py/2 = cell row. (px%2, py%2) selects the quadrant.
+ * style.fg is the pixel color (filled quadrant). */
+extern void tui_draw_quadrant_plot(TUI_DrawContext* ctx, int px, int py,
+                                     TUI_Style style);
+
+/* Fill a rectangular region of virtual pixels at quadrant resolution.
+ * (px, py) = top-left pixel, (pw, ph) = pixel dimensions.
+ * style.fg is the fill color for all covered quadrants. */
+extern void tui_draw_quadrant_fill_rect(TUI_DrawContext* ctx,
+                                          int px, int py, int pw, int ph,
+                                          TUI_Style style);
+
+/* ============================================================================
  * Internal Helpers
  * ============================================================================
  *
