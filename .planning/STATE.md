@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-20)
 
 **Core value:** Provide a low-level drawing primitive API that a future cels-clay module can target to render Clay UI layouts in the terminal
-**Current focus:** Phase 7 - True Color (Plan 1 complete, Plan 2 remaining)
+**Current focus:** Phase 7 - True Color (COMPLETE)
 
 ## Current Position
 
-Phase: 7 of 10 (True Color) -- IN PROGRESS
-Plan: 1 of 2
-Status: In progress
-Last activity: 2026-02-21 -- Completed 07-01-PLAN.md
+Phase: 7 of 10 (True Color) -- COMPLETE
+Plan: 2 of 2
+Status: Phase complete
+Last activity: 2026-02-21 -- Completed 07-02-PLAN.md
 
-Progress: [##############......] 70% (v1.0 complete, v1.1 3/10 plans)
+Progress: [################....] 80% (v1.0 complete, v1.1 4/10 plans)
 
 ## Performance Metrics
 
@@ -24,9 +24,9 @@ Progress: [##############......] 70% (v1.0 complete, v1.1 3/10 plans)
 - Total execution time: 0.50 hours
 
 **v1.1 Velocity:**
-- Total plans completed: 3
-- Average duration: 3.7 min
-- Total execution time: 11 min
+- Total plans completed: 4
+- Average duration: 3.5 min
+- Total execution time: 14 min
 
 ## Accumulated Context
 
@@ -49,6 +49,7 @@ Recent decisions affecting current work:
 - [07-01]: wattr_set opts pointer replaces (short)pair,NULL for extended pair support in all modes
 - [07-01]: Detection priority: tigetflag(RGB) > COLORTERM+can_change_color > can_change_color > 256-fallback
 - [07-01]: Palette allocator manages slots 16-255 only (slots 0-15 are user terminal theme)
+- [07-02]: Standalone examples that bypass Engine_use() must call tui_color_init(-1) explicitly after start_color()
 
 ### Pending Todos
 
@@ -62,10 +63,10 @@ Lessons from reviewing an upstream Clay ncurses renderer. Relevant for v1.1+:
 
 ### Blockers/Concerns
 
-- Pre-existing: tui_window.h references CELS_WindowState type removed from cels core (Phase 26 refactoring). Does not block Phase 7 work but affects full project build.
+- Pre-existing: tui_window.h references CELS_WindowState type removed from cels core (Phase 26 refactoring). Does not block Phase 8 work but affects full project build.
 
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 07-01-PLAN.md (Phase 7 plan 1 of 2)
+Stopped at: Completed 07-02-PLAN.md (Phase 7 complete, 2 of 2 plans)
 Resume file: None
