@@ -27,7 +27,7 @@ Archived. See git history for v1.0 phase details.
 - Integer phases (6, 7, 8, 9, 10): Planned milestone work
 - Decimal phases (e.g., 7.1): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 6: Mouse Input** - Click, scroll, drag, hover, and layer-aware hit testing
+- [ ] **Phase 6: Mouse Input** - Raw mouse primitives (position polling + button press/release)
 - [ ] **Phase 7: True Color** - 24-bit RGB via palette redefinition with 256-color fallback
 - [ ] **Phase 8: Sub-Cell Rendering** - Half-block, quadrant, and braille drawing primitives
 - [ ] **Phase 9: Damage Tracking** - Per-layer dirty rectangles with selective clearing
@@ -36,20 +36,15 @@ Archived. See git history for v1.0 phase details.
 ## Phase Details
 
 ### Phase 6: Mouse Input
-**Goal**: Developer can receive and dispatch mouse events with layer-aware coordinate mapping
+**Goal**: Developer can poll mouse position and receive button press/release events through the module-local input system
 **Depends on**: Nothing (independent of rendering pipeline)
-**Requirements**: MOUS-01, MOUS-02, MOUS-03, MOUS-04, MOUS-05
-**Success Criteria** (what must be TRUE):
-  1. Developer can click on a layer and receive the click event with layer-local cell coordinates and modifier key state
-  2. Developer can scroll the mouse wheel and receive discrete up/down events with cell coordinates
-  3. Developer can determine which visible layer was clicked by z-order hit testing (topmost layer wins)
-  4. Developer can drag from one cell to another and receive start position, current position, and release events
-  5. Developer can read the current mouse hover position each frame (consolidated to final position, no event flood)
-**Plans**: TBD
+**Requirements**: MOUS-01 (partial -- no modifier keys), MOUS-02 deferred, MOUS-03 deferred, MOUS-04 deferred, MOUS-05 deferred
+**Scope reduction**: Raw mouse primitives only. No scroll wheel, no modifier keys, no hit testing, no drag detection, no hover events. Higher-level logic is a consumer responsibility.
+**Plans:** 2 plans
 
 Plans:
-- [ ] 06-01: TBD
-- [ ] 06-02: TBD
+- [ ] 06-01-PLAN.md -- Replace CELS_Input with module-local TUI_InputState + add mouse support
+- [ ] 06-02-PLAN.md -- Update examples to new input API + full build verification
 
 ### Phase 7: True Color
 **Goal**: Developer can specify exact RGB colors and have them rendered faithfully on capable terminals
@@ -116,7 +111,7 @@ Phases execute in numeric order: 6 -> 7 -> 8 -> 9 -> 10
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 1-5 | v1.0 | 15/15 | Complete | 2026-02-20 |
-| 6. Mouse Input | v1.1 | 0/TBD | Not started | - |
+| 6. Mouse Input | v1.1 | 0/2 | Planned | - |
 | 7. True Color | v1.1 | 0/TBD | Not started | - |
 | 8. Sub-Cell Rendering | v1.1 | 0/TBD | Not started | - |
 | 9. Damage Tracking | v1.1 | 0/TBD | Not started | - |
