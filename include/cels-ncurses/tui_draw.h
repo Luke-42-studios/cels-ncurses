@@ -1,4 +1,20 @@
 /*
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
  * TUI Draw - Drawing primitives for the TUI graphics API
  *
  * Provides all drawing function declarations and supporting types for the
@@ -29,6 +45,7 @@
 #include "cels-ncurses/tui_types.h"
 #include "cels-ncurses/tui_color.h"
 #include "cels-ncurses/tui_draw_context.h"
+#include "cels-ncurses/tui_subcell.h"
 #include <ncurses.h>
 
 /* ============================================================================
@@ -156,6 +173,30 @@ extern void tui_draw_hline(TUI_DrawContext* ctx, int x, int y, int length,
  * Clipped against ctx->clip. */
 extern void tui_draw_vline(TUI_DrawContext* ctx, int x, int y, int length,
                             TUI_BorderStyle border_style, TUI_Style style);
+
+/* ============================================================================
+ * Sub-Cell Drawing -- Half-Block Mode
+ * ============================================================================
+ *
+ * Half-block mode: 1x2 virtual pixels per terminal cell.
+ * pixel_x maps 1:1 to cell_x. pixel_y / 2 = cell_y, pixel_y % 2 = sub (0=top, 1=bottom).
+ * Uses U+2584 (lower half block) as canonical character: fg=bottom, bg=top.
+ * Drawing one half preserves the other half's existing color.
+ * Requires layer-backed DrawContext (ctx->subcell_buf != NULL).
+ */
+
+/* Plot a single virtual pixel at (px, py) in half-block coordinates.
+ * px maps 1:1 to cell column. py/2 = cell row, py%2 = sub (0=top, 1=bottom).
+ * style.fg is the pixel color. The other half preserves its existing color. */
+extern void tui_draw_halfblock_plot(TUI_DrawContext* ctx, int px, int py,
+                                     TUI_Style style);
+
+/* Fill a rectangular region of virtual pixels at half-block resolution.
+ * (px, py) = top-left pixel, (pw, ph) = pixel dimensions.
+ * style.fg is the fill color for all pixels in the rect. */
+extern void tui_draw_halfblock_fill_rect(TUI_DrawContext* ctx,
+                                          int px, int py, int pw, int ph,
+                                          TUI_Style style);
 
 /* ============================================================================
  * Internal Helpers

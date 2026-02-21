@@ -1,4 +1,20 @@
 /*
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
  * TUI Draw - Rectangle drawing primitives and border character infrastructure
  *
  * Implements filled rectangles, outlined rectangles with box-drawing characters,
@@ -16,8 +32,10 @@
  */
 
 #include "cels-ncurses/tui_draw.h"
+#include "cels-ncurses/tui_subcell.h"
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 #include <wchar.h>
 
 /* ============================================================================
@@ -504,4 +522,185 @@ void tui_draw_text_bounded(TUI_DrawContext* ctx, int x, int y,
 
     /* Restore original clip */
     ctx->clip = saved_clip;
+}
+
+/* ============================================================================
+ * Sub-Cell Drawing -- Half-Block Mode
+ * ============================================================================
+ *
+ * Half-block mode: 1x2 virtual pixels per terminal cell.
+ * Uses a per-layer shadow buffer (TUI_SubCellBuffer) to track top/bottom
+ * half colors independently. Drawing one half preserves the other half's
+ * existing color.
+ *
+ * Canonical character: U+2584 (lower half block) -- fg=bottom, bg=top.
+ * When only top half drawn: U+2580 (upper half block) -- fg=top, bg=default.
+ * When only bottom half drawn: U+2584 -- fg=bottom, bg=default.
+ */
+
+/* ----------------------------------------------------------------------------
+ * subcell_ensure_buffer -- Lazy-allocate the shadow buffer
+ * --------------------------------------------------------------------------*/
+static TUI_SubCellBuffer* subcell_ensure_buffer(TUI_DrawContext* ctx) {
+    if (!ctx->subcell_buf) return NULL;  /* non-layer context */
+    if (!*ctx->subcell_buf) {
+        *ctx->subcell_buf = tui_subcell_buffer_create(ctx->width, ctx->height);
+    }
+    return *ctx->subcell_buf;
+}
+
+/* ----------------------------------------------------------------------------
+ * subcell_write_halfblock -- Write one half-block cell to ncurses
+ *
+ * Reads the shadow buffer state for (cell_x, cell_y) and constructs the
+ * appropriate cchar_t + style, then writes via mvwadd_wch. Follows the
+ * existing setcchar + tui_style_apply + mvwadd_wch pattern from
+ * init_rounded_corners and tui_draw_border_rect.
+ * --------------------------------------------------------------------------*/
+static void subcell_write_halfblock(TUI_DrawContext* ctx,
+                                     TUI_SubCellBuffer* buf,
+                                     int cell_x, int cell_y) {
+    TUI_SubCell* cell = &buf->cells[cell_y * buf->width + cell_x];
+    if (cell->mode != TUI_SUBCELL_HALFBLOCK) return;
+
+    wchar_t wc[2] = { 0, L'\0' };
+    TUI_Style style = { .fg = TUI_COLOR_DEFAULT, .bg = TUI_COLOR_DEFAULT, .attrs = TUI_ATTR_NORMAL };
+
+    if (cell->halfblock.has_top && cell->halfblock.has_bottom) {
+        /* Both halves drawn: use LOWER HALF BLOCK (U+2584)
+         * fg = bottom color, bg = top color */
+        wc[0] = 0x2584;
+        style.fg = cell->halfblock.bottom;
+        style.bg = cell->halfblock.top;
+    } else if (cell->halfblock.has_top) {
+        /* Only top: use UPPER HALF BLOCK (U+2580)
+         * fg = top color, bg = default (transparent) */
+        wc[0] = 0x2580;
+        style.fg = cell->halfblock.top;
+        style.bg = TUI_COLOR_DEFAULT;
+    } else if (cell->halfblock.has_bottom) {
+        /* Only bottom: use LOWER HALF BLOCK (U+2584)
+         * fg = bottom color, bg = default (transparent) */
+        wc[0] = 0x2584;
+        style.fg = cell->halfblock.bottom;
+        style.bg = TUI_COLOR_DEFAULT;
+    } else {
+        return; /* Nothing to draw */
+    }
+
+    cchar_t cc;
+    setcchar(&cc, wc, A_NORMAL, 0, NULL);
+    tui_style_apply(ctx->win, style);
+    mvwadd_wch(ctx->win, cell_y, cell_x, &cc);
+}
+
+/* ----------------------------------------------------------------------------
+ * tui_draw_halfblock_plot -- Plot a single virtual pixel
+ *
+ * px maps 1:1 to cell_x. py / 2 = cell_y, py % 2 = sub (0=top, 1=bottom).
+ * style.fg is the pixel color. Drawing one half preserves the other half.
+ * --------------------------------------------------------------------------*/
+void tui_draw_halfblock_plot(TUI_DrawContext* ctx, int px, int py,
+                              TUI_Style style) {
+    TUI_SubCellBuffer* buf = subcell_ensure_buffer(ctx);
+    if (!buf) return;
+
+    int cell_x = px;
+    int cell_y = py / 2;
+    int sub_y = py % 2;
+
+    /* Bounds check against buffer dimensions */
+    if (cell_x < 0 || cell_x >= buf->width) return;
+    if (cell_y < 0 || cell_y >= buf->height) return;
+
+    /* Scissor clip at cell level */
+    if (!tui_cell_rect_contains(ctx->clip, cell_x, cell_y)) return;
+
+    TUI_SubCell* cell = &buf->cells[cell_y * buf->width + cell_x];
+
+    /* Mode mixing: last mode wins */
+    if (cell->mode != TUI_SUBCELL_HALFBLOCK) {
+        memset(cell, 0, sizeof(TUI_SubCell));
+        cell->mode = TUI_SUBCELL_HALFBLOCK;
+    }
+
+    /* Set the appropriate half */
+    if (sub_y == 0) {
+        cell->halfblock.top = style.fg;
+        cell->halfblock.has_top = true;
+    } else {
+        cell->halfblock.bottom = style.fg;
+        cell->halfblock.has_bottom = true;
+    }
+
+    /* Write through to ncurses */
+    subcell_write_halfblock(ctx, buf, cell_x, cell_y);
+}
+
+/* ----------------------------------------------------------------------------
+ * tui_draw_halfblock_fill_rect -- Fill a rectangular pixel region
+ *
+ * (px, py) = top-left pixel, (pw, ph) = pixel dimensions.
+ * style.fg is the fill color for all pixels. Iterates in cell coordinates
+ * for efficiency: determines which halves are covered per cell, updates
+ * shadow buffer, and writes through to ncurses once per touched cell.
+ * --------------------------------------------------------------------------*/
+void tui_draw_halfblock_fill_rect(TUI_DrawContext* ctx,
+                                   int px, int py, int pw, int ph,
+                                   TUI_Style style) {
+    if (pw <= 0 || ph <= 0) return;
+
+    TUI_SubCellBuffer* buf = subcell_ensure_buffer(ctx);
+    if (!buf) return;
+
+    /* Convert pixel rect to cell coordinate range */
+    int cell_x_min = px;
+    int cell_x_max = px + pw - 1;
+    int cell_y_min = py / 2;
+    int cell_y_max = (py + ph - 1) / 2;
+
+    /* Clamp to buffer bounds */
+    if (cell_x_min < 0) cell_x_min = 0;
+    if (cell_y_min < 0) cell_y_min = 0;
+    if (cell_x_max >= buf->width) cell_x_max = buf->width - 1;
+    if (cell_y_max >= buf->height) cell_y_max = buf->height - 1;
+
+    /* Pixel rect boundaries for half-coverage tests */
+    int py_end = py + ph; /* one past last pixel row */
+
+    for (int cy = cell_y_min; cy <= cell_y_max; cy++) {
+        for (int cx = cell_x_min; cx <= cell_x_max; cx++) {
+            /* Scissor clip at cell level */
+            if (!tui_cell_rect_contains(ctx->clip, cx, cy)) continue;
+
+            /* Determine which halves this pixel rect covers in this cell */
+            int top_pixel_y = cy * 2;       /* pixel y of this cell's top half */
+            int bottom_pixel_y = cy * 2 + 1; /* pixel y of this cell's bottom half */
+
+            bool covers_top = (top_pixel_y >= py && top_pixel_y < py_end);
+            bool covers_bottom = (bottom_pixel_y >= py && bottom_pixel_y < py_end);
+
+            if (!covers_top && !covers_bottom) continue;
+
+            TUI_SubCell* cell = &buf->cells[cy * buf->width + cx];
+
+            /* Mode mixing: last mode wins */
+            if (cell->mode != TUI_SUBCELL_HALFBLOCK) {
+                memset(cell, 0, sizeof(TUI_SubCell));
+                cell->mode = TUI_SUBCELL_HALFBLOCK;
+            }
+
+            if (covers_top) {
+                cell->halfblock.top = style.fg;
+                cell->halfblock.has_top = true;
+            }
+            if (covers_bottom) {
+                cell->halfblock.bottom = style.fg;
+                cell->halfblock.has_bottom = true;
+            }
+
+            /* Write through to ncurses (once per cell) */
+            subcell_write_halfblock(ctx, buf, cx, cy);
+        }
+    }
 }
