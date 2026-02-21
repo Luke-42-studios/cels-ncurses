@@ -1,0 +1,1052 @@
+[
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build",
+  "command": "/usr/bin/cc -DCELS_BACKEND_HEADLESS -DCELS_DEBUG -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/include -I/home/cachy/workspaces/libs/cels/src -I/home/cachy/workspaces/libs/cels/src/managers -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=c99 -o CMakeFiles/cels.dir/src/cels_api.c.o -c /home/cachy/workspaces/libs/cels/src/cels_api.c",
+  "file": "/home/cachy/workspaces/libs/cels/src/cels_api.c",
+  "output": "CMakeFiles/cels.dir/src/cels_api.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build",
+  "command": "/usr/bin/cc -DCELS_BACKEND_HEADLESS -DCELS_DEBUG -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/include -I/home/cachy/workspaces/libs/cels/src -I/home/cachy/workspaces/libs/cels/src/managers -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=c99 -o CMakeFiles/cels.dir/src/core/memory_manager.c.o -c /home/cachy/workspaces/libs/cels/src/core/memory_manager.c",
+  "file": "/home/cachy/workspaces/libs/cels/src/core/memory_manager.c",
+  "output": "CMakeFiles/cels.dir/src/core/memory_manager.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build",
+  "command": "/usr/bin/cc -DCELS_BACKEND_HEADLESS -DCELS_DEBUG -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/include -I/home/cachy/workspaces/libs/cels/src -I/home/cachy/workspaces/libs/cels/src/managers -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=c99 -o CMakeFiles/cels.dir/src/core/world_manager.c.o -c /home/cachy/workspaces/libs/cels/src/core/world_manager.c",
+  "file": "/home/cachy/workspaces/libs/cels/src/core/world_manager.c",
+  "output": "CMakeFiles/cels.dir/src/core/world_manager.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build",
+  "command": "/usr/bin/cc -DCELS_BACKEND_HEADLESS -DCELS_DEBUG -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/include -I/home/cachy/workspaces/libs/cels/src -I/home/cachy/workspaces/libs/cels/src/managers -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=c99 -o CMakeFiles/cels.dir/src/managers/component_registry.c.o -c /home/cachy/workspaces/libs/cels/src/managers/component_registry.c",
+  "file": "/home/cachy/workspaces/libs/cels/src/managers/component_registry.c",
+  "output": "CMakeFiles/cels.dir/src/managers/component_registry.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build",
+  "command": "/usr/bin/cc -DCELS_BACKEND_HEADLESS -DCELS_DEBUG -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/include -I/home/cachy/workspaces/libs/cels/src -I/home/cachy/workspaces/libs/cels/src/managers -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=c99 -o CMakeFiles/cels.dir/src/managers/system_registry.c.o -c /home/cachy/workspaces/libs/cels/src/managers/system_registry.c",
+  "file": "/home/cachy/workspaces/libs/cels/src/managers/system_registry.c",
+  "output": "CMakeFiles/cels.dir/src/managers/system_registry.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build",
+  "command": "/usr/bin/cc -DCELS_BACKEND_HEADLESS -DCELS_DEBUG -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/include -I/home/cachy/workspaces/libs/cels/src -I/home/cachy/workspaces/libs/cels/src/managers -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=c99 -o CMakeFiles/cels.dir/src/managers/phase_registry.c.o -c /home/cachy/workspaces/libs/cels/src/managers/phase_registry.c",
+  "file": "/home/cachy/workspaces/libs/cels/src/managers/phase_registry.c",
+  "output": "CMakeFiles/cels.dir/src/managers/phase_registry.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build",
+  "command": "/usr/bin/cc -DCELS_BACKEND_HEADLESS -DCELS_DEBUG -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/include -I/home/cachy/workspaces/libs/cels/src -I/home/cachy/workspaces/libs/cels/src/managers -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=c99 -o CMakeFiles/cels.dir/src/managers/module_registry.c.o -c /home/cachy/workspaces/libs/cels/src/managers/module_registry.c",
+  "file": "/home/cachy/workspaces/libs/cels/src/managers/module_registry.c",
+  "output": "CMakeFiles/cels.dir/src/managers/module_registry.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build",
+  "command": "/usr/bin/cc -DCELS_BACKEND_HEADLESS -DCELS_DEBUG -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/include -I/home/cachy/workspaces/libs/cels/src -I/home/cachy/workspaces/libs/cels/src/managers -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=c99 -o CMakeFiles/cels.dir/src/managers/entity_manager.c.o -c /home/cachy/workspaces/libs/cels/src/managers/entity_manager.c",
+  "file": "/home/cachy/workspaces/libs/cels/src/managers/entity_manager.c",
+  "output": "CMakeFiles/cels.dir/src/managers/entity_manager.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build",
+  "command": "/usr/bin/cc -DCELS_BACKEND_HEADLESS -DCELS_DEBUG -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/include -I/home/cachy/workspaces/libs/cels/src -I/home/cachy/workspaces/libs/cels/src/managers -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=c99 -o CMakeFiles/cels.dir/src/managers/reactivity_manager.c.o -c /home/cachy/workspaces/libs/cels/src/managers/reactivity_manager.c",
+  "file": "/home/cachy/workspaces/libs/cels/src/managers/reactivity_manager.c",
+  "output": "CMakeFiles/cels.dir/src/managers/reactivity_manager.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build",
+  "command": "/usr/bin/cc -DCELS_BACKEND_HEADLESS -DCELS_DEBUG -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/include -I/home/cachy/workspaces/libs/cels/src -I/home/cachy/workspaces/libs/cels/src/managers -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=c99 -o CMakeFiles/cels.dir/src/managers/lifecycle_manager.c.o -c /home/cachy/workspaces/libs/cels/src/managers/lifecycle_manager.c",
+  "file": "/home/cachy/workspaces/libs/cels/src/managers/lifecycle_manager.c",
+  "output": "CMakeFiles/cels.dir/src/managers/lifecycle_manager.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build",
+  "command": "/usr/bin/cc -DCELS_BACKEND_HEADLESS -DCELS_DEBUG -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/include -I/home/cachy/workspaces/libs/cels/src -I/home/cachy/workspaces/libs/cels/src/managers -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=c99 -o CMakeFiles/cels.dir/src/managers/composition_engine.c.o -c /home/cachy/workspaces/libs/cels/src/managers/composition_engine.c",
+  "file": "/home/cachy/workspaces/libs/cels/src/managers/composition_engine.c",
+  "output": "CMakeFiles/cels.dir/src/managers/composition_engine.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build",
+  "command": "/usr/bin/cc -DCELS_BACKEND_HEADLESS -DCELS_DEBUG -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/include -I/home/cachy/workspaces/libs/cels/src -I/home/cachy/workspaces/libs/cels/src/managers -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=c99 -o CMakeFiles/cels.dir/src/backends/main.c.o -c /home/cachy/workspaces/libs/cels/src/backends/main.c",
+  "file": "/home/cachy/workspaces/libs/cels/src/backends/main.c",
+  "output": "CMakeFiles/cels.dir/src/backends/main.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build",
+  "command": "/usr/bin/cc -DCELS_BACKEND_HEADLESS -DCELS_RELATIONSHIPS -I/home/cachy/workspaces/libs/cels/include -g -std=gnu99 -o CMakeFiles/test_relationships.dir/tests/test_relationships.c.o -c /home/cachy/workspaces/libs/cels/tests/test_relationships.c",
+  "file": "/home/cachy/workspaces/libs/cels/tests/test_relationships.c",
+  "output": "CMakeFiles/test_relationships.dir/tests/test_relationships.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build",
+  "command": "/usr/bin/cc -DCELS_BACKEND_HEADLESS -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/include -I/home/cachy/workspaces/libs/cels/src -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -o CMakeFiles/test_lifecycle_fsm.dir/tests/test_lifecycle_fsm.c.o -c /home/cachy/workspaces/libs/cels/tests/test_lifecycle_fsm.c",
+  "file": "/home/cachy/workspaces/libs/cels/tests/test_lifecycle_fsm.c",
+  "output": "CMakeFiles/test_lifecycle_fsm.dir/tests/test_lifecycle_fsm.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build",
+  "command": "/usr/bin/cc -DCELS_BACKEND_HEADLESS -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/include -I/home/cachy/workspaces/libs/cels/src -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -o CMakeFiles/test_entity_model.dir/tests/test_entity_model.c.o -c /home/cachy/workspaces/libs/cels/tests/test_entity_model.c",
+  "file": "/home/cachy/workspaces/libs/cels/tests/test_entity_model.c",
+  "output": "CMakeFiles/test_entity_model.dir/tests/test_entity_model.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build",
+  "command": "/usr/bin/cc -DCELS_BACKEND_HEADLESS -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/include -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -o CMakeFiles/test_root_composition.dir/tests/test_root_composition.c.o -c /home/cachy/workspaces/libs/cels/tests/test_root_composition.c",
+  "file": "/home/cachy/workspaces/libs/cels/tests/test_root_composition.c",
+  "output": "CMakeFiles/test_root_composition.dir/tests/test_root_composition.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build",
+  "command": "/usr/bin/cc -DCELS_BACKEND_HEADLESS -DCELS_TEST_OUTPUT_DIR=\\\"/home/cachy/workspaces/libs/cels/tests/output\\\" -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=199309L -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/include -I/home/cachy/workspaces/libs/cels/tests -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -I/home/cachy/workspaces/libs/cels/build/_deps/yyjson-src/src -g -std=gnu99 -o CMakeFiles/test_cels.dir/tests/test_cels.c.o -c /home/cachy/workspaces/libs/cels/tests/test_cels.c",
+  "file": "/home/cachy/workspaces/libs/cels/tests/test_cels.c",
+  "output": "CMakeFiles/test_cels.dir/tests/test_cels.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build",
+  "command": "/usr/bin/cc -DCELS_BACKEND_HEADLESS -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=199309L -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/include -I/home/cachy/workspaces/libs/cels/tests -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -o CMakeFiles/test_interactions.dir/tests/test_interactions.c.o -c /home/cachy/workspaces/libs/cels/tests/test_interactions.c",
+  "file": "/home/cachy/workspaces/libs/cels/tests/test_interactions.c",
+  "output": "CMakeFiles/test_interactions.dir/tests/test_interactions.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build",
+  "command": "/usr/bin/cc -DCELS_BACKEND_HEADLESS -D_DEFAULT_SOURCE -D_POSIX_C_SOURCE=199309L -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/include -I/home/cachy/workspaces/libs/cels/tests -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -o CMakeFiles/test_modules.dir/tests/test_modules.c.o -c /home/cachy/workspaces/libs/cels/tests/test_modules.c",
+  "file": "/home/cachy/workspaces/libs/cels/tests/test_modules.c",
+  "output": "CMakeFiles/test_modules.dir/tests/test_modules.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build",
+  "command": "/usr/bin/cc  -I/home/cachy/workspaces/libs/cels/src -I/home/cachy/workspaces/libs/cels/include -I/home/cachy/workspaces/libs/cels/tests -g -std=gnu99 -o CMakeFiles/test_sparse_set.dir/tests/test_sparse_set.c.o -c /home/cachy/workspaces/libs/cels/tests/test_sparse_set.c",
+  "file": "/home/cachy/workspaces/libs/cels/tests/test_sparse_set.c",
+  "output": "CMakeFiles/test_sparse_set.dir/tests/test_sparse_set.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build",
+  "command": "/usr/bin/cc -DCELS_BACKEND_HEADLESS -DCELS_RELATIONSHIPS -I/home/cachy/workspaces/libs/cels/include -g -o CMakeFiles/relationships_example.dir/examples/archive/relationships_example.c.o -c /home/cachy/workspaces/libs/cels/examples/archive/relationships_example.c",
+  "file": "/home/cachy/workspaces/libs/cels/examples/archive/relationships_example.c",
+  "output": "CMakeFiles/relationships_example.dir/examples/archive/relationships_example.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build",
+  "command": "/usr/bin/cc -DCELS_BACKEND_HEADLESS -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/include -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -o CMakeFiles/sample.dir/examples/sample.c.o -c /home/cachy/workspaces/libs/cels/examples/sample.c",
+  "file": "/home/cachy/workspaces/libs/cels/examples/sample.c",
+  "output": "CMakeFiles/sample.dir/examples/sample.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/alerts.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/alerts.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/alerts.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/alerts.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/app.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/app.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/app.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/app.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/doc.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/doc.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/doc.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/doc.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/flecs_cpp.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/flecs_cpp.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/flecs_cpp.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/flecs_cpp.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/http/http.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/http/http.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/http/http.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/http/http.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/journal.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/journal.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/journal.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/journal.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/json/deserialize.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/deserialize.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/deserialize.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/json/deserialize.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/json/deserialize_value.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/deserialize_value.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/deserialize_value.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/json/deserialize_value.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/json/json.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/json.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/json.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/json/json.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/json/serialize_entity.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/serialize_entity.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/serialize_entity.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/json/serialize_entity.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/json/serialize_field_info.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/serialize_field_info.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/serialize_field_info.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/json/serialize_field_info.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/json/serialize_iter.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/serialize_iter.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/serialize_iter.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/json/serialize_iter.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/json/serialize_iter_result.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/serialize_iter_result.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/serialize_iter_result.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/json/serialize_iter_result.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/json/serialize_iter_result_query.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/serialize_iter_result_query.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/serialize_iter_result_query.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/json/serialize_iter_result_query.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/json/serialize_iter_result_table.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/serialize_iter_result_table.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/serialize_iter_result_table.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/json/serialize_iter_result_table.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/json/serialize_query_info.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/serialize_query_info.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/serialize_query_info.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/json/serialize_query_info.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/json/serialize_type_info.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/serialize_type_info.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/serialize_type_info.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/json/serialize_type_info.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/json/serialize_value.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/serialize_value.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/serialize_value.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/json/serialize_value.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/json/serialize_world.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/serialize_world.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/json/serialize_world.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/json/serialize_world.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/log.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/log.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/log.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/log.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/meta/c_utils.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/c_utils.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/c_utils.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/meta/c_utils.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/meta/cursor.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/cursor.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/cursor.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/meta/cursor.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/meta/definitions.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/definitions.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/definitions.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/meta/definitions.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/meta/meta.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/meta.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/meta.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/meta/meta.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/meta/rtt_lifecycle.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/rtt_lifecycle.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/rtt_lifecycle.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/meta/rtt_lifecycle.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/meta/serializer.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/serializer.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/serializer.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/meta/serializer.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/meta/type_support/array_ts.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/type_support/array_ts.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/type_support/array_ts.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/meta/type_support/array_ts.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/meta/type_support/enum_ts.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/type_support/enum_ts.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/type_support/enum_ts.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/meta/type_support/enum_ts.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/meta/type_support/opaque_ts.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/type_support/opaque_ts.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/type_support/opaque_ts.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/meta/type_support/opaque_ts.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/meta/type_support/primitive_ts.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/type_support/primitive_ts.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/type_support/primitive_ts.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/meta/type_support/primitive_ts.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/meta/type_support/struct_ts.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/type_support/struct_ts.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/type_support/struct_ts.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/meta/type_support/struct_ts.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/meta/type_support/units_ts.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/type_support/units_ts.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/meta/type_support/units_ts.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/meta/type_support/units_ts.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/metrics.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/metrics.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/metrics.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/metrics.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/module.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/module.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/module.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/module.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/os_api_impl/os_api_impl.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/os_api_impl/os_api_impl.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/os_api_impl/os_api_impl.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/os_api_impl/os_api_impl.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/parser/tokenizer.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/parser/tokenizer.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/parser/tokenizer.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/parser/tokenizer.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/pipeline/frame.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/pipeline/frame.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/pipeline/frame.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/pipeline/frame.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/pipeline/pipeline.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/pipeline/pipeline.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/pipeline/pipeline.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/pipeline/pipeline.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/pipeline/worker.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/pipeline/worker.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/pipeline/worker.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/pipeline/worker.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/query_dsl/parser.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/query_dsl/parser.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/query_dsl/parser.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/query_dsl/parser.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/rest.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/rest.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/rest.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/rest.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/ast.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/ast.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/ast.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/ast.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/expr/ast.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/expr/ast.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/expr/ast.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/expr/ast.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/expr/parser.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/expr/parser.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/expr/parser.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/expr/parser.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/expr/stack.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/expr/stack.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/expr/stack.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/expr/stack.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/expr/util.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/expr/util.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/expr/util.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/expr/util.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/expr/visit_eval.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/expr/visit_eval.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/expr/visit_eval.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/expr/visit_eval.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/expr/visit_fold.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/expr/visit_fold.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/expr/visit_fold.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/expr/visit_fold.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/expr/visit_free.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/expr/visit_free.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/expr/visit_free.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/expr/visit_free.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/expr/visit_to_str.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/expr/visit_to_str.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/expr/visit_to_str.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/expr/visit_to_str.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/expr/visit_type.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/expr/visit_type.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/expr/visit_type.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/expr/visit_type.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/function.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/function.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/function.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/function.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/functions_builtin.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/functions_builtin.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/functions_builtin.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/functions_builtin.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/functions_math.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/functions_math.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/functions_math.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/functions_math.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/parser.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/parser.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/parser.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/parser.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/script.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/script.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/script.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/script.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/serialize.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/serialize.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/serialize.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/serialize.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/template.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/template.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/template.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/template.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/vars.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/vars.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/vars.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/vars.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/visit.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/visit.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/visit.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/visit.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/visit_check.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/visit_check.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/visit_check.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/visit_check.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/visit_eval.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/visit_eval.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/visit_eval.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/visit_eval.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/visit_free.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/visit_free.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/visit_free.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/visit_free.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/script/visit_to_str.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/visit_to_str.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/script/visit_to_str.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/script/visit_to_str.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/stats/memory.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/stats/memory.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/stats/memory.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/stats/memory.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/stats/monitor.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/stats/monitor.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/stats/monitor.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/stats/monitor.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/stats/pipeline_monitor.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/stats/pipeline_monitor.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/stats/pipeline_monitor.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/stats/pipeline_monitor.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/stats/stats.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/stats/stats.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/stats/stats.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/stats/stats.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/stats/system_monitor.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/stats/system_monitor.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/stats/system_monitor.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/stats/system_monitor.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/stats/world_monitor.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/stats/world_monitor.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/stats/world_monitor.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/stats/world_monitor.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/stats/world_summary.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/stats/world_summary.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/stats/world_summary.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/stats/world_summary.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/system/system.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/system/system.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/system/system.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/system/system.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/timer.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/timer.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/timer.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/timer.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/addons/units.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/units.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/addons/units.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/addons/units.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/bootstrap.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/bootstrap.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/bootstrap.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/bootstrap.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/commands.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/commands.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/commands.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/commands.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/component_actions.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/component_actions.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/component_actions.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/component_actions.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/datastructures/allocator.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/datastructures/allocator.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/datastructures/allocator.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/datastructures/allocator.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/datastructures/bitset.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/datastructures/bitset.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/datastructures/bitset.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/datastructures/bitset.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/datastructures/block_allocator.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/datastructures/block_allocator.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/datastructures/block_allocator.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/datastructures/block_allocator.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/datastructures/hash.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/datastructures/hash.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/datastructures/hash.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/datastructures/hash.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/datastructures/hashmap.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/datastructures/hashmap.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/datastructures/hashmap.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/datastructures/hashmap.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/datastructures/map.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/datastructures/map.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/datastructures/map.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/datastructures/map.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/datastructures/name_index.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/datastructures/name_index.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/datastructures/name_index.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/datastructures/name_index.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/datastructures/sparse.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/datastructures/sparse.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/datastructures/sparse.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/datastructures/sparse.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/datastructures/stack_allocator.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/datastructures/stack_allocator.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/datastructures/stack_allocator.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/datastructures/stack_allocator.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/datastructures/strbuf.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/datastructures/strbuf.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/datastructures/strbuf.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/datastructures/strbuf.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/datastructures/vec.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/datastructures/vec.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/datastructures/vec.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/datastructures/vec.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/each.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/each.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/each.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/each.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/entity.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/entity.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/entity.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/entity.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/entity_name.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/entity_name.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/entity_name.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/entity_name.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/id.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/id.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/id.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/id.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/instantiate.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/instantiate.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/instantiate.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/instantiate.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/iter.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/iter.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/iter.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/iter.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/misc.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/misc.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/misc.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/misc.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/observable.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/observable.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/observable.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/observable.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/observer.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/observer.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/observer.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/observer.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/on_delete.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/on_delete.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/on_delete.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/on_delete.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/os_api.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/os_api.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/os_api.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/os_api.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/poly.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/poly.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/poly.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/poly.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/api.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/api.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/api.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/api.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/cache/cache.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/cache/cache.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/cache/cache.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/cache/cache.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/cache/cache_iter.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/cache/cache_iter.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/cache/cache_iter.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/cache/cache_iter.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/cache/change_detection.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/cache/change_detection.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/cache/change_detection.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/cache/change_detection.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/cache/group.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/cache/group.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/cache/group.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/cache/group.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/cache/match.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/cache/match.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/cache/match.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/cache/match.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/cache/order_by.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/cache/order_by.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/cache/order_by.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/cache/order_by.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/compiler/compiler.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/compiler/compiler.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/compiler/compiler.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/compiler/compiler.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/compiler/compiler_term.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/compiler/compiler_term.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/compiler/compiler_term.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/compiler/compiler_term.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/engine/eval.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/eval.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/eval.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/engine/eval.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/engine/eval_iter.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/eval_iter.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/eval_iter.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/engine/eval_iter.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/engine/eval_member.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/eval_member.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/eval_member.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/engine/eval_member.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/engine/eval_pred.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/eval_pred.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/eval_pred.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/engine/eval_pred.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/engine/eval_sparse.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/eval_sparse.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/eval_sparse.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/engine/eval_sparse.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/engine/eval_toggle.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/eval_toggle.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/eval_toggle.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/engine/eval_toggle.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/engine/eval_trav.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/eval_trav.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/eval_trav.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/engine/eval_trav.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/engine/eval_up.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/eval_up.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/eval_up.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/engine/eval_up.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/engine/eval_utils.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/eval_utils.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/eval_utils.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/engine/eval_utils.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/engine/trav_cache.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/trav_cache.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/trav_cache.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/engine/trav_cache.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/engine/trav_down_cache.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/trav_down_cache.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/trav_down_cache.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/engine/trav_down_cache.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/engine/trav_up_cache.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/trav_up_cache.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/trav_up_cache.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/engine/trav_up_cache.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/engine/trivial_iter.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/trivial_iter.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/engine/trivial_iter.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/engine/trivial_iter.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/util.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/util.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/util.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/util.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/query/validator.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/validator.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/query/validator.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/query/validator.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/ref.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/ref.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/ref.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/ref.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/search.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/search.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/search.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/search.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/stage.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/stage.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/stage.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/stage.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/storage/component_index.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/storage/component_index.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/storage/component_index.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/storage/component_index.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/storage/entity_index.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/storage/entity_index.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/storage/entity_index.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/storage/entity_index.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/storage/ordered_children.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/storage/ordered_children.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/storage/ordered_children.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/storage/ordered_children.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/storage/sparse_storage.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/storage/sparse_storage.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/storage/sparse_storage.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/storage/sparse_storage.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/storage/table.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/storage/table.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/storage/table.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/storage/table.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/storage/table_cache.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/storage/table_cache.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/storage/table_cache.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/storage/table_cache.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/storage/table_graph.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/storage/table_graph.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/storage/table_graph.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/storage/table_graph.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/type_info.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/type_info.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/type_info.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/type_info.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/value.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/value.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/value.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/value.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-build",
+  "command": "/usr/bin/cc -Dflecs_STATIC -I/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/include -g -std=gnu99 -fPIC -fvisibility=hidden -o CMakeFiles/flecs_static.dir/src/world.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/world.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/flecs-src/src/world.c",
+  "output": "_deps/flecs-build/CMakeFiles/flecs_static.dir/src/world.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/_deps/yyjson-build",
+  "command": "/usr/bin/cc  -I/home/cachy/workspaces/libs/cels/build/_deps/yyjson-src/src -g -o CMakeFiles/yyjson.dir/src/yyjson.c.o -c /home/cachy/workspaces/libs/cels/build/_deps/yyjson-src/src/yyjson.c",
+  "file": "/home/cachy/workspaces/libs/cels/build/_deps/yyjson-src/src/yyjson.c",
+  "output": "_deps/yyjson-build/CMakeFiles/yyjson.dir/src/yyjson.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/tools/cels-debug",
+  "command": "/usr/bin/cc -DCELS_TEST_OUTPUT_DIR=\\\"/home/cachy/workspaces/libs/cels/tools/cels-debug/../../tests/output\\\" -I/home/cachy/workspaces/libs/cels/tools/cels-debug/src -I/home/cachy/workspaces/libs/cels/build/_deps/yyjson-src/src -g -std=c99 -DWITH_GZFILEOP -o CMakeFiles/cels-debug.dir/src/main.c.o -c /home/cachy/workspaces/libs/cels/tools/cels-debug/src/main.c",
+  "file": "/home/cachy/workspaces/libs/cels/tools/cels-debug/src/main.c",
+  "output": "tools/cels-debug/CMakeFiles/cels-debug.dir/src/main.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/tools/cels-debug",
+  "command": "/usr/bin/cc -DCELS_TEST_OUTPUT_DIR=\\\"/home/cachy/workspaces/libs/cels/tools/cels-debug/../../tests/output\\\" -I/home/cachy/workspaces/libs/cels/tools/cels-debug/src -I/home/cachy/workspaces/libs/cels/build/_deps/yyjson-src/src -g -std=c99 -DWITH_GZFILEOP -o CMakeFiles/cels-debug.dir/src/http_client.c.o -c /home/cachy/workspaces/libs/cels/tools/cels-debug/src/http_client.c",
+  "file": "/home/cachy/workspaces/libs/cels/tools/cels-debug/src/http_client.c",
+  "output": "tools/cels-debug/CMakeFiles/cels-debug.dir/src/http_client.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/tools/cels-debug",
+  "command": "/usr/bin/cc -DCELS_TEST_OUTPUT_DIR=\\\"/home/cachy/workspaces/libs/cels/tools/cels-debug/../../tests/output\\\" -I/home/cachy/workspaces/libs/cels/tools/cels-debug/src -I/home/cachy/workspaces/libs/cels/build/_deps/yyjson-src/src -g -std=c99 -DWITH_GZFILEOP -o CMakeFiles/cels-debug.dir/src/json_parser.c.o -c /home/cachy/workspaces/libs/cels/tools/cels-debug/src/json_parser.c",
+  "file": "/home/cachy/workspaces/libs/cels/tools/cels-debug/src/json_parser.c",
+  "output": "tools/cels-debug/CMakeFiles/cels-debug.dir/src/json_parser.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/tools/cels-debug",
+  "command": "/usr/bin/cc -DCELS_TEST_OUTPUT_DIR=\\\"/home/cachy/workspaces/libs/cels/tools/cels-debug/../../tests/output\\\" -I/home/cachy/workspaces/libs/cels/tools/cels-debug/src -I/home/cachy/workspaces/libs/cels/build/_deps/yyjson-src/src -g -std=c99 -DWITH_GZFILEOP -o CMakeFiles/cels-debug.dir/src/data_model.c.o -c /home/cachy/workspaces/libs/cels/tools/cels-debug/src/data_model.c",
+  "file": "/home/cachy/workspaces/libs/cels/tools/cels-debug/src/data_model.c",
+  "output": "tools/cels-debug/CMakeFiles/cels-debug.dir/src/data_model.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/tools/cels-debug",
+  "command": "/usr/bin/cc -DCELS_TEST_OUTPUT_DIR=\\\"/home/cachy/workspaces/libs/cels/tools/cels-debug/../../tests/output\\\" -I/home/cachy/workspaces/libs/cels/tools/cels-debug/src -I/home/cachy/workspaces/libs/cels/build/_deps/yyjson-src/src -g -std=c99 -DWITH_GZFILEOP -o CMakeFiles/cels-debug.dir/src/tui.c.o -c /home/cachy/workspaces/libs/cels/tools/cels-debug/src/tui.c",
+  "file": "/home/cachy/workspaces/libs/cels/tools/cels-debug/src/tui.c",
+  "output": "tools/cels-debug/CMakeFiles/cels-debug.dir/src/tui.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/tools/cels-debug",
+  "command": "/usr/bin/cc -DCELS_TEST_OUTPUT_DIR=\\\"/home/cachy/workspaces/libs/cels/tools/cels-debug/../../tests/output\\\" -I/home/cachy/workspaces/libs/cels/tools/cels-debug/src -I/home/cachy/workspaces/libs/cels/build/_deps/yyjson-src/src -g -std=c99 -DWITH_GZFILEOP -o CMakeFiles/cels-debug.dir/src/tab_system.c.o -c /home/cachy/workspaces/libs/cels/tools/cels-debug/src/tab_system.c",
+  "file": "/home/cachy/workspaces/libs/cels/tools/cels-debug/src/tab_system.c",
+  "output": "tools/cels-debug/CMakeFiles/cels-debug.dir/src/tab_system.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/tools/cels-debug",
+  "command": "/usr/bin/cc -DCELS_TEST_OUTPUT_DIR=\\\"/home/cachy/workspaces/libs/cels/tools/cels-debug/../../tests/output\\\" -I/home/cachy/workspaces/libs/cels/tools/cels-debug/src -I/home/cachy/workspaces/libs/cels/build/_deps/yyjson-src/src -g -std=c99 -DWITH_GZFILEOP -o CMakeFiles/cels-debug.dir/src/scroll.c.o -c /home/cachy/workspaces/libs/cels/tools/cels-debug/src/scroll.c",
+  "file": "/home/cachy/workspaces/libs/cels/tools/cels-debug/src/scroll.c",
+  "output": "tools/cels-debug/CMakeFiles/cels-debug.dir/src/scroll.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/tools/cels-debug",
+  "command": "/usr/bin/cc -DCELS_TEST_OUTPUT_DIR=\\\"/home/cachy/workspaces/libs/cels/tools/cels-debug/../../tests/output\\\" -I/home/cachy/workspaces/libs/cels/tools/cels-debug/src -I/home/cachy/workspaces/libs/cels/build/_deps/yyjson-src/src -g -std=c99 -DWITH_GZFILEOP -o CMakeFiles/cels-debug.dir/src/split_panel.c.o -c /home/cachy/workspaces/libs/cels/tools/cels-debug/src/split_panel.c",
+  "file": "/home/cachy/workspaces/libs/cels/tools/cels-debug/src/split_panel.c",
+  "output": "tools/cels-debug/CMakeFiles/cels-debug.dir/src/split_panel.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/tools/cels-debug",
+  "command": "/usr/bin/cc -DCELS_TEST_OUTPUT_DIR=\\\"/home/cachy/workspaces/libs/cels/tools/cels-debug/../../tests/output\\\" -I/home/cachy/workspaces/libs/cels/tools/cels-debug/src -I/home/cachy/workspaces/libs/cels/build/_deps/yyjson-src/src -g -std=c99 -DWITH_GZFILEOP -o CMakeFiles/cels-debug.dir/src/json_render.c.o -c /home/cachy/workspaces/libs/cels/tools/cels-debug/src/json_render.c",
+  "file": "/home/cachy/workspaces/libs/cels/tools/cels-debug/src/json_render.c",
+  "output": "tools/cels-debug/CMakeFiles/cels-debug.dir/src/json_render.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/tools/cels-debug",
+  "command": "/usr/bin/cc -DCELS_TEST_OUTPUT_DIR=\\\"/home/cachy/workspaces/libs/cels/tools/cels-debug/../../tests/output\\\" -I/home/cachy/workspaces/libs/cels/tools/cels-debug/src -I/home/cachy/workspaces/libs/cels/build/_deps/yyjson-src/src -g -std=c99 -DWITH_GZFILEOP -o CMakeFiles/cels-debug.dir/src/tree_view.c.o -c /home/cachy/workspaces/libs/cels/tools/cels-debug/src/tree_view.c",
+  "file": "/home/cachy/workspaces/libs/cels/tools/cels-debug/src/tree_view.c",
+  "output": "tools/cels-debug/CMakeFiles/cels-debug.dir/src/tree_view.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/tools/cels-debug",
+  "command": "/usr/bin/cc -DCELS_TEST_OUTPUT_DIR=\\\"/home/cachy/workspaces/libs/cels/tools/cels-debug/../../tests/output\\\" -I/home/cachy/workspaces/libs/cels/tools/cels-debug/src -I/home/cachy/workspaces/libs/cels/build/_deps/yyjson-src/src -g -std=c99 -DWITH_GZFILEOP -o CMakeFiles/cels-debug.dir/src/tabs/tab_overview.c.o -c /home/cachy/workspaces/libs/cels/tools/cels-debug/src/tabs/tab_overview.c",
+  "file": "/home/cachy/workspaces/libs/cels/tools/cels-debug/src/tabs/tab_overview.c",
+  "output": "tools/cels-debug/CMakeFiles/cels-debug.dir/src/tabs/tab_overview.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/tools/cels-debug",
+  "command": "/usr/bin/cc -DCELS_TEST_OUTPUT_DIR=\\\"/home/cachy/workspaces/libs/cels/tools/cels-debug/../../tests/output\\\" -I/home/cachy/workspaces/libs/cels/tools/cels-debug/src -I/home/cachy/workspaces/libs/cels/build/_deps/yyjson-src/src -g -std=c99 -DWITH_GZFILEOP -o CMakeFiles/cels-debug.dir/src/tabs/tab_cels.c.o -c /home/cachy/workspaces/libs/cels/tools/cels-debug/src/tabs/tab_cels.c",
+  "file": "/home/cachy/workspaces/libs/cels/tools/cels-debug/src/tabs/tab_cels.c",
+  "output": "tools/cels-debug/CMakeFiles/cels-debug.dir/src/tabs/tab_cels.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/tools/cels-debug",
+  "command": "/usr/bin/cc -DCELS_TEST_OUTPUT_DIR=\\\"/home/cachy/workspaces/libs/cels/tools/cels-debug/../../tests/output\\\" -I/home/cachy/workspaces/libs/cels/tools/cels-debug/src -I/home/cachy/workspaces/libs/cels/build/_deps/yyjson-src/src -g -std=c99 -DWITH_GZFILEOP -o CMakeFiles/cels-debug.dir/src/tabs/tab_systems.c.o -c /home/cachy/workspaces/libs/cels/tools/cels-debug/src/tabs/tab_systems.c",
+  "file": "/home/cachy/workspaces/libs/cels/tools/cels-debug/src/tabs/tab_systems.c",
+  "output": "tools/cels-debug/CMakeFiles/cels-debug.dir/src/tabs/tab_systems.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/tools/cels-debug",
+  "command": "/usr/bin/cc -DCELS_TEST_OUTPUT_DIR=\\\"/home/cachy/workspaces/libs/cels/tools/cels-debug/../../tests/output\\\" -I/home/cachy/workspaces/libs/cels/tools/cels-debug/src -I/home/cachy/workspaces/libs/cels/build/_deps/yyjson-src/src -g -std=c99 -DWITH_GZFILEOP -o CMakeFiles/cels-debug.dir/src/tabs/tab_performance.c.o -c /home/cachy/workspaces/libs/cels/tools/cels-debug/src/tabs/tab_performance.c",
+  "file": "/home/cachy/workspaces/libs/cels/tools/cels-debug/src/tabs/tab_performance.c",
+  "output": "tools/cels-debug/CMakeFiles/cels-debug.dir/src/tabs/tab_performance.c.o"
+},
+{
+  "directory": "/home/cachy/workspaces/libs/cels/build/tools/cels-debug",
+  "command": "/usr/bin/cc -DCELS_TEST_OUTPUT_DIR=\\\"/home/cachy/workspaces/libs/cels/tools/cels-debug/../../tests/output\\\" -I/home/cachy/workspaces/libs/cels/tools/cels-debug/src -I/home/cachy/workspaces/libs/cels/build/_deps/yyjson-src/src -g -std=c99 -DWITH_GZFILEOP -o CMakeFiles/cels-debug.dir/src/tabs/tab_tests.c.o -c /home/cachy/workspaces/libs/cels/tools/cels-debug/src/tabs/tab_tests.c",
+  "file": "/home/cachy/workspaces/libs/cels/tools/cels-debug/src/tabs/tab_tests.c",
+  "output": "tools/cels-debug/CMakeFiles/cels-debug.dir/src/tabs/tab_tests.c.o"
+}
+]
