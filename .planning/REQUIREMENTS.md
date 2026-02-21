@@ -76,30 +76,30 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| MOUS-01 | - | Pending |
-| MOUS-02 | - | Pending |
-| MOUS-03 | - | Pending |
-| MOUS-04 | - | Pending |
-| MOUS-05 | - | Pending |
-| CELL-01 | - | Pending |
-| CELL-02 | - | Pending |
-| CELL-03 | - | Pending |
-| COLR-01 | - | Pending |
-| COLR-02 | - | Pending |
-| COLR-03 | - | Pending |
-| DMGT-01 | - | Pending |
-| DMGT-02 | - | Pending |
-| DMGT-03 | - | Pending |
-| TRNS-01 | - | Pending |
-| TRNS-02 | - | Pending |
-| TRNS-03 | - | Pending |
-| TRNS-04 | - | Pending |
+| MOUS-01 | Phase 6 | Pending |
+| MOUS-02 | Phase 6 | Pending |
+| MOUS-03 | Phase 6 | Pending |
+| MOUS-04 | Phase 6 | Pending |
+| MOUS-05 | Phase 6 | Pending |
+| CELL-01 | Phase 8 | Pending |
+| CELL-02 | Phase 8 | Pending |
+| CELL-03 | Phase 8 | Pending |
+| COLR-01 | Phase 7 | Pending |
+| COLR-02 | Phase 7 | Pending |
+| COLR-03 | Phase 7 | Pending |
+| DMGT-01 | Phase 9 | Pending |
+| DMGT-02 | Phase 9 | Pending |
+| DMGT-03 | Phase 9 | Pending |
+| TRNS-01 | Phase 10 | Pending |
+| TRNS-02 | Phase 10 | Pending |
+| TRNS-03 | Phase 10 | Pending |
+| TRNS-04 | Phase 10 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 18 total
-- Mapped to phases: 0
-- Unmapped: 18
+- Mapped to phases: 18
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-20*
-*Last updated: 2026-02-20 after initial definition*
+*Last updated: 2026-02-20 after v1.1 roadmap creation*
