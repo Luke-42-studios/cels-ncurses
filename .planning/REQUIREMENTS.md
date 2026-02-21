@@ -76,11 +76,11 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| MOUS-01 | Phase 6 | Pending |
-| MOUS-02 | Phase 6 | Pending |
-| MOUS-03 | Phase 6 | Pending |
-| MOUS-04 | Phase 6 | Pending |
-| MOUS-05 | Phase 6 | Pending |
+| MOUS-01 | Phase 6 | Partial (no modifier keys -- raw press/release only) |
+| MOUS-02 | Phase 6 | Deferred |
+| MOUS-03 | Phase 6 | Deferred |
+| MOUS-04 | Phase 6 | Deferred |
+| MOUS-05 | Phase 6 | Deferred |
 | CELL-01 | Phase 8 | Pending |
 | CELL-02 | Phase 8 | Pending |
 | CELL-03 | Phase 8 | Pending |

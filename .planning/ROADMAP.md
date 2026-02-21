@@ -27,7 +27,7 @@ Archived. See git history for v1.0 phase details.
 - Integer phases (6, 7, 8, 9, 10): Planned milestone work
 - Decimal phases (e.g., 7.1): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 6: Mouse Input** - Raw mouse primitives (position polling + button press/release)
+- [x] **Phase 6: Mouse Input** - Raw mouse primitives (position polling + button press/release) ✓
 - [ ] **Phase 7: True Color** - 24-bit RGB via palette redefinition with 256-color fallback
 - [ ] **Phase 8: Sub-Cell Rendering** - Half-block, quadrant, and braille drawing primitives
 - [ ] **Phase 9: Damage Tracking** - Per-layer dirty rectangles with selective clearing
@@ -43,8 +43,8 @@ Archived. See git history for v1.0 phase details.
 **Plans:** 2 plans
 
 Plans:
-- [ ] 06-01-PLAN.md -- Replace CELS_Input with module-local TUI_InputState + add mouse support
-- [ ] 06-02-PLAN.md -- Update examples to new input API + full build verification
+- [x] 06-01-PLAN.md -- Replace CELS_Input with module-local TUI_InputState + add mouse support
+- [x] 06-02-PLAN.md -- Update examples to new input API + full build verification
 
 ### Phase 7: True Color
 **Goal**: Developer can specify exact RGB colors and have them rendered faithfully on capable terminals
@@ -111,7 +111,7 @@ Phases execute in numeric order: 6 -> 7 -> 8 -> 9 -> 10
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 1-5 | v1.0 | 15/15 | Complete | 2026-02-20 |
-| 6. Mouse Input | v1.1 | 0/2 | Planned | - |
+| 6. Mouse Input | v1.1 | 2/2 | Complete | 2026-02-21 |
 | 7. True Color | v1.1 | 0/TBD | Not started | - |
 | 8. Sub-Cell Rendering | v1.1 | 0/TBD | Not started | - |
 | 9. Damage Tracking | v1.1 | 0/TBD | Not started | - |
