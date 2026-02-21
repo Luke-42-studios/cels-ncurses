@@ -1,11 +1,32 @@
 /*
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
  * TUI Input Provider - ncurses Implementation
  *
  * Implements the TUI_Input provider as a standalone ECS system at OnLoad.
- * Reads ncurses getch() each frame and populates CELS_Input.
+ * Reads ncurses getch() each frame and populates TUI_InputState (g_input_state).
+ *
+ * Keyboard: maps ncurses key codes to TUI_InputState fields.
+ * Mouse: enables ncurses mouse events via mousemask(), handles KEY_MOUSE
+ * with a drain loop (multiple events per frame, final position + last
+ * button event win). Tracks persistent held state per button.
  *
  * Q key signals application quit via the window provider's running pointer.
- * All other keys map to CELS_Input fields for backend-agnostic consumption.
+ * All other keys map to TUI_InputState fields for backend-agnostic consumption.
  *
  * NOTE: This system runs during Engine_Progress() at OnLoad phase.
  * ncurses must already be initialized by TUI_Window before this runs.
@@ -34,6 +55,12 @@
  * Static State
  * ============================================================================ */
 
+/* Global input state (extern declaration in tui_input.h) */
+TUI_InputState g_input_state = {0};
+
+/* Mouse initialization flag */
+static int g_mouse_initialized = 0;
+
 /* Pointer to g_running in tui_window.c -- used to signal quit on Q key */
 static volatile int* g_tui_running_ptr = NULL;
 
@@ -59,76 +86,161 @@ static void tui_pause(void) {
 }
 
 /* ============================================================================
+ * Input State Getters
+ * ============================================================================ */
+
+const TUI_InputState* tui_input_get_state(void) {
+    return &g_input_state;
+}
+
+void tui_input_get_mouse_position(int *x, int *y) {
+    if (x) *x = g_input_state.mouse_x;
+    if (y) *y = g_input_state.mouse_y;
+}
+
+/* ============================================================================
  * Input Reading
  * ============================================================================
  *
- * Reads a single key per frame via ncurses wgetch(stdscr).
+ * Reads input per frame via ncurses wgetch(stdscr).
  * nodelay(stdscr, TRUE) ensures non-blocking (returns ERR if no input).
  * keypad(stdscr, TRUE) ensures function keys arrive as KEY_* constants.
+ *
+ * Per-frame fields are reset at the start; persistent state (mouse position,
+ * held buttons) is preserved across frames.
  */
 
 static void tui_read_input_ncurses(void) {
-    CELS_Context* ctx = cels_get_context();
-    CELS_Input input;
-    memset(&input, 0, sizeof(input));
+    /* Reset per-frame fields (preserve persistent state like mouse_x/y and held buttons) */
+    g_input_state.axis_left[0] = 0.0f;
+    g_input_state.axis_left[1] = 0.0f;
+    g_input_state.button_accept = false;
+    g_input_state.button_cancel = false;
+    g_input_state.key_tab = false;
+    g_input_state.key_shift_tab = false;
+    g_input_state.key_home = false;
+    g_input_state.key_end = false;
+    g_input_state.key_page_up = false;
+    g_input_state.key_page_down = false;
+    g_input_state.key_backspace = false;
+    g_input_state.key_delete = false;
+    g_input_state.has_number = false;
+    g_input_state.has_function = false;
+    g_input_state.has_raw_key = false;
+    g_input_state.mouse_button = TUI_MOUSE_NONE;
+    g_input_state.mouse_pressed = false;
+    g_input_state.mouse_released = false;
+    /* NOTE: mouse_x, mouse_y, mouse_*_held are NOT reset -- they persist across frames */
 
     int ch = wgetch(stdscr);
     if (ch == ERR) {
         /* No input this frame */
-        cels_input_set(ctx, &input);
         return;
     }
 
     switch (ch) {
         /* Arrow keys (decoded by keypad()) */
-        case KEY_UP:    input.axis_left[1] = -1.0f; break;
-        case KEY_DOWN:  input.axis_left[1] =  1.0f; break;
-        case KEY_LEFT:  input.axis_left[0] = -1.0f; break;
-        case KEY_RIGHT: input.axis_left[0] =  1.0f; break;
+        case KEY_UP:    g_input_state.axis_left[1] = -1.0f; break;
+        case KEY_DOWN:  g_input_state.axis_left[1] =  1.0f; break;
+        case KEY_LEFT:  g_input_state.axis_left[0] = -1.0f; break;
+        case KEY_RIGHT: g_input_state.axis_left[0] =  1.0f; break;
 
         /* WASD (raw character + axis) */
-        case 'w': case 'W': input.axis_left[1] = -1.0f; input.raw_key = ch; input.has_raw_key = true; break;
-        case 's': case 'S': input.axis_left[1] =  1.0f; input.raw_key = ch; input.has_raw_key = true; break;
-        case 'a': case 'A': input.axis_left[0] = -1.0f; input.raw_key = ch; input.has_raw_key = true; break;
-        case 'd': case 'D': input.axis_left[0] =  1.0f; input.raw_key = ch; input.has_raw_key = true; break;
+        case 'w': case 'W': g_input_state.axis_left[1] = -1.0f; g_input_state.raw_key = ch; g_input_state.has_raw_key = true; break;
+        case 's': case 'S': g_input_state.axis_left[1] =  1.0f; g_input_state.raw_key = ch; g_input_state.has_raw_key = true; break;
+        case 'a': case 'A': g_input_state.axis_left[0] = -1.0f; g_input_state.raw_key = ch; g_input_state.has_raw_key = true; break;
+        case 'd': case 'D': g_input_state.axis_left[0] =  1.0f; g_input_state.raw_key = ch; g_input_state.has_raw_key = true; break;
 
         /* Action buttons */
         case '\n': case '\r': case KEY_ENTER:
-            input.button_accept = true; break;
+            g_input_state.button_accept = true; break;
         case 27:  /* Escape */
-            input.button_cancel = true;
-            input.raw_key = 27; input.has_raw_key = true; break;
+            g_input_state.button_cancel = true;
+            g_input_state.raw_key = 27; g_input_state.has_raw_key = true; break;
 
         /* Extended navigation */
         case '\t':
-            input.key_tab = true; break;
+            g_input_state.key_tab = true; break;
         case KEY_BTAB:
-            input.key_shift_tab = true; break;
+            g_input_state.key_shift_tab = true; break;
         case KEY_HOME:
-            input.key_home = true; break;
+            g_input_state.key_home = true; break;
         case KEY_END:
-            input.key_end = true; break;
+            g_input_state.key_end = true; break;
         case KEY_PPAGE:
-            input.key_page_up = true; break;
+            g_input_state.key_page_up = true; break;
         case KEY_NPAGE:
-            input.key_page_down = true; break;
+            g_input_state.key_page_down = true; break;
         case KEY_BACKSPACE: case 127:
-            input.key_backspace = true; break;
+            g_input_state.key_backspace = true; break;
         case KEY_DC:
-            input.key_delete = true; break;
+            g_input_state.key_delete = true; break;
 
         /* Quit key -- signals window to close (unless quit guard suppresses) */
         case 'q': case 'Q':
             if (g_quit_guard_fn && g_quit_guard_fn()) {
                 /* Quit suppressed (e.g., text input active) -- pass as raw_key */
-                input.raw_key = ch;
-                input.has_raw_key = true;
+                g_input_state.raw_key = ch;
+                g_input_state.has_raw_key = true;
                 break;
             }
             if (g_tui_running_ptr) {
                 *g_tui_running_ptr = 0;
             }
             return;  /* Do NOT set any input field -- immediate quit */
+
+        /* Mouse events -- drain all queued events per frame */
+        case KEY_MOUSE: {
+            /* Drain ALL queued mouse events -- keep final position, last button event.
+             * This prevents position lag when mouse moves fast (many events per frame). */
+            MEVENT event;
+            do {
+                if (getmouse(&event) != OK) break;
+
+                /* Always update position (screen-relative cell coordinates) */
+                g_input_state.mouse_x = event.x;
+                g_input_state.mouse_y = event.y;
+
+                /* Decode button press/release events */
+                if (event.bstate & BUTTON1_PRESSED) {
+                    g_input_state.mouse_button = TUI_MOUSE_LEFT;
+                    g_input_state.mouse_pressed = true;
+                    g_input_state.mouse_released = false;
+                    g_input_state.mouse_left_held = true;
+                } else if (event.bstate & BUTTON1_RELEASED) {
+                    g_input_state.mouse_button = TUI_MOUSE_LEFT;
+                    g_input_state.mouse_pressed = false;
+                    g_input_state.mouse_released = true;
+                    g_input_state.mouse_left_held = false;
+                } else if (event.bstate & BUTTON2_PRESSED) {
+                    g_input_state.mouse_button = TUI_MOUSE_MIDDLE;
+                    g_input_state.mouse_pressed = true;
+                    g_input_state.mouse_released = false;
+                    g_input_state.mouse_middle_held = true;
+                } else if (event.bstate & BUTTON2_RELEASED) {
+                    g_input_state.mouse_button = TUI_MOUSE_MIDDLE;
+                    g_input_state.mouse_pressed = false;
+                    g_input_state.mouse_released = true;
+                    g_input_state.mouse_middle_held = false;
+                } else if (event.bstate & BUTTON3_PRESSED) {
+                    g_input_state.mouse_button = TUI_MOUSE_RIGHT;
+                    g_input_state.mouse_pressed = true;
+                    g_input_state.mouse_released = false;
+                    g_input_state.mouse_right_held = true;
+                } else if (event.bstate & BUTTON3_RELEASED) {
+                    g_input_state.mouse_button = TUI_MOUSE_RIGHT;
+                    g_input_state.mouse_pressed = false;
+                    g_input_state.mouse_released = true;
+                    g_input_state.mouse_right_held = false;
+                }
+                /* else: motion-only event (position already updated above) */
+
+            } while ((ch = wgetch(stdscr)) == KEY_MOUSE);
+
+            /* Put back any non-mouse key for the next frame */
+            if (ch != ERR) ungetch(ch);
+            return;  /* Mouse events fully processed */
+        }
 
         /* Terminal resize -- drain queued resize events (window manager sends
          * many during a drag), then process only the final dimensions. */
@@ -140,7 +252,6 @@ static void tui_read_input_ncurses(void) {
 
             /* Skip if dimensions are invalid (can happen mid-animation) */
             if (COLS < 4 || LINES < 4) {
-                cels_input_set(ctx, &input);
                 return;
             }
 
@@ -155,42 +266,38 @@ static void tui_read_input_ncurses(void) {
             tui_layer_resize_all(COLS, LINES);
             tui_frame_invalidate_all();
             clearok(curscr, TRUE);
-            cels_input_set(ctx, &input);  /* Set clean (zeroed) input */
             return;
         }
 
         /* Ctrl+Arrow keys (custom key codes via define_key) */
-        case CELS_KEY_CTRL_UP:    input.raw_key = CELS_KEY_CTRL_UP;    input.has_raw_key = true; break;
-        case CELS_KEY_CTRL_DOWN:  input.raw_key = CELS_KEY_CTRL_DOWN;  input.has_raw_key = true; break;
-        case CELS_KEY_CTRL_LEFT:  input.raw_key = CELS_KEY_CTRL_LEFT;  input.has_raw_key = true; break;
-        case CELS_KEY_CTRL_RIGHT: input.raw_key = CELS_KEY_CTRL_RIGHT; input.has_raw_key = true; break;
+        case CELS_KEY_CTRL_UP:    g_input_state.raw_key = CELS_KEY_CTRL_UP;    g_input_state.has_raw_key = true; break;
+        case CELS_KEY_CTRL_DOWN:  g_input_state.raw_key = CELS_KEY_CTRL_DOWN;  g_input_state.has_raw_key = true; break;
+        case CELS_KEY_CTRL_LEFT:  g_input_state.raw_key = CELS_KEY_CTRL_LEFT;  g_input_state.has_raw_key = true; break;
+        case CELS_KEY_CTRL_RIGHT: g_input_state.raw_key = CELS_KEY_CTRL_RIGHT; g_input_state.has_raw_key = true; break;
 
         /* Shift+Arrow keys (for future text selection) */
-        case CELS_KEY_SHIFT_LEFT:  input.raw_key = CELS_KEY_SHIFT_LEFT;  input.has_raw_key = true; break;
-        case CELS_KEY_SHIFT_RIGHT: input.raw_key = CELS_KEY_SHIFT_RIGHT; input.has_raw_key = true; break;
+        case CELS_KEY_SHIFT_LEFT:  g_input_state.raw_key = CELS_KEY_SHIFT_LEFT;  g_input_state.has_raw_key = true; break;
+        case CELS_KEY_SHIFT_RIGHT: g_input_state.raw_key = CELS_KEY_SHIFT_RIGHT; g_input_state.has_raw_key = true; break;
 
         /* F1 -- Pause for text selection/copy */
         case KEY_F(1):
             tui_pause();
-            cels_input_set(ctx, &input);  /* Clean frame after resume */
-            return;
+            return;  /* Clean frame after resume */
 
         /* Numbers, function keys, raw characters */
         default:
             if (ch >= '0' && ch <= '9') {
-                input.key_number = ch - '0';
-                input.has_number = true;
+                g_input_state.key_number = ch - '0';
+                g_input_state.has_number = true;
             } else if (ch >= KEY_F(2) && ch <= KEY_F(12)) {
-                input.key_function = ch - KEY_F(0);
-                input.has_function = true;
+                g_input_state.key_function = ch - KEY_F(0);
+                g_input_state.has_function = true;
             } else {
-                input.raw_key = ch;
-                input.has_raw_key = true;
+                g_input_state.raw_key = ch;
+                g_input_state.has_raw_key = true;
             }
             break;
     }
-
-    cels_input_set(ctx, &input);
 }
 
 /* ============================================================================
@@ -212,6 +319,7 @@ static void tui_input_system_callback(ecs_iter_t* it) {
  *
  * Called by Use(TUI_Input) inside Build() block.
  * Gets the running pointer from TUI_Window and registers the ECS system.
+ * Initializes mouse event handling via mousemask().
  */
 
 void TUI_Input_use(TUI_Input config) {
@@ -229,6 +337,19 @@ void TUI_Input_use(TUI_Input config) {
     /* Register xterm-compatible Shift+Arrow escape sequences */
     define_key("\033[1;2D", CELS_KEY_SHIFT_LEFT);
     define_key("\033[1;2C", CELS_KEY_SHIFT_RIGHT);
+
+    /* Initialize mouse position to "no position yet" */
+    g_input_state.mouse_x = -1;
+    g_input_state.mouse_y = -1;
+
+    /* Enable mouse events: buttons 1-3 press/release + position tracking */
+    mmask_t desired = BUTTON1_PRESSED | BUTTON1_RELEASED
+                    | BUTTON2_PRESSED | BUTTON2_RELEASED
+                    | BUTTON3_PRESSED | BUTTON3_RELEASED
+                    | REPORT_MOUSE_POSITION;
+    mousemask(desired, NULL);
+    mouseinterval(0);  /* Disable click detection -- raw press/release only */
+    g_mouse_initialized = 1;
 
     /* Register ECS system at OnLoad phase
      * Same pattern as CELS_LifecycleSystem in cels.cpp */
