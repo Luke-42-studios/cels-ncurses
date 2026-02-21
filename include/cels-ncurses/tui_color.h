@@ -1,14 +1,38 @@
 /*
- * TUI Color - Color types, style struct, and attribute flags
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * TUI Color - Three-tier color system with style and attribute flags
  *
  * Provides the foundational color and style system for the TUI graphics API.
- * TUI_Color wraps an xterm-256 color index (resolved eagerly from RGB at
- * creation time). TUI_Style combines foreground/background colors with
- * attribute flags for bold, dim, underline, and reverse.
+ * TUI_Color wraps a color index whose meaning depends on the detected color
+ * mode. tui_color_rgb() resolves RGB values based on terminal capabilities:
  *
- * Color pairs are managed invisibly by ncurses alloc_pair() -- the developer
- * never sees pair numbers. tui_style_apply() sets attributes and color pair
- * atomically via wattr_set(), replacing the old attron/attroff pattern.
+ *   - Direct color mode:  index = packed 0xRRGGBB (exact 24-bit color)
+ *   - Palette mode:       index = palette slot 16-255 (redefined to exact RGB)
+ *   - 256-color mode:     index = nearest xterm-256 color index (fallback)
+ *
+ * Color mode is auto-detected at startup (after start_color()) and can be
+ * overridden via TUI_Window.color_mode or Engine_Config.color_mode.
+ *
+ * TUI_Style combines foreground/background colors with attribute flags for
+ * bold, dim, underline, reverse, and italic. Color pairs are managed
+ * invisibly by ncurses alloc_pair() -- the developer never sees pair numbers.
+ * tui_style_apply() sets attributes and color pair atomically via wattr_set()
+ * with extended pair support (opts pointer for pairs > 255).
  *
  * Usage:
  *   #include <cels-ncurses/tui_color.h>
@@ -33,16 +57,35 @@
 #include <stdint.h>
 
 /* ============================================================================
+ * Color Mode
+ * ============================================================================
+ *
+ * Detected at startup, determines how tui_color_rgb() resolves RGB values.
+ * Can be overridden via TUI_Window.color_mode or Engine_Config.color_mode.
+ */
+
+typedef enum TUI_ColorMode {
+    TUI_COLOR_MODE_256,        /* Default: nearest xterm-256 mapping */
+    TUI_COLOR_MODE_PALETTE,    /* can_change_color: redefine palette slots 16-255 */
+    TUI_COLOR_MODE_DIRECT      /* RGB flag: packed 0xRRGGBB values */
+} TUI_ColorMode;
+
+/* ============================================================================
  * Color Type
  * ============================================================================
  *
- * Wraps an xterm-256 color index. Created from RGB via tui_color_rgb() which
- * eagerly resolves to the nearest color index at creation time.
+ * Wraps a color index. The meaning of index depends on the active color mode:
+ *   -1            = terminal default (all modes)
+ *   0-255         = xterm-256 color index (256-color mode)
+ *   16-255        = palette slot redefined to exact RGB (palette mode)
+ *   0x000000-0xFFFFFF = packed RGB value (direct color mode)
+ *
+ * Created from RGB via tui_color_rgb() which resolves based on detected mode.
  * Use TUI_COLOR_DEFAULT for the terminal's default foreground or background.
  */
 
 typedef struct TUI_Color {
-    int index;  /* -1 = terminal default, 0-255 = xterm-256 color index */
+    int index;  /* -1 = terminal default, interpretation depends on color mode */
 } TUI_Color;
 
 #define TUI_COLOR_DEFAULT ((TUI_Color){ .index = -1 })
@@ -81,12 +124,26 @@ typedef struct TUI_Style {
  * ============================================================================ */
 
 /* Create a color from RGB values (0-255 per channel).
- * Eagerly maps to nearest xterm-256 color index at creation time. */
+ * Resolves based on detected color mode:
+ *   Direct:  packed 0xRRGGBB index
+ *   Palette: allocates palette slot, redefines to exact RGB
+ *   256:     nearest xterm-256 color index (fallback) */
 extern TUI_Color tui_color_rgb(uint8_t r, uint8_t g, uint8_t b);
 
 /* Apply a style atomically to an ncurses WINDOW.
- * Uses alloc_pair for color pair resolution and wattr_set for
- * atomic attribute application. Never uses attron/attroff. */
+ * Uses alloc_pair for color pair resolution and wattr_set with opts
+ * pointer for extended pair support. Never uses attron/attroff. */
 extern void tui_style_apply(WINDOW* win, TUI_Style style);
+
+/* Initialize color system. Call once after start_color().
+ * Detects terminal color capabilities and sets the resolution mode.
+ * Pass -1 for auto-detection, or a TUI_ColorMode value to force a mode. */
+extern void tui_color_init(int mode_override);
+
+/* Query the active color mode (returns TUI_ColorMode value). */
+extern TUI_ColorMode tui_color_get_mode(void);
+
+/* Human-readable name for a color mode ("256", "palette", "direct"). */
+extern const char* tui_color_mode_name(TUI_ColorMode mode);
 
 #endif /* CELS_NCURSES_TUI_COLOR_H */
