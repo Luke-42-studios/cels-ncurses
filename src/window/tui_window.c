@@ -1,4 +1,20 @@
 /*
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
  * TUI Window Provider - ncurses Implementation (Backend Descriptor)
  *
  * Implements the CELS_BackendDesc hook interface for ncurses TUI.
@@ -8,6 +24,7 @@
 
 #define _POSIX_C_SOURCE 199309L
 #include <cels-ncurses/tui_window.h>
+#include <cels-ncurses/tui_color.h>
 #include <flecs.h>
 #include <ncurses.h>
 #include <unistd.h>
@@ -22,10 +39,10 @@
  * ============================================================================ */
 
 Engine_WindowState_t Engine_WindowState = {0};
-cels_entity_t Engine_WindowStateID = 0;
+cels_entity_t Engine_WindowState_id = 0;
 
 void Engine_WindowState_register(void) {
-    if (Engine_WindowStateID == 0) Engine_WindowStateID = cels_state_register("Engine_WindowState");
+    if (Engine_WindowState_id == 0) Engine_WindowState_id = cels_state_register("Engine_WindowState");
 }
 
 static TUI_Window g_tui_config;
@@ -86,6 +103,13 @@ static void tui_hook_startup(void) {
         start_color();
         use_default_colors();
         assume_default_colors(-1, -1);
+
+        /* Initialize color system with mode detection/override.
+         * color_mode: 0=auto, 1=256, 2=palette, 3=direct */
+        int override = g_tui_config.color_mode > 0
+                     ? g_tui_config.color_mode - 1   /* Convert 1-3 to TUI_ColorMode 0-2 */
+                     : -1;                            /* 0 means auto-detect */
+        tui_color_init(override);
     }
 
     int fps = g_tui_config.fps > 0 ? g_tui_config.fps : 60;
@@ -99,7 +123,7 @@ static void tui_hook_startup(void) {
     Engine_WindowState.version = g_tui_config.version;
     Engine_WindowState.target_fps = (float)fps;
     Engine_WindowState.delta_time = g_delta_time;
-    cels_state_notify_change(Engine_WindowStateID);
+    cels_state_notify_change(Engine_WindowState_id);
 
     /* Create CEL_Window singleton entity for new CEL_Query/CEL_Watch pattern */
     CEL_Window_register();  /* Register CEL_Window component type */
@@ -143,7 +167,7 @@ static void tui_hook_startup(void) {
 static void tui_hook_shutdown(void) {
     /* State transition */
     Engine_WindowState.state = WINDOW_STATE_CLOSING;
-    cels_state_notify_change(Engine_WindowStateID);
+    cels_state_notify_change(Engine_WindowState_id);
     Engine_WindowState.state = WINDOW_STATE_CLOSED;
 
     /* Standard state transition */
@@ -192,7 +216,7 @@ static void tui_hook_frame_begin(void) {
             ecs_set_id(world, (ecs_entity_t)g_cel_window_entity, (ecs_entity_t)CEL_WindowID,
                        sizeof(CEL_Window), &win_data);
             cels_component_notify_change(CEL_WindowID);
-            cels_state_notify_change(Engine_WindowStateID);
+            cels_state_notify_change(Engine_WindowState_id);
 
             /* Keep CELS_Window in context in sync for cels_window_get() */
             CELS_Window cw = { .width = new_w, .height = new_h, .title = Engine_WindowState.title };

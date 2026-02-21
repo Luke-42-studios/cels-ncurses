@@ -1,4 +1,20 @@
 /*
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
  * Engine Module - Implementation
  *
  * Registers TUI providers (Window, Input) and initializes the frame pipeline.
@@ -22,20 +38,21 @@
 static Engine_Config g_engine_config = {0};
 static bool g_config_set = false;
 
-CEL_Module(Engine) {
-    CEL_ModuleProvides(Window);
-    CEL_ModuleProvides(Input);
-    CEL_ModuleProvides(FramePipeline);
+cel_module(Engine) {
+    cel_module_provides(Window);
+    cel_module_provides(Input);
+    cel_module_provides(FramePipeline);
 
     /* Register window provider with config (or defaults) */
-    CEL_Use(TUI_Window,
+    TUI_Window_use((TUI_Window){
         .title = g_engine_config.title ? g_engine_config.title : "CELS App",
         .version = g_engine_config.version ? g_engine_config.version : "0.0.0",
-        .fps = g_engine_config.fps > 0 ? g_engine_config.fps : 60
-    );
+        .fps = g_engine_config.fps > 0 ? g_engine_config.fps : 60,
+        .color_mode = g_engine_config.color_mode
+    });
 
     /* Register input provider (zero-config) */
-    CEL_Use(TUI_Input);
+    TUI_Input_use((TUI_Input){0});
 
     /* Initialize frame pipeline: background layer + ECS systems */
     tui_frame_init();
@@ -48,7 +65,7 @@ CEL_Module(Engine) {
             "Engine_WindowState", &Engine_WindowState, sizeof(Engine_WindowState_t));
 
         /* Store real ID so tui_window_frame_loop can notify_change correctly */
-        Engine_WindowStateID = win_state_id;
+        Engine_WindowState_id = win_state_id;
 
         Engine_Context ctx;
         ctx.windowState = win_state_id;
@@ -77,11 +94,11 @@ void Engine_use(Engine_Config config) {
  *   4. Calls clay_ncurses_renderer_init() (ncurses Clay renderer)
  *   5. Registers root composition via cfg->root() if specified
  */
-CEL_Module(CelsNcurses) {
-    CEL_ModuleProvides(Window);
-    CEL_ModuleProvides(Input);
-    CEL_ModuleProvides(Renderer);
-    CEL_ModuleProvides(FrameLoop);
+cel_module(CelsNcurses) {
+    cel_module_provides(Window);
+    cel_module_provides(Input);
+    cel_module_provides(Renderer);
+    cel_module_provides(FrameLoop);
 
     /* Read run config (stored by CEL_Run macro before CELS_BuildInit) */
     const CEL_RunConfig* cfg = _cels_get_run_config();
@@ -93,6 +110,7 @@ CEL_Module(CelsNcurses) {
         .title = cfg->title ? cfg->title : "CELS App",
         .version = cfg->version ? cfg->version : "0.0.0",
         .fps = cfg->fps > 0 ? cfg->fps : 60,
+        .color_mode = 0,  /* auto-detect */
         .root = NULL
     });
 

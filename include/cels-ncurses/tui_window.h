@@ -1,4 +1,20 @@
 /*
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
  * TUI Window Provider - Header
  *
  * ncurses-based window provider for CELS framework.
@@ -25,6 +41,7 @@
 #define CELS_NCURSES_TUI_WINDOW_H
 
 #include <cels/cels.h>
+#include <cels/backend.h>
 
 /* ===========================================
  * Window State Machine (Vulkan-aligned)
@@ -62,7 +79,7 @@ typedef struct Engine_WindowState_t {
 } Engine_WindowState_t;
 
 extern Engine_WindowState_t Engine_WindowState;
-extern cels_entity_t Engine_WindowStateID;
+extern cels_entity_t Engine_WindowState_id;
 extern void Engine_WindowState_register(void);
 
 /* ===========================================
@@ -78,6 +95,7 @@ typedef struct TUI_Window {
     int fps;
     int width;
     int height;
+    int color_mode;    /* 0=auto (default), 1=256-color, 2=palette-redef, 3=direct-RGB */
 } TUI_Window;
 
 /* Provider registration function (called by Use() macro)
@@ -95,7 +113,7 @@ extern CELS_WindowState* tui_window_get_standard_state(void);
  * ============================================================================ */
 typedef Engine_WindowState_t TUI_WindowState_t;
 #define TUI_WindowState Engine_WindowState
-#define TUI_WindowStateID Engine_WindowStateID
+#define TUI_WindowStateID Engine_WindowState_id
 #define TUI_WindowState_register Engine_WindowState_register
 
 #endif /* CELS_NCURSES_TUI_WINDOW_H */

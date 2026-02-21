@@ -1,4 +1,20 @@
 /*
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
  * Engine Module - Single Entry Point
  *
  * Bundles TUI providers (Window, Input) and frame pipeline into one module.
@@ -65,6 +81,7 @@ typedef struct Engine_Config {
     const char* title;      /* Window title (default: "CELS App") */
     const char* version;    /* App version for info display (default: "0.0.0") */
     int fps;                /* Target frames per second (default: 60) */
+    int color_mode;         /* 0=auto, 1=256-color, 2=palette-redef, 3=direct-RGB */
     void (*root)(Engine_Context ctx);  /* Root composition init function */
 } Engine_Config;
 
