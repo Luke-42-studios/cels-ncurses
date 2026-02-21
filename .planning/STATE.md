@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-20)
 
 **Core value:** Provide a low-level drawing primitive API that a future cels-clay module can target to render Clay UI layouts in the terminal
-**Current focus:** Phase 7 - True Color (COMPLETE)
+**Current focus:** Phase 8 - Sub-Cell Rendering (In progress)
 
 ## Current Position
 
-Phase: 7 of 10 (True Color) -- COMPLETE
-Plan: 2 of 2
-Status: Phase complete
-Last activity: 2026-02-21 -- Completed 07-02-PLAN.md
+Phase: 8 of 10 (Sub-Cell Rendering)
+Plan: 1 of 3
+Status: In progress
+Last activity: 2026-02-21 -- Completed 08-01-PLAN.md
 
-Progress: [################....] 80% (v1.0 complete, v1.1 4/10 plans)
+Progress: [#################...] 83% (v1.0 complete, v1.1 5/10 plans)
 
 ## Performance Metrics
 
@@ -24,9 +24,9 @@ Progress: [################....] 80% (v1.0 complete, v1.1 4/10 plans)
 - Total execution time: 0.50 hours
 
 **v1.1 Velocity:**
-- Total plans completed: 4
-- Average duration: 3.5 min
-- Total execution time: 14 min
+- Total plans completed: 5
+- Average duration: 3.8 min
+- Total execution time: 19 min
 
 ## Accumulated Context
 
@@ -50,6 +50,10 @@ Recent decisions affecting current work:
 - [07-01]: Detection priority: tigetflag(RGB) > COLORTERM+can_change_color > can_change_color > 256-fallback
 - [07-01]: Palette allocator manages slots 16-255 only (slots 0-15 are user terminal theme)
 - [07-02]: Standalone examples that bypass Engine_use() must call tui_color_init(-1) explicitly after start_color()
+- [08-01]: Lazy allocation: subcell_buf starts NULL, allocated on first sub-cell draw
+- [08-01]: Forward declaration (not include) of TUI_SubCellBuffer in tui_draw_context.h and tui_layer.h
+- [08-01]: Cell-coordinate iteration in fill_rect (not per-pixel) for efficiency
+- [08-01]: U+2584 (lower half block) as canonical character: fg=bottom, bg=top
 
 ### Pending Todos
 
@@ -68,5 +72,5 @@ Lessons from reviewing an upstream Clay ncurses renderer. Relevant for v1.1+:
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 07-02-PLAN.md (Phase 7 complete, 2 of 2 plans)
+Stopped at: Completed 08-01-PLAN.md (Plan 1 of 3 in Phase 8)
 Resume file: None
