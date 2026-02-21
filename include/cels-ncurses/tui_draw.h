@@ -225,6 +225,54 @@ extern void tui_draw_quadrant_fill_rect(TUI_DrawContext* ctx,
                                           TUI_Style style);
 
 /* ============================================================================
+ * Sub-Cell Drawing — Braille Mode
+ * ============================================================================
+ *
+ * Braille mode: 2x4 virtual pixels per terminal cell.
+ * pixel_x / 2 = cell_x, pixel_y / 4 = cell_y.
+ * (pixel_x % 2, pixel_y % 4) selects one of 8 dot positions.
+ * Braille bit ordering is non-sequential: use BRAILLE_DOT_BIT[sub_x][sub_y] lookup.
+ * Codepoint = U+2800 + dots_bitmask (direct binary encoding by Unicode design).
+ * Read-modify-write: plot sets a dot (OR), unplot clears a dot (AND NOT).
+ * Requires layer-backed DrawContext (ctx->subcell_buf != NULL).
+ */
+
+/* Plot a single virtual pixel (set a dot) at (px, py) in braille coordinates.
+ * px/2 = cell column, py/4 = cell row. (px%2, py%4) selects the dot.
+ * style.fg is the dot color. Multiple plots in the same cell compose via OR. */
+extern void tui_draw_braille_plot(TUI_DrawContext* ctx, int px, int py,
+                                    TUI_Style style);
+
+/* Unplot a single virtual pixel (clear a dot) at (px, py) in braille coordinates.
+ * Does not allocate a buffer -- only operates on existing buffer.
+ * No-op if cell is not in braille mode. */
+extern void tui_draw_braille_unplot(TUI_DrawContext* ctx, int px, int py);
+
+/* Fill a rectangular region of virtual pixels at braille resolution.
+ * (px, py) = top-left pixel, (pw, ph) = pixel dimensions.
+ * style.fg is the dot color for all dots in the rect. */
+extern void tui_draw_braille_fill_rect(TUI_DrawContext* ctx,
+                                         int px, int py, int pw, int ph,
+                                         TUI_Style style);
+
+/* ============================================================================
+ * Sub-Cell Resolution Query
+ * ============================================================================
+ *
+ * Returns the virtual pixel dimensions of the DrawContext for a given sub-cell mode.
+ * Renderers like Clay use this to calculate their logical viewport size.
+ */
+
+/* Get virtual pixel dimensions for the given sub-cell mode.
+ * HALFBLOCK: width = ctx->width,     height = ctx->height * 2
+ * QUADRANT:  width = ctx->width * 2, height = ctx->height * 2
+ * BRAILLE:   width = ctx->width * 2, height = ctx->height * 4
+ * NONE:      width = ctx->width,     height = ctx->height (1:1) */
+extern void tui_draw_subcell_resolution(TUI_DrawContext* ctx,
+                                          TUI_SubCellMode mode,
+                                          int* width, int* height);
+
+/* ============================================================================
  * Internal Helpers
  * ============================================================================
  *

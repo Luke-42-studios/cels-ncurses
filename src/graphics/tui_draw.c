@@ -889,3 +889,225 @@ void tui_draw_quadrant_fill_rect(TUI_DrawContext* ctx,
         }
     }
 }
+
+/* ============================================================================
+ * Sub-Cell Drawing -- Braille Mode
+ * ============================================================================
+ *
+ * Braille mode: 2x4 virtual pixels per terminal cell.
+ * Uses an 8-bit dot bitmask per cell. Codepoint = U+2800 + dots.
+ * Dot bit ordering is non-sequential (Unicode standard):
+ *   col 0: bits 0,1,2,6    col 1: bits 3,4,5,7
+ * Read-modify-write: plot sets dots (OR), unplot clears dots (AND NOT).
+ */
+
+/* Braille dot-to-bit mapping: BRAILLE_DOT_BIT[sub_x][sub_y] */
+static const uint8_t BRAILLE_DOT_BIT[2][4] = {
+    /* col 0 (left)  */ { 0x01, 0x02, 0x04, 0x40 },  /* bits 0, 1, 2, 6 */
+    /* col 1 (right) */ { 0x08, 0x10, 0x20, 0x80 },  /* bits 3, 4, 5, 7 */
+};
+
+/* ----------------------------------------------------------------------------
+ * subcell_write_braille -- Write one braille cell to ncurses
+ *
+ * Computes codepoint from dots bitmask (U+2800 + dots), constructs cchar_t,
+ * applies style, and writes via mvwadd_wch.
+ * --------------------------------------------------------------------------*/
+static void subcell_write_braille(TUI_DrawContext* ctx,
+                                    TUI_SubCellBuffer* buf,
+                                    int cell_x, int cell_y) {
+    TUI_SubCell* cell = &buf->cells[cell_y * buf->width + cell_x];
+    if (cell->mode != TUI_SUBCELL_BRAILLE) return;
+
+    wchar_t wc[2];
+    TUI_Style style = { .fg = cell->braille.fg, .bg = TUI_COLOR_DEFAULT, .attrs = TUI_ATTR_NORMAL };
+
+    if (cell->braille.dots == 0) {
+        /* No dots set: write space to clear previous content */
+        wc[0] = L' ';
+        wc[1] = L'\0';
+    } else {
+        /* Compute braille codepoint from dots bitmask */
+        wc[0] = 0x2800 + cell->braille.dots;
+        wc[1] = L'\0';
+    }
+
+    cchar_t cc;
+    setcchar(&cc, wc, A_NORMAL, 0, NULL);
+    tui_style_apply(ctx->win, style);
+    mvwadd_wch(ctx->win, cell_y, cell_x, &cc);
+}
+
+/* ----------------------------------------------------------------------------
+ * tui_draw_braille_plot -- Plot a single dot at braille resolution
+ *
+ * px / 2 = cell_x, py / 4 = cell_y.
+ * (px % 2, py % 4) selects one of 8 dot positions.
+ * style.fg is the dot color. Multiple plots compose via OR.
+ * --------------------------------------------------------------------------*/
+void tui_draw_braille_plot(TUI_DrawContext* ctx, int px, int py,
+                             TUI_Style style) {
+    TUI_SubCellBuffer* buf = subcell_ensure_buffer(ctx);
+    if (!buf) return;
+
+    int cell_x = px / 2;
+    int cell_y = py / 4;
+    int sub_x = px % 2;
+    int sub_y = py % 4;
+
+    /* Bounds check against buffer dimensions */
+    if (cell_x < 0 || cell_x >= buf->width) return;
+    if (cell_y < 0 || cell_y >= buf->height) return;
+
+    /* Scissor clip at cell level */
+    if (!tui_cell_rect_contains(ctx->clip, cell_x, cell_y)) return;
+
+    TUI_SubCell* cell = &buf->cells[cell_y * buf->width + cell_x];
+
+    /* Mode mixing: last mode wins */
+    if (cell->mode != TUI_SUBCELL_BRAILLE) {
+        memset(cell, 0, sizeof(TUI_SubCell));
+        cell->mode = TUI_SUBCELL_BRAILLE;
+    }
+
+    /* Set the dot bit (OR compositing) */
+    cell->braille.dots |= BRAILLE_DOT_BIT[sub_x][sub_y];
+
+    /* Set color */
+    cell->braille.fg = style.fg;
+
+    /* Write through to ncurses */
+    subcell_write_braille(ctx, buf, cell_x, cell_y);
+}
+
+/* ----------------------------------------------------------------------------
+ * tui_draw_braille_unplot -- Clear a single dot at braille resolution
+ *
+ * Does NOT allocate a buffer -- only operates on existing buffer.
+ * No-op if cell is not in braille mode.
+ * --------------------------------------------------------------------------*/
+void tui_draw_braille_unplot(TUI_DrawContext* ctx, int px, int py) {
+    if (!ctx->subcell_buf) return;    /* non-layer context */
+    if (!*ctx->subcell_buf) return;   /* no buffer allocated, nothing to unplot */
+
+    TUI_SubCellBuffer* buf = *ctx->subcell_buf;
+
+    int cell_x = px / 2;
+    int cell_y = py / 4;
+    int sub_x = px % 2;
+    int sub_y = py % 4;
+
+    /* Bounds check against buffer dimensions */
+    if (cell_x < 0 || cell_x >= buf->width) return;
+    if (cell_y < 0 || cell_y >= buf->height) return;
+
+    /* Scissor clip at cell level */
+    if (!tui_cell_rect_contains(ctx->clip, cell_x, cell_y)) return;
+
+    TUI_SubCell* cell = &buf->cells[cell_y * buf->width + cell_x];
+
+    /* Only unplot if cell is in braille mode */
+    if (cell->mode != TUI_SUBCELL_BRAILLE) return;
+
+    /* Clear the dot bit (AND NOT) */
+    cell->braille.dots &= ~BRAILLE_DOT_BIT[sub_x][sub_y];
+
+    /* Write through to ncurses (writes space if dots == 0) */
+    subcell_write_braille(ctx, buf, cell_x, cell_y);
+}
+
+/* ----------------------------------------------------------------------------
+ * tui_draw_braille_fill_rect -- Fill a rectangular pixel region at braille
+ *                                resolution (2x4 virtual pixels per cell)
+ *
+ * (px, py) = top-left pixel, (pw, ph) = pixel dimensions.
+ * style.fg is the dot color. Iterates in cell coordinates for efficiency.
+ * --------------------------------------------------------------------------*/
+void tui_draw_braille_fill_rect(TUI_DrawContext* ctx,
+                                  int px, int py, int pw, int ph,
+                                  TUI_Style style) {
+    if (pw <= 0 || ph <= 0) return;
+
+    TUI_SubCellBuffer* buf = subcell_ensure_buffer(ctx);
+    if (!buf) return;
+
+    /* Convert pixel rect to cell coordinate range */
+    int cell_x_min = px / 2;
+    int cell_x_max = (px + pw - 1) / 2;
+    int cell_y_min = py / 4;
+    int cell_y_max = (py + ph - 1) / 4;
+
+    /* Clamp to buffer bounds */
+    if (cell_x_min < 0) cell_x_min = 0;
+    if (cell_y_min < 0) cell_y_min = 0;
+    if (cell_x_max >= buf->width) cell_x_max = buf->width - 1;
+    if (cell_y_max >= buf->height) cell_y_max = buf->height - 1;
+
+    /* Pixel rect boundaries */
+    int px_end = px + pw;
+    int py_end = py + ph;
+
+    for (int cy = cell_y_min; cy <= cell_y_max; cy++) {
+        for (int cx = cell_x_min; cx <= cell_x_max; cx++) {
+            /* Scissor clip at cell level */
+            if (!tui_cell_rect_contains(ctx->clip, cx, cy)) continue;
+
+            TUI_SubCell* cell = &buf->cells[cy * buf->width + cx];
+
+            /* Mode mixing: last mode wins */
+            if (cell->mode != TUI_SUBCELL_BRAILLE) {
+                memset(cell, 0, sizeof(TUI_SubCell));
+                cell->mode = TUI_SUBCELL_BRAILLE;
+            }
+
+            /* Determine which dots the pixel rect covers in this cell */
+            for (int sub_x = 0; sub_x < 2; sub_x++) {
+                for (int sub_y = 0; sub_y < 4; sub_y++) {
+                    int pixel_x = cx * 2 + sub_x;
+                    int pixel_y = cy * 4 + sub_y;
+                    if (pixel_x >= px && pixel_x < px_end &&
+                        pixel_y >= py && pixel_y < py_end) {
+                        cell->braille.dots |= BRAILLE_DOT_BIT[sub_x][sub_y];
+                    }
+                }
+            }
+
+            /* Set fg color */
+            cell->braille.fg = style.fg;
+
+            /* Write through to ncurses (once per cell) */
+            subcell_write_braille(ctx, buf, cx, cy);
+        }
+    }
+}
+
+/* ============================================================================
+ * Sub-Cell Resolution Query
+ * ============================================================================
+ *
+ * Returns the virtual pixel dimensions of the DrawContext for a given
+ * sub-cell mode. Renderers like Clay use this to calculate their logical
+ * viewport size.
+ */
+
+void tui_draw_subcell_resolution(TUI_DrawContext* ctx, TUI_SubCellMode mode,
+                                   int* width, int* height) {
+    switch (mode) {
+        case TUI_SUBCELL_HALFBLOCK:
+            *width = ctx->width;
+            *height = ctx->height * 2;
+            break;
+        case TUI_SUBCELL_QUADRANT:
+            *width = ctx->width * 2;
+            *height = ctx->height * 2;
+            break;
+        case TUI_SUBCELL_BRAILLE:
+            *width = ctx->width * 2;
+            *height = ctx->height * 4;
+            break;
+        default:
+            *width = ctx->width;
+            *height = ctx->height;
+            break;
+    }
+}
