@@ -1,4 +1,20 @@
 /*
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
  * Minimal CELS ncurses Example
  *
  * The absolute minimum to get a CELS TUI app running:
@@ -23,20 +39,20 @@
  * ============================================================================ */
 
 /* Content area: centered greeting */
-#define HelloContent(...) CEL_Init(HelloContent, __VA_ARGS__)
+#define HelloContent(...) cel_init(HelloContent, __VA_ARGS__)
 CEL_Composition(HelloContent) {
     (void)props;
-    CEL_Has(W_TabContent,
+    cel_has(W_TabContent,
         .text = "Hello CELS!",
         .hint = "This is a minimal cels-ncurses example"
     );
 }
 
 /* Status bar: quit hint at the bottom */
-#define HelloStatus(...) CEL_Init(HelloStatus, __VA_ARGS__)
+#define HelloStatus(...) cel_init(HelloStatus, __VA_ARGS__)
 CEL_Composition(HelloStatus) {
     (void)props;
-    CEL_Has(W_StatusBar,
+    cel_has(W_StatusBar,
         .left  = "minimal example",
         .right = "q:quit "
     );
