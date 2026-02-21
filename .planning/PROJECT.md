@@ -4,6 +4,10 @@
 
 A terminal graphics API for the CELS framework that treats ncurses like a 2D rendering engine. Developers use character-based primitives (rectangles, text, borders, lines) drawn into panel-backed layers with z-ordering, composited through a retained-mode frame pipeline. The module provides the same mental model as a game engine's graphics backend -- but targeting terminal output.
 
+## Current Milestone: v1.1 Enhanced Rendering
+
+**Goal:** Add mouse input, sub-cell rendering, true color, damage tracking, and layer transparency to transform the renderer from functional to high-fidelity.
+
 ## Core Value
 
 Provide a low-level, backend-agnostic drawing primitive API that a future cels-clay module can target to render Clay UI layouts in the terminal -- the same way clay_renderer_SDL3.c targets SDL3.
@@ -75,4 +79,4 @@ Provide a low-level, backend-agnostic drawing primitive API that a future cels-c
 | stdscr for input only | All drawing through TUI_DrawContext/layers | ✓ Good |
 
 ---
-*Last updated: 2026-02-20 after v1.0 milestone*
+*Last updated: 2026-02-20 after v1.1 milestone start*
