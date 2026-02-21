@@ -68,11 +68,12 @@ Plans:
   1. Developer can draw filled rectangles at 2x vertical resolution using half-block characters with independent top and bottom pixel colors
   2. Developer can draw 2x2-resolution pixels per cell using quadrant block characters with a two-color constraint
   3. Developer can plot individual dots at 2x4 resolution using braille characters with read-modify-write compositing for overlapping dots in the same cell
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 08-01: TBD
-- [ ] 08-02: TBD
+- [ ] 08-01-PLAN.md -- Shadow buffer infrastructure + half-block rendering
+- [ ] 08-02-PLAN.md -- Quadrant + braille rendering + resolution query
+- [ ] 08-03-PLAN.md -- draw_test demo integration + visual verification
 
 ### Phase 9: Damage Tracking
 **Goal**: Frame pipeline redraws only what changed, skipping untouched regions and idle frames
@@ -113,6 +114,6 @@ Phases execute in numeric order: 6 -> 7 -> 8 -> 9 -> 10
 | 1-5 | v1.0 | 15/15 | Complete | 2026-02-20 |
 | 6. Mouse Input | v1.1 | 2/2 | Complete | 2026-02-21 |
 | 7. True Color | v1.1 | 2/2 | Complete | 2026-02-21 |
-| 8. Sub-Cell Rendering | v1.1 | 0/TBD | Not started | - |
+| 8. Sub-Cell Rendering | v1.1 | 0/3 | Not started | - |
 | 9. Damage Tracking | v1.1 | 0/TBD | Not started | - |
 | 10. Layer Transparency | v1.1 | 0/TBD | Not started | - |
