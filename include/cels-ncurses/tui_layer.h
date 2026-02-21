@@ -1,4 +1,20 @@
 /*
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
  * TUI Layer - Panel-backed layer system for z-ordered window compositing
  *
  * Provides the TUI_Layer struct and lifecycle API for managing panel-backed
@@ -31,6 +47,8 @@
 
 #include "cels-ncurses/tui_draw_context.h"
 
+typedef struct TUI_SubCellBuffer TUI_SubCellBuffer;
+
 /* ============================================================================
  * Constants
  * ============================================================================ */
@@ -56,6 +74,7 @@ typedef struct TUI_Layer {
     int width, height;    /* Dimensions */
     bool visible;         /* Visibility state */
     bool dirty;           /* Auto-set by tui_layer_get_draw_context; cleared by tui_frame_begin */
+    TUI_SubCellBuffer* subcell_buf; /* NULL until first sub-cell draw (lazy alloc) */
 } TUI_Layer;
 
 /* ============================================================================

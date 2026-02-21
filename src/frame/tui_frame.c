@@ -1,4 +1,20 @@
 /*
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
  * TUI Frame Pipeline - Implementation
  *
  * Implements the retained-mode frame lifecycle with dirty tracking.
@@ -18,6 +34,7 @@
 
 #include <cels-ncurses/tui_frame.h>
 #include <cels-ncurses/tui_layer.h>
+#include <cels-ncurses/tui_subcell.h>
 #include <ncurses.h>
 #include <panel.h>
 #include <time.h>
@@ -120,6 +137,9 @@ void tui_frame_begin(void) {
         if (g_layers[i].dirty && g_layers[i].visible) {
             werase(g_layers[i].win);
             wattr_set(g_layers[i].win, A_NORMAL, 0, NULL);
+            if (g_layers[i].subcell_buf) {
+                tui_subcell_buffer_clear(g_layers[i].subcell_buf);
+            }
             g_layers[i].dirty = false;
         }
     }

@@ -1,4 +1,20 @@
 /*
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
  * TUI Draw Context - Draw context wrapping an ncurses WINDOW
  *
  * Provides a lightweight context struct that wraps an ncurses WINDOW* with
@@ -34,11 +50,14 @@
  * explicitly. The clip field represents the current effective clip rect.
  * Phase 2's scissor stack will update this field.
  */
+typedef struct TUI_SubCellBuffer TUI_SubCellBuffer;
+
 typedef struct TUI_DrawContext {
     WINDOW* win;          /* Borrowed -- caller manages lifetime */
     int x, y;             /* Origin offset within the window */
     int width, height;    /* Drawable area dimensions */
     TUI_CellRect clip;    /* Current effective clip rect (set by scissor stack in Phase 2) */
+    TUI_SubCellBuffer** subcell_buf; /* Pointer to layer's buffer pointer (NULL for non-layer contexts) */
 } TUI_DrawContext;
 
 /* ============================================================================
@@ -60,6 +79,7 @@ static inline TUI_DrawContext tui_draw_context_create(WINDOW* win,
     ctx.width = width;
     ctx.height = height;
     ctx.clip = (TUI_CellRect){ .x = x, .y = y, .w = width, .h = height };
+    ctx.subcell_buf = NULL;
     return ctx;
 }
 

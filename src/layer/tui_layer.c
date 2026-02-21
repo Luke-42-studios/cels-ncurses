@@ -1,4 +1,20 @@
 /*
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
  * TUI Layer - Panel-backed layer system implementation
  *
  * Implements the layer lifecycle (create/destroy) and manages the global
@@ -10,6 +26,7 @@
  */
 
 #include <cels-ncurses/tui_layer.h>
+#include <cels-ncurses/tui_subcell.h>
 #include <string.h>
 
 /* ============================================================================
@@ -59,6 +76,7 @@ TUI_Layer* tui_layer_create(const char* name, int x, int y, int w, int h) {
     layer->height = h;
     layer->visible = true;
     layer->dirty = false;
+    layer->subcell_buf = NULL;
 
     g_layer_count++;
     return layer;
@@ -77,6 +95,12 @@ TUI_Layer* tui_layer_create(const char* name, int x, int y, int w, int h) {
  */
 void tui_layer_destroy(TUI_Layer* layer) {
     if (!layer || !layer->panel) return;
+
+    /* Free sub-cell buffer if allocated */
+    if (layer->subcell_buf) {
+        tui_subcell_buffer_destroy(layer->subcell_buf);
+        layer->subcell_buf = NULL;
+    }
 
     /* Free panel first, then window (correct order per ncurses docs) */
     del_panel(layer->panel);
@@ -161,6 +185,10 @@ void tui_layer_resize(TUI_Layer* layer, int w, int h) {
     replace_panel(layer->panel, layer->win);
     layer->width = w;
     layer->height = h;
+
+    if (layer->subcell_buf) {
+        tui_subcell_buffer_resize(layer->subcell_buf, w, h);
+    }
 }
 
 /* ============================================================================
@@ -190,5 +218,7 @@ void tui_layer_resize_all(int new_cols, int new_lines) {
  */
 TUI_DrawContext tui_layer_get_draw_context(TUI_Layer* layer) {
     layer->dirty = true;
-    return tui_draw_context_create(layer->win, 0, 0, layer->width, layer->height);
+    TUI_DrawContext ctx = tui_draw_context_create(layer->win, 0, 0, layer->width, layer->height);
+    ctx.subcell_buf = &layer->subcell_buf;
+    return ctx;
 }
