@@ -22,7 +22,7 @@
  * scissors, frame pipeline, and text rendering.
  *
  * Controls:
- *   Menu:  1-7 select scene, q quit
+ *   Menu:  1-8 select scene, q quit
  *   Scene: Escape/q return to menu, scene-specific keys shown in HUD
  */
 
@@ -33,6 +33,7 @@
 #include <cels-ncurses/tui_scissor.h>
 #include <cels-ncurses/tui_layer.h>
 #include <cels-ncurses/tui_frame.h>
+#include <cels-ncurses/tui_subcell.h>
 #include <ncurses.h>
 #include <panel.h>
 #include <locale.h>
@@ -100,7 +101,7 @@ static void init_styles(void) {
  * ============================================================================ */
 
 #define SCENE_MENU 0
-#define SCENE_COUNT 7
+#define SCENE_COUNT 8
 
 static int g_current_scene = SCENE_MENU;
 static int g_running = 1;
@@ -184,7 +185,8 @@ static void draw_menu(TUI_DrawContext* ctx, int cols, int rows) {
         "4. Layer Playground",
         "5. Scissor Demo",
         "6. Text & Typography",
-        "7. Dashboard"
+        "7. Dashboard",
+        "8. Sub-Cell Rendering"
     };
 
     const char* title = "cels-ncurses API Showcase";
@@ -216,7 +218,7 @@ static void draw_menu(TUI_DrawContext* ctx, int cols, int rows) {
     }
 
     /* Footer */
-    const char* footer = "Press 1-7 to enter, q to quit";
+    const char* footer = "Press 1-8 to enter, q to quit";
     int flen = (int)strlen(footer);
     tui_draw_text(ctx, (cols - flen) / 2, box_y + box_h + 1, footer, s_dim);
 
@@ -926,6 +928,139 @@ static void handle_input_dashboard(int ch) {
 }
 
 /* ============================================================================
+ * Scene 8 — Sub-Cell Rendering
+ * ============================================================================ */
+
+static void draw_scene_subcell(TUI_DrawContext* ctx, int cols, int rows) {
+    draw_hud(ctx, cols, rows, "Sub-Cell Rendering",
+             "Half-block | Quadrant | Braille");
+
+    /* Style colors for the demo */
+    TUI_Color sc_red    = tui_color_rgb(220, 50, 50);
+    TUI_Color sc_blue   = tui_color_rgb(50, 100, 220);
+    TUI_Color sc_green  = tui_color_rgb(50, 200, 80);
+    TUI_Color sc_yellow = tui_color_rgb(230, 200, 50);
+    TUI_Color sc_purple = tui_color_rgb(160, 80, 220);
+    TUI_Color sc_cyan   = tui_color_rgb(80, 220, 220);
+
+    TUI_Style st_red    = { .fg = sc_red,    .bg = TUI_COLOR_DEFAULT, .attrs = TUI_ATTR_NORMAL };
+    TUI_Style st_blue   = { .fg = sc_blue,   .bg = TUI_COLOR_DEFAULT, .attrs = TUI_ATTR_NORMAL };
+    TUI_Style st_green  = { .fg = sc_green,  .bg = TUI_COLOR_DEFAULT, .attrs = TUI_ATTR_NORMAL };
+    TUI_Style st_yellow = { .fg = sc_yellow, .bg = TUI_COLOR_DEFAULT, .attrs = TUI_ATTR_NORMAL };
+    TUI_Style st_purple = { .fg = sc_purple, .bg = TUI_COLOR_DEFAULT, .attrs = TUI_ATTR_NORMAL };
+    TUI_Style st_cyan   = { .fg = sc_cyan,   .bg = TUI_COLOR_DEFAULT, .attrs = TUI_ATTR_NORMAL };
+
+    int section_x = 2;
+
+    /* ---- Section 1: Half-Block Demo ---- */
+    int sec1_y = 2;
+    tui_draw_text(ctx, section_x, sec1_y,
+                  "Half-Block Mode (1xN, 2x vertical resolution)", s_subtitle);
+    sec1_y += 1;
+
+    /* Red rectangle: px=2, py=0, pw=20, ph=6 (3 cells tall) */
+    tui_draw_halfblock_fill_rect(ctx, section_x, sec1_y * 2, 20, 6, st_red);
+
+    /* Blue rectangle overlapping: px=12, py=3, pw=20, ph=6 */
+    tui_draw_halfblock_fill_rect(ctx, section_x + 10, sec1_y * 2 + 3, 20, 6, st_blue);
+
+    /* Green single-pixel row using plot in a loop */
+    for (int px = 0; px < 30; px++) {
+        tui_draw_halfblock_plot(ctx, section_x + px, sec1_y * 2 + 7, st_green);
+    }
+
+    /* Label */
+    tui_draw_text(ctx, section_x + 34, sec1_y,
+                  "Red + Blue rects (overlap preserves halves)", s_dim);
+    tui_draw_text(ctx, section_x + 34, sec1_y + 1,
+                  "Green row via halfblock_plot loop", s_dim);
+
+    /* ---- Section 2: Quadrant Demo ---- */
+    int sec2_y = sec1_y + 6;
+    tui_draw_text(ctx, section_x, sec2_y,
+                  "Quadrant Mode (2x2 resolution per cell)", s_subtitle);
+    sec2_y += 1;
+
+    /* Checkerboard pattern using quadrant_plot: 16x8 pixel region */
+    for (int py = 0; py < 8; py++) {
+        for (int px = 0; px < 16; px++) {
+            if ((px + py) % 2 == 0) {
+                tui_draw_quadrant_plot(ctx, section_x * 2 + px,
+                                       sec2_y * 2 + py, st_yellow);
+            } else {
+                tui_draw_quadrant_plot(ctx, section_x * 2 + px,
+                                       sec2_y * 2 + py, st_purple);
+            }
+        }
+    }
+
+    /* Diagonal stripe using quadrant fill_rect */
+    int stripe_base_x = section_x * 2 + 20;
+    for (int i = 0; i < 6; i++) {
+        tui_draw_quadrant_fill_rect(ctx, stripe_base_x + i * 3, sec2_y * 2 + i,
+                                     3, 2, st_yellow);
+    }
+
+    tui_draw_text(ctx, section_x + 22, sec2_y,
+                  "Checkerboard (plot) + diagonal (fill_rect)", s_dim);
+
+    /* ---- Section 3: Braille Demo ---- */
+    int sec3_y = sec2_y + 6;
+    tui_draw_text(ctx, section_x, sec3_y,
+                  "Braille Mode (2x4 resolution per cell)", s_subtitle);
+    sec3_y += 1;
+
+    /* Sine wave using braille_plot */
+    int braille_w, braille_h;
+    tui_draw_subcell_resolution(ctx, TUI_SUBCELL_BRAILLE, &braille_w, &braille_h);
+    int wave_w = 50;
+    if (wave_w > braille_w - section_x * 2) wave_w = braille_w - section_x * 2;
+    int wave_center_y = sec3_y * 4 + 8;
+    float amplitude = 6.0f;
+    for (int px = 0; px < wave_w; px++) {
+        int py = wave_center_y + (int)(sinf(px * 0.15f) * amplitude);
+        tui_draw_braille_plot(ctx, section_x * 2 + px, py, st_cyan);
+    }
+
+    /* Solid braille fill_rect */
+    int braille_rect_x = section_x * 2 + wave_w + 4;
+    int braille_rect_y = sec3_y * 4;
+    tui_draw_braille_fill_rect(ctx, braille_rect_x, braille_rect_y, 8, 12, st_cyan);
+
+    /* Unplot a hole in the middle of the braille rect */
+    for (int uy = braille_rect_y + 3; uy < braille_rect_y + 9; uy++) {
+        for (int ux = braille_rect_x + 2; ux < braille_rect_x + 6; ux++) {
+            tui_draw_braille_unplot(ctx, ux, uy);
+        }
+    }
+
+    tui_draw_text(ctx, section_x + 34, sec3_y,
+                  "Sine wave (plot) + rect with hole (unplot)", s_dim);
+
+    /* ---- Section 4: Resolution Query ---- */
+    int sec4_y = sec3_y + 6;
+    tui_draw_text(ctx, section_x, sec4_y,
+                  "Resolution Query (tui_draw_subcell_resolution)", s_subtitle);
+    sec4_y += 1;
+
+    int hb_w, hb_h, q_w, q_h, br_w, br_h;
+    tui_draw_subcell_resolution(ctx, TUI_SUBCELL_HALFBLOCK, &hb_w, &hb_h);
+    tui_draw_subcell_resolution(ctx, TUI_SUBCELL_QUADRANT, &q_w, &q_h);
+    tui_draw_subcell_resolution(ctx, TUI_SUBCELL_BRAILLE, &br_w, &br_h);
+
+    char res_buf[80];
+    snprintf(res_buf, sizeof(res_buf), "Half-block: %dx%d pixels", hb_w, hb_h);
+    tui_draw_text(ctx, section_x + 2, sec4_y, res_buf, s_info);
+    snprintf(res_buf, sizeof(res_buf), "Quadrant:   %dx%d pixels", q_w, q_h);
+    tui_draw_text(ctx, section_x + 2, sec4_y + 1, res_buf, s_info);
+    snprintf(res_buf, sizeof(res_buf), "Braille:    %dx%d pixels", br_w, br_h);
+    tui_draw_text(ctx, section_x + 2, sec4_y + 2, res_buf, s_info);
+
+    snprintf(res_buf, sizeof(res_buf), "Terminal:   %dx%d cells", cols, rows);
+    tui_draw_text(ctx, section_x + 2, sec4_y + 3, res_buf, s_dim);
+}
+
+/* ============================================================================
  * Scene Transitions
  * ============================================================================ */
 
@@ -970,7 +1105,7 @@ static void handle_input(int ch) {
     if (g_current_scene == SCENE_MENU) {
         if (ch == 'q' || ch == 'Q') {
             g_running = 0;
-        } else if (ch >= '1' && ch <= '7') {
+        } else if (ch >= '1' && ch <= '8') {
             transition_scene(ch - '0');
         }
     } else {
@@ -1061,6 +1196,7 @@ int main(void) {
                 case 5: draw_scene_scissors(&ctx, cols, rows); break;
                 case 6: draw_scene_text(&ctx, cols, rows); break;
                 case 7: draw_scene_dashboard(&ctx, cols, rows); break;
+                case 8: draw_scene_subcell(&ctx, cols, rows); break;
             }
         }
 
