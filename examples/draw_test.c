@@ -1,4 +1,20 @@
 /*
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
  * Interactive API Showcase Demo
  *
  * Scene-based interactive demo that exercises every API function in the
@@ -136,9 +152,9 @@ static void draw_hud(TUI_DrawContext* ctx, int cols, int rows,
     snprintf(buf, sizeof(buf), " [%d] %s ", g_current_scene, scene_name);
     tui_draw_text(ctx, 1, 0, buf, s_title);
 
-    snprintf(buf, sizeof(buf), "FPS: %.0f  Frame: %lu  dt: %.3f",
+    snprintf(buf, sizeof(buf), "FPS: %.0f  Frame: %lu  color: %s",
              g_frame_state.fps, (unsigned long)g_frame_state.frame_count,
-             g_frame_state.delta_time);
+             tui_color_mode_name(tui_color_get_mode()));
     int len = (int)strlen(buf);
     tui_draw_text(ctx, cols - len - 1, 0, buf, s_hud);
 
@@ -208,6 +224,10 @@ static void draw_menu(TUI_DrawContext* ctx, int cols, int rows) {
     char fps_buf[32];
     snprintf(fps_buf, sizeof(fps_buf), "FPS: %.0f", g_frame_state.fps);
     tui_draw_text(ctx, cols - (int)strlen(fps_buf) - 1, 0, fps_buf, s_hud);
+
+    char mode_buf[32];
+    snprintf(mode_buf, sizeof(mode_buf), "Color: %s", tui_color_mode_name(tui_color_get_mode()));
+    tui_draw_text(ctx, cols - (int)strlen(mode_buf) - 1, 1, mode_buf, s_hud);
 }
 
 /* ============================================================================
@@ -987,6 +1007,10 @@ int main(void) {
     setlocale(LC_ALL, "");
     initscr();
     start_color();
+
+    /* Initialize three-tier color system (auto-detect) */
+    tui_color_init(-1);
+
     cbreak();
     noecho();
     curs_set(0);
