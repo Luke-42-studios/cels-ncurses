@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-20)
 ## Current Position
 
 Phase: 8 of 10 (Sub-Cell Rendering)
-Plan: 1 of 3
+Plan: 2 of 3
 Status: In progress
-Last activity: 2026-02-21 -- Completed 08-01-PLAN.md
+Last activity: 2026-02-21 -- Completed 08-02-PLAN.md
 
-Progress: [#################...] 83% (v1.0 complete, v1.1 5/10 plans)
+Progress: [##################..] 87% (v1.0 complete, v1.1 6/10 plans)
 
 ## Performance Metrics
 
@@ -24,9 +24,9 @@ Progress: [#################...] 83% (v1.0 complete, v1.1 5/10 plans)
 - Total execution time: 0.50 hours
 
 **v1.1 Velocity:**
-- Total plans completed: 5
-- Average duration: 3.8 min
-- Total execution time: 19 min
+- Total plans completed: 6
+- Average duration: 3.7 min
+- Total execution time: 22 min
 
 ## Accumulated Context
 
@@ -54,6 +54,9 @@ Recent decisions affecting current work:
 - [08-01]: Forward declaration (not include) of TUI_SubCellBuffer in tui_draw_context.h and tui_layer.h
 - [08-01]: Cell-coordinate iteration in fill_rect (not per-pixel) for efficiency
 - [08-01]: U+2584 (lower half block) as canonical character: fg=bottom, bg=top
+- [08-02]: Quadrant bg defaults to TUI_COLOR_DEFAULT on mode-mix reset
+- [08-02]: Braille unplot does not allocate buffer (early return if no buffer exists)
+- [08-02]: Resolution query TUI_SUBCELL_NONE returns 1:1 cell dimensions (default case)
 
 ### Pending Todos
 
@@ -72,5 +75,5 @@ Lessons from reviewing an upstream Clay ncurses renderer. Relevant for v1.1+:
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 08-01-PLAN.md (Plan 1 of 3 in Phase 8)
+Stopped at: Completed 08-02-PLAN.md (Plan 2 of 3 in Phase 8)
 Resume file: None
