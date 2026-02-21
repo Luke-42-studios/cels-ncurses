@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-20)
 
 **Core value:** Provide a low-level drawing primitive API that a future cels-clay module can target to render Clay UI layouts in the terminal
-**Current focus:** Phase 6 - Mouse Input COMPLETE, ready for Phase 7 - True Color
+**Current focus:** Phase 7 - True Color (Plan 1 complete, Plan 2 remaining)
 
 ## Current Position
 
-Phase: 6 of 10 (Mouse Input) -- COMPLETE
-Plan: 2 of 2
-Status: Phase complete
-Last activity: 2026-02-21 -- Completed 06-02-PLAN.md
+Phase: 7 of 10 (True Color) -- IN PROGRESS
+Plan: 1 of 2
+Status: In progress
+Last activity: 2026-02-21 -- Completed 07-01-PLAN.md
 
-Progress: [############........] 60% (v1.0 complete, v1.1 2/10 plans)
+Progress: [##############......] 70% (v1.0 complete, v1.1 3/10 plans)
 
 ## Performance Metrics
 
@@ -24,9 +24,9 @@ Progress: [############........] 60% (v1.0 complete, v1.1 2/10 plans)
 - Total execution time: 0.50 hours
 
 **v1.1 Velocity:**
-- Total plans completed: 2
-- Average duration: 3.5 min
-- Total execution time: 7 min
+- Total plans completed: 3
+- Average duration: 3.7 min
+- Total execution time: 11 min
 
 ## Accumulated Context
 
@@ -45,6 +45,10 @@ Recent decisions affecting current work:
 - [06-01]: Backward compat typedef CELS_Input = TUI_InputState for gradual migration
 - [06-02]: Keep cels/backend.h include in game.c -- still needed for ECS context functions
 - [06-02]: Remove CELS_Context* ctx only when solely used for cels_input_get(ctx)
+- [07-01]: color_mode uses int convention: 0=auto, 1-3=mode+1 to avoid cross-header include
+- [07-01]: wattr_set opts pointer replaces (short)pair,NULL for extended pair support in all modes
+- [07-01]: Detection priority: tigetflag(RGB) > COLORTERM+can_change_color > can_change_color > 256-fallback
+- [07-01]: Palette allocator manages slots 16-255 only (slots 0-15 are user terminal theme)
 
 ### Pending Todos
 
@@ -63,5 +67,5 @@ Lessons from reviewing an upstream Clay ncurses renderer. Relevant for v1.1+:
 ## Session Continuity
 
 Last session: 2026-02-21
-Stopped at: Completed 06-02-PLAN.md (Phase 6 complete)
+Stopped at: Completed 07-01-PLAN.md (Phase 7 plan 1 of 2)
 Resume file: None
