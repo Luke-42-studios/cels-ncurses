@@ -1,4 +1,20 @@
 /*
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
  * Space Invaders - Main Game
  *
  * A Space Invaders clone built with the CELS ECS framework and cels-ncurses
@@ -13,6 +29,7 @@
 
 #include "components.h"
 #include "renderer.h"
+#include <cels/backend.h>
 #include <cels-ncurses/tui_engine.h>
 #include <flecs.h>
 #include <stdbool.h>
@@ -54,23 +71,23 @@
  * Lifecycles
  * ============================================================================ */
 
-CEL_Observer(TitleVisible, SI_GameState) {
+cel_condition(TitleVisible, SI_GameState) {
     return SI_GameState.screen == SCREEN_TITLE;
 }
 
-CEL_Observer(PlayingVisible, SI_GameState) {
+cel_condition(PlayingVisible, SI_GameState) {
     return SI_GameState.screen == SCREEN_PLAYING;
 }
 
-CEL_Observer(PlayingInactive, SI_GameState) {
+cel_condition(PlayingInactive, SI_GameState) {
     return SI_GameState.screen != SCREEN_PLAYING;
 }
 
-CEL_Observer(GameOverVisible, SI_GameState) {
+cel_condition(GameOverVisible, SI_GameState) {
     return SI_GameState.screen == SCREEN_GAMEOVER;
 }
 
-CEL_Observer(WaveClearVisible, SI_GameState) {
+cel_condition(WaveClearVisible, SI_GameState) {
     return SI_GameState.screen == SCREEN_WAVE_CLEAR;
 }
 
@@ -99,7 +116,7 @@ static int rng_int(int min, int max) {
  * Previous input for edge detection
  * ============================================================================ */
 
-static CELS_Input g_prev_input = {0};
+static TUI_InputState g_prev_input = {0};
 
 /* ============================================================================
  * Bullet Pool
@@ -161,8 +178,7 @@ CEL_System(TitleInputSystem,
     .phase = CELS_Phase_OnUpdate
 ) {
     (void)it;
-    CELS_Context* ctx = cels_get_context();
-    const CELS_Input* input = cels_input_get(ctx);
+    const TUI_InputState* input = tui_input_get_state();
 
     if (input->button_accept && !g_prev_input.button_accept) {
         CEL_Update(SI_GameState) {
@@ -170,7 +186,7 @@ CEL_System(TitleInputSystem,
         }
     }
 
-    memcpy((void*)&g_prev_input, input, sizeof(CELS_Input));
+    memcpy((void*)&g_prev_input, input, sizeof(TUI_InputState));
 }
 
 /* --- GameOver Input System --- */
@@ -178,8 +194,7 @@ CEL_System(GameOverInputSystem,
     .phase = CELS_Phase_OnUpdate
 ) {
     (void)it;
-    CELS_Context* ctx = cels_get_context();
-    const CELS_Input* input = cels_input_get(ctx);
+    const TUI_InputState* input = tui_input_get_state();
 
     if (input->button_accept && !g_prev_input.button_accept) {
         CEL_Update(SI_GameState) {
@@ -191,7 +206,7 @@ CEL_System(GameOverInputSystem,
         }
     }
 
-    memcpy((void*)&g_prev_input, input, sizeof(CELS_Input));
+    memcpy((void*)&g_prev_input, input, sizeof(TUI_InputState));
 }
 
 /* --- Player Input System --- */
@@ -201,7 +216,7 @@ CEL_System(PlayerInputSystem,
     (void)it;
     CELS_Context* ctx = cels_get_context();
     ecs_world_t* world = cels_get_world(ctx);
-    const CELS_Input* input = cels_input_get(ctx);
+    const TUI_InputState* input = tui_input_get_state();
     float dt = g_frame_state.delta_time;
 
     if (PlayerTagID == 0 || PositionID == 0) goto done;
@@ -249,7 +264,7 @@ CEL_System(PlayerInputSystem,
     }
 
 done:
-    memcpy((void*)&g_prev_input, input, sizeof(CELS_Input));
+    memcpy((void*)&g_prev_input, input, sizeof(TUI_InputState));
 }
 
 /* --- Enemy Movement System --- */
@@ -629,9 +644,9 @@ CEL_System(WaveClearSystem,
 static void spawn_game_entities(void) {
     /* Spawn player */
     CEL_Entity({.name = "Player"}) {
-        CEL_Has(Position, .x = (float)(PLAY_W / 2), .y = (float)PLAYER_Y);
-        CEL_Has(Sprite, .ch = "A", .style_id = STYLE_PLAYER);
-        CEL_Has(PlayerTag, .shoot_cooldown = 0);
+        cel_has(Position, .x = (float)(PLAY_W / 2), .y = (float)PLAYER_Y);
+        cel_has(Sprite, .ch = "A", .style_id = STYLE_PLAYER);
+        cel_has(PlayerTag, .shoot_cooldown = 0);
     }
 
     /* Spawn enemy grid */
@@ -664,13 +679,13 @@ static void spawn_game_entities(void) {
             float ey = (float)(ENEMY_START_Y + row * ENEMY_SPACING_Y);
 
             CEL_Entity({.name = "Enemy"}) {
-                CEL_Has(Position, .x = ex, .y = ey);
-                CEL_Has(Velocity, .dx = 0, .dy = 0);
+                cel_has(Position, .x = ex, .y = ey);
+                cel_has(Velocity, .dx = 0, .dy = 0);
                 {
                     Sprite _spr = { .ch = {ch[0], '\0'}, .style_id = style_id };
                     cels_component_add(cels_get_context(), SpriteID, &_spr, sizeof(Sprite));
                 }
-                CEL_Has(EnemyTag, .type = row, .points = points, .col = col, .row = row);
+                cel_has(EnemyTag, .type = row, .points = points, .col = col, .row = row);
             }
             enemy_count++;
         }
@@ -689,9 +704,9 @@ static void spawn_game_entities(void) {
         for (int dy = 0; dy < 2; dy++) {
             for (int dx = 0; dx < 3; dx++) {
                 CEL_Entity({.name = "Shield"}) {
-                    CEL_Has(Position, .x = (float)(base_x + dx), .y = (float)(SHIELD_Y + dy));
-                    CEL_Has(Sprite, .ch = "#", .style_id = STYLE_SHIELD);
-                    CEL_Has(ShieldBlock, .health = 3);
+                    cel_has(Position, .x = (float)(base_x + dx), .y = (float)(SHIELD_Y + dy));
+                    cel_has(Sprite, .ch = "#", .style_id = STYLE_SHIELD);
+                    cel_has(ShieldBlock, .health = 3);
                 }
             }
         }
@@ -701,10 +716,10 @@ static void spawn_game_entities(void) {
     g_bullet_pool_count = 0;
     for (int i = 0; i < BULLET_POOL_MAX; i++) {
         CEL_Entity({.name = "Bullet"}) {
-            CEL_Has(Position, .x = -999, .y = -999);
-            CEL_Has(Velocity, .dx = 0, .dy = 0);
-            CEL_Has(Sprite, .ch = " ", .style_id = STYLE_BULLET);
-            CEL_Has(BulletTag, .from_player = false, .active = false);
+            cel_has(Position, .x = -999, .y = -999);
+            cel_has(Velocity, .dx = 0, .dy = 0);
+            cel_has(Sprite, .ch = " ", .style_id = STYLE_BULLET);
+            cel_has(BulletTag, .from_player = false, .active = false);
             g_bullet_pool[g_bullet_pool_count] = cels_get_current_entity();
         }
         g_bullet_pool_count++;
@@ -718,11 +733,11 @@ static void spawn_game_entities(void) {
 }
 
 /* --- GameWorld composition --- */
-#define GameWorld(...) CEL_Init(GameWorld, __VA_ARGS__)
+#define GameWorld(...) cel_init(GameWorld, __VA_ARGS__)
 CEL_Composition(GameWorld) {
     (void)props;
 
-    CEL_Has(GameCanvas, ._unused = 0);
+    cel_has(GameCanvas, ._unused = 0);
 
     CEL_Use(PlayerInputSystem);
     CEL_Use(EnemyMovementSystem);
@@ -735,23 +750,23 @@ CEL_Composition(GameWorld) {
 }
 
 /* --- TitleComp --- */
-#define TitleComp(...) CEL_Init(TitleComp, __VA_ARGS__)
+#define TitleComp(...) cel_init(TitleComp, __VA_ARGS__)
 CEL_Composition(TitleComp) {
     (void)props;
-    CEL_Has(GameCanvas, ._unused = 0);
+    cel_has(GameCanvas, ._unused = 0);
     CEL_Use(TitleInputSystem);
 }
 
 /* --- GameOverComp --- */
-#define GameOverComp(...) CEL_Init(GameOverComp, __VA_ARGS__)
+#define GameOverComp(...) cel_init(GameOverComp, __VA_ARGS__)
 CEL_Composition(GameOverComp) {
     (void)props;
-    CEL_Has(GameCanvas, ._unused = 0);
+    cel_has(GameCanvas, ._unused = 0);
     CEL_Use(GameOverInputSystem);
 }
 
 /* --- WaveClearComp (one-frame bridge: destroys GameWorld, transitions to PLAYING) --- */
-#define WaveClearComp(...) CEL_Init(WaveClearComp, __VA_ARGS__)
+#define WaveClearComp(...) cel_init(WaveClearComp, __VA_ARGS__)
 CEL_Composition(WaveClearComp) {
     (void)props;
     CEL_Use(WaveClearSystem);
