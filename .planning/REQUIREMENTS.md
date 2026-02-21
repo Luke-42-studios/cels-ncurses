@@ -21,9 +21,9 @@
 
 ### True Color
 
-- [ ] **COLR-01**: Color system uses packed RGB values via init_extended_pair/alloc_pair when terminal supports direct color mode (detected via tigetflag or COLORTERM)
-- [ ] **COLR-02**: Color system falls back gracefully to xterm-256 color mapping when direct color is unavailable (existing tui_color_rgb behavior preserved)
-- [ ] **COLR-03**: Color mode can be detected via COLORTERM=truecolor environment variable and overridden via TUI_Window configuration
+- [x] **COLR-01**: Color system uses packed RGB values via init_extended_pair/alloc_pair when terminal supports direct color mode (detected via tigetflag or COLORTERM)
+- [x] **COLR-02**: Color system falls back gracefully to xterm-256 color mapping when direct color is unavailable (existing tui_color_rgb behavior preserved)
+- [x] **COLR-03**: Color mode can be detected via COLORTERM=truecolor environment variable and overridden via TUI_Window configuration
 
 ### Damage Tracking
 
@@ -84,9 +84,9 @@
 | CELL-01 | Phase 8 | Pending |
 | CELL-02 | Phase 8 | Pending |
 | CELL-03 | Phase 8 | Pending |
-| COLR-01 | Phase 7 | Pending |
-| COLR-02 | Phase 7 | Pending |
-| COLR-03 | Phase 7 | Pending |
+| COLR-01 | Phase 7 | Complete |
+| COLR-02 | Phase 7 | Complete |
+| COLR-03 | Phase 7 | Complete |
 | DMGT-01 | Phase 9 | Pending |
 | DMGT-02 | Phase 9 | Pending |
 | DMGT-03 | Phase 9 | Pending |
@@ -102,4 +102,4 @@
 
 ---
 *Requirements defined: 2026-02-20*
-*Last updated: 2026-02-20 after v1.1 roadmap creation*
+*Last updated: 2026-02-21 after Phase 7 completion*
