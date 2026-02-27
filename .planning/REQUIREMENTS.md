@@ -72,27 +72,27 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| WIN-01 | TBD | Pending |
-| WIN-02 | TBD | Pending |
-| WIN-03 | TBD | Pending |
-| INP-01 | TBD | Pending |
-| INP-02 | TBD | Pending |
-| LAYR-01 | TBD | Pending |
-| LAYR-02 | TBD | Pending |
-| LAYR-03 | TBD | Pending |
-| FRAM-01 | TBD | Pending |
-| FRAM-02 | TBD | Pending |
-| FRAM-03 | TBD | Pending |
-| MOD-01 | TBD | Pending |
-| MOD-02 | TBD | Pending |
-| MOD-03 | TBD | Pending |
-| DEMO-01 | TBD | Pending |
+| MOD-01 | Phase 1: Module Boundary | Pending |
+| MOD-02 | Phase 1: Module Boundary | Pending |
+| MOD-03 | Phase 1: Module Boundary | Pending |
+| WIN-01 | Phase 2: Window Entity | Pending |
+| WIN-02 | Phase 2: Window Entity | Pending |
+| WIN-03 | Phase 2: Window Entity | Pending |
+| INP-01 | Phase 3: Input System | Pending |
+| INP-02 | Phase 3: Input System | Pending |
+| LAYR-01 | Phase 4: Layer Entities | Pending |
+| LAYR-02 | Phase 4: Layer Entities | Pending |
+| LAYR-03 | Phase 4: Layer Entities | Pending |
+| FRAM-01 | Phase 5: Frame Pipeline | Pending |
+| FRAM-02 | Phase 5: Frame Pipeline | Pending |
+| FRAM-03 | Phase 5: Frame Pipeline | Pending |
+| DEMO-01 | Phase 6: Demo | Pending |
 
 **Coverage:**
 - v0.2.0 requirements: 15 total
-- Mapped to phases: 0
-- Unmapped: 15
+- Mapped to phases: 15
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-26*
-*Last updated: 2026-02-26 after initial definition*
+*Last updated: 2026-02-26 after roadmap creation*

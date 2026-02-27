@@ -5,25 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-02-26)
 
 **Core value:** Provide a low-level drawing primitive API that a future cels-clay module can target to render Clay UI layouts in the terminal
-**Current focus:** v0.2.0 ECS Module Architecture -- planning
+**Current focus:** v0.2.0 Phase 1 - Module Boundary
 
 ## Current Position
 
 Milestone: v0.2.0 ECS Module Architecture
-Phase: None (milestone planning)
-Status: Planning
-Last activity: 2026-02-26 -- Closed v1.1, began v0.2.0 planning
+Phase: 1 of 6 (Module Boundary)
+Plan: 0 of TBD in current phase
+Status: Ready to plan
+Last activity: 2026-02-26 -- Roadmap created for v0.2.0
 
-## Architecture Direction
-
-**Problem:** v1.0/v1.1 used a monolithic Engine module that "provides" Window, Input, FramePipeline as sub-modules. This doesn't follow CELS ECS patterns.
-
-**New approach:** One NCurses module that registers:
-- **Components**: Window config, Input state, Color config, Layer, DrawContext, etc.
-- **Systems**: Input polling, frame begin/end, rendering -- hooked into CELS pipeline phases
-- **Entities**: Developer creates entities with NCurses components to configure behavior
-
-Developer updates component data to tell NCurses what they need. NCurses systems react through ECS queries in the appropriate phases.
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
@@ -44,6 +36,7 @@ Developer updates component data to tell NCurses what they need. NCurses systems
 - [v0.2.0]: Monolithic Engine module replaced by single NCurses module with components/systems/entities
 - [v0.2.0]: Window, Input, FramePipeline are components and systems, NOT sub-modules
 - [v0.2.0]: Developer configures by setting component data; NCurses systems react via ECS queries
+- [v0.2.0]: 6 phases derived from requirement categories: Module Boundary, Window Entity, Input System, Layer Entities, Frame Pipeline, Demo
 
 ### Carried Forward from v1.1
 
@@ -56,10 +49,10 @@ Developer updates component data to tell NCurses what they need. NCurses systems
 
 ### Blockers/Concerns
 
-- tui_window.h references CELS_WindowState type removed from cels core -- will be resolved in v0.2.0 restructure
+- tui_window.h references CELS_WindowState type removed from cels core -- will be resolved in Phase 1
 
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: v1.1 closed, v0.2.0 milestone planning
+Stopped at: v0.2.0 roadmap created, ready to plan Phase 1
 Resume file: None

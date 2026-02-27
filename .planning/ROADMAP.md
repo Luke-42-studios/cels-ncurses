@@ -4,7 +4,7 @@
 
 - v1.0 Foundation (Phases 1-5) -- SHIPPED 2026-02-20. Window lifecycle, input, drawing primitives, panel-backed layers, frame pipeline. 39 requirements verified, archived.
 - v1.1 Enhanced Rendering (Phases 6-8) -- CLOSED 2026-02-26. Mouse input, true color, sub-cell rendering. Phases 9-10 dropped for architecture rethink.
-- v0.2.0 ECS Module Architecture -- planning
+- v0.2.0 ECS Module Architecture (Phases 1-6) -- in progress
 
 ## Phases
 
@@ -32,14 +32,92 @@ Closed early. Phases 9-10 dropped for v2.0 architecture rethink.
 
 ### v0.2.0 ECS Module Architecture
 
-**Milestone Goal:** Restructure cels-ncurses from a monolithic Engine module into a proper CELS ECS module. One cel_module(NCurses) with components, systems, and entities. Developer configures via component data; NCurses systems react in pipeline phases.
+**Milestone Goal:** Restructure cels-ncurses from a monolithic Engine module into a proper CELS ECS module. One `cel_module(NCurses)` that registers components, systems, and entities. Developer configures by setting component data on entities; NCurses systems react through ECS queries in pipeline phases.
 
-Phases: TBD (pending requirements + roadmap)
+- [ ] **Phase 1: Module Boundary** - Replace Engine + CelsNcurses with a single cel_module(NCurses) skeleton
+- [ ] **Phase 2: Window Entity** - Terminal lifecycle driven by TUI_WindowConfig/TUI_WindowState components on an entity
+- [ ] **Phase 3: Input System** - Per-frame input reading as a CELS phase system with queryable state
+- [ ] **Phase 4: Layer Entities** - Panel-backed layers created from TUI_Layer components with TUI_DrawContext attachment
+- [ ] **Phase 5: Frame Pipeline** - Begin/end frame as CELS pipeline phase systems orchestrating layers
+- [ ] **Phase 6: Demo** - Validate the full entity-driven API with a button + box example
+
+## Phase Details
+
+### Phase 1: Module Boundary
+**Goal**: Developer imports a single NCurses module that owns all terminal components and systems -- no more Engine facade or sub-module registration
+**Depends on**: Nothing (first phase)
+**Requirements**: MOD-01, MOD-02, MOD-03
+**Success Criteria** (what must be TRUE):
+  1. A single `cel_module(NCurses)` exists and can be imported by a consumer application
+  2. The old Engine module and CelsNcurses module are removed -- no `TUI_Engine_use()` or `Engine_Progress()` calls remain
+  3. Developer creates entities with NCurses components to configure behavior (no config structs passed to init functions)
+  4. Public API surface is entity-component based: headers expose component types, not provider registration functions
+**Plans**: TBD
+
+### Phase 2: Window Entity
+**Goal**: Developer can configure and observe the terminal by creating a window entity with config/state components
+**Depends on**: Phase 1
+**Requirements**: WIN-01, WIN-02, WIN-03
+**Success Criteria** (what must be TRUE):
+  1. Developer creates an entity, sets TUI_WindowConfig (title, fps, color_mode), and the terminal initializes from it
+  2. NCurses system attaches TUI_WindowState (width, height, running, actual_fps) to the window entity after initialization
+  3. Developer can query TUI_WindowState at any point to read terminal dimensions and running status
+  4. Terminal shutdown is clean when the window entity is removed or running is set to false
+**Plans**: TBD
+
+### Phase 3: Input System
+**Goal**: Developer can read keyboard and mouse input state that NCurses fills each frame in a dedicated CELS phase
+**Depends on**: Phase 2
+**Requirements**: INP-01, INP-02
+**Success Criteria** (what must be TRUE):
+  1. An NCurses input system runs in a CELS input phase, reading getch/mouse events without developer intervention
+  2. Developer can read input state (key presses, mouse position, button events) from a component after the input phase completes
+  3. Input state is fresh each frame -- previous frame state does not leak into the current frame
+**Plans**: TBD
+
+### Phase 4: Layer Entities
+**Goal**: Developer can create drawable layers by adding TUI_Layer components to entities, with NCurses managing panels internally
+**Depends on**: Phase 2
+**Requirements**: LAYR-01, LAYR-02, LAYR-03
+**Success Criteria** (what must be TRUE):
+  1. Developer creates an entity with TUI_Layer (z_order, visible, dimensions) and a panel/WINDOW is created internally by NCurses
+  2. NCurses attaches a TUI_DrawContext component to each layer entity so the developer can retrieve it
+  3. Developer can get TUI_DrawContext from a layer entity and draw into it using existing draw primitives (tui_draw_rect, tui_draw_text, etc.)
+  4. Multiple layer entities stack correctly according to z_order
+**Plans**: TBD
+
+### Phase 5: Frame Pipeline
+**Goal**: NCurses owns the frame lifecycle through CELS pipeline phases, with developer systems running naturally between begin and end frame
+**Depends on**: Phase 2, Phase 4
+**Requirements**: FRAM-01, FRAM-02, FRAM-03
+**Success Criteria** (what must be TRUE):
+  1. NCurses registers begin-frame and end-frame systems in CELS pipeline phases
+  2. Begin-frame system clears layers; end-frame system composites panels and calls doupdate()
+  3. Developer-defined systems that draw into layers run between begin-frame and end-frame without explicit ordering code
+**Plans**: TBD
+
+### Phase 6: Demo
+**Goal**: A working example proves the full entity-driven API by rendering interactive content across multiple layers
+**Depends on**: Phase 1, Phase 2, Phase 3, Phase 4, Phase 5
+**Requirements**: DEMO-01
+**Success Criteria** (what must be TRUE):
+  1. Example app creates a window entity, creates layer entities at different z-orders, and renders a button and box using draw primitives
+  2. The example uses only the entity-component API -- no legacy Engine_use(), no config structs, no direct ncurses calls
+  3. The demo compiles and runs, showing layered content that responds to the frame pipeline
+**Plans**: TBD
 
 ## Progress
+
+**Execution Order:**
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 1-5 | v1.0 | 15/15 | Complete | 2026-02-20 |
 | 6-8 | v1.1 | 6/6 | Closed | 2026-02-26 |
-| v0.2.0 | v0.2.0 | - | Planning | - |
+| 1. Module Boundary | v0.2.0 | 0/TBD | Not started | - |
+| 2. Window Entity | v0.2.0 | 0/TBD | Not started | - |
+| 3. Input System | v0.2.0 | 0/TBD | Not started | - |
+| 4. Layer Entities | v0.2.0 | 0/TBD | Not started | - |
+| 5. Frame Pipeline | v0.2.0 | 0/TBD | Not started | - |
+| 6. Demo | v0.2.0 | 0/TBD | Not started | - |
