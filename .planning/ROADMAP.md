@@ -57,7 +57,11 @@ Closed early. Phases 9-10 dropped for v2.0 architecture rethink.
   6. `scripts/release.sh` exists and handles selective push to public remote (reusable across libs)
   7. v0.5.1 tagged and released on 42-Galaxies/cels via `gh release create`
   8. All existing tests pass, review.md and research/ excluded from public
-**Plans**: TBD
+**Plans:** 3 plans
+Plans:
+- [ ] 00-01-PLAN.md -- Dual-remote setup + release script
+- [ ] 00-02-PLAN.md -- CEL_Module macro fix + CELS_REGISTER phase removal
+- [ ] 00-03-PLAN.md -- Doc updates, version bump, release to public
 
 ### Phase 1: Module Boundary
 **Goal**: Developer imports a single NCurses module that owns all terminal components and systems -- no more Engine facade or sub-module registration. Absorbs Phase 2 (Window Entity) -- module skeleton AND working window lifecycle delivered together.
@@ -130,6 +134,7 @@ Phases execute in numeric order: 0 (cels repo) -> 1 -> 3 -> 4 -> 5 -> 6 (Phase 2
 |-------|-----------|----------------|--------|-----------|
 | 1-5 | v1.0 | 15/15 | Complete | 2026-02-20 |
 | 6-8 | v1.1 | 6/6 | Closed | 2026-02-26 |
+| 0. CELS Module Registration | v0.2.0 | 0/3 | Planned | - |
 | 1. Module Boundary | v0.2.0 | 0/3 | Planned | - |
 | 2. Window Entity | v0.2.0 | -- | Absorbed into P1 | - |
 | 3. Input System | v0.2.0 | 0/TBD | Not started | - |
