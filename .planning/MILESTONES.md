@@ -23,6 +23,22 @@
 
 **Git range:** `docs: project research` -> `docs(05): complete integration and migration phase`
 
-**What's next:** v2.0 -- Mouse input, sub-cell rendering, true color, damage tracking, layer transparency
+---
+
+## v1.1 Enhanced Rendering (Closed: 2026-02-26)
+
+**Delivered:** Mouse input, true color, and sub-cell rendering additions on top of v1.0 monolithic architecture.
+
+**Phases completed:** 6-8 (6 plans total)
+
+**Key accomplishments:**
+
+- Module-local TUI_InputState with raw mouse press/release events (Phase 6)
+- Three-tier color system: auto-detect true color, palette redefinition, 256-color fallback (Phase 7)
+- Sub-cell rendering: half-block (2x), quadrant (2x2), braille (2x4) with lazy shadow buffers (Phase 8)
+
+**Closed early:** Phases 9 (Damage Tracking) and 10 (Layer Transparency) dropped. Architecture rethink needed -- moving from monolithic Engine module to proper ECS-native module design in v2.0.
+
+**Git range:** Phase 6 through `chore: sync with CELS v0.4 API changes`
 
 ---
