@@ -34,6 +34,7 @@ Closed early. Phases 9-10 dropped for v2.0 architecture rethink.
 
 **Milestone Goal:** Restructure cels-ncurses from a monolithic Engine module into a proper CELS ECS module. One `CEL_Module(NCurses)` that registers components, systems, and entities. Developer configures by setting component data on entities; NCurses systems react through ECS queries in pipeline phases.
 
+- [ ] **Phase 0: CELS Module Registration** - Fix CEL_Module macro, remove CELS_REGISTER phase, update docs, set up dual-remote, release v0.5.1 (work in cels repo)
 - [ ] **Phase 1: Module Boundary** - Replace Engine + CelsNcurses with a single CEL_Module(NCurses) + working window lifecycle (absorbs Phase 2)
 - [ ] **Phase 2: Window Entity** - (Absorbed into Phase 1)
 - [ ] **Phase 3: Input System** - Per-frame input reading as a CELS phase system with queryable state
@@ -43,9 +44,24 @@ Closed early. Phases 9-10 dropped for v2.0 architecture rethink.
 
 ## Phase Details
 
+### Phase 0: CELS Module Registration
+**Goal**: Fix CELS framework for module registration, remove unused CELS_REGISTER phase, update docs, set up dual-remote workflow (Luke-42-studios = dev, 42-Galaxies = public), and release v0.5.1
+**Depends on**: Nothing (prerequisite for Phase 1)
+**Repo**: cels (not cels-ncurses)
+**Success Criteria** (what must be TRUE):
+  1. `CEL_Module(Name)` generates both `Name_init()` and `Name_register()` (register calls init)
+  2. `cels_register(NCurses)` works identically to `cels_register(Position)` — uniform registration
+  3. The `CELS_REGISTER` enum value, `Register` phase macro, callback storage, and `_cels_session_enter` register-phase logic are fully removed
+  4. `docs/modules.md` and `docs/api.md` updated for the macro fix and phase removal
+  5. Dual-remote configured: Luke-42-studios/cels = origin (dev), 42-Galaxies/cels = public
+  6. `scripts/release.sh` exists and handles selective push to public remote (reusable across libs)
+  7. v0.5.1 tagged and released on 42-Galaxies/cels via `gh release create`
+  8. All existing tests pass, review.md and research/ excluded from public
+**Plans**: TBD
+
 ### Phase 1: Module Boundary
 **Goal**: Developer imports a single NCurses module that owns all terminal components and systems -- no more Engine facade or sub-module registration. Absorbs Phase 2 (Window Entity) -- module skeleton AND working window lifecycle delivered together.
-**Depends on**: Nothing (first phase)
+**Depends on**: Phase 0 (CELS Module Registration)
 **Requirements**: MOD-01, MOD-02, MOD-03, WIN-01, WIN-02, WIN-03
 **Success Criteria** (what must be TRUE):
   1. A single `CEL_Module(NCurses)` exists and can be imported by a consumer application
@@ -108,7 +124,7 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 3 -> 4 -> 5 -> 6 (Phase 2 absorbed into Phase 1)
+Phases execute in numeric order: 0 (cels repo) -> 1 -> 3 -> 4 -> 5 -> 6 (Phase 2 absorbed into Phase 1)
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
