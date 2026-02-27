@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-26)
 
 Milestone: v0.2.0 ECS Module Architecture
 Phase: 0 of 6 (CELS Module Registration -- prerequisite in cels repo)
-Plan: 2 of 3 in current phase
-Status: In progress -- Plan 02 complete (CEL_Module macro fix + CELS_REGISTER removal)
-Last activity: 2026-02-27 -- Completed 00-02-PLAN.md
+Plan: 3 of 3 in current phase (checkpoint -- awaiting human verification)
+Status: In progress -- Plan 03 Tasks 1-2 complete, awaiting checkpoint approval
+Last activity: 2026-02-27 -- Executing 00-03-PLAN.md (checkpoint reached)
 
-Progress: [██░░░░░░░░] ~7% (2/3 Phase 0 plans, 6 phases total)
+Progress: [██░░░░░░░░] ~9% (2.67/3 Phase 0 plans, 6 phases total)
 
 ## Performance Metrics
 
@@ -46,6 +46,7 @@ Progress: [██░░░░░░░░] ~7% (2/3 Phase 0 plans, 6 phases tota
 - [00-01]: Active development on v0.4 branch (ahead of main); both branches pushed to dev remote
 - [00-02]: CEL_Module(Name) now generates static inline Name_register() -- cels_register(ModuleName) works uniformly
 - [00-02]: CELS_ERROR_LIMIT_EXCEEDED kept as general-purpose error code
+- [00-03]: Public repo default branch is v0.4 (has dev artifacts); release script pushes filtered code to main branch
 
 ### Carried Forward from v1.1
 
@@ -63,6 +64,6 @@ Progress: [██░░░░░░░░] ~7% (2/3 Phase 0 plans, 6 phases tota
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 00-02-PLAN.md (CEL_Module macro fix + CELS_REGISTER removal in cels repo)
+Stopped at: 00-03-PLAN.md checkpoint (Tasks 1-2 done, awaiting human-verify)
 Resume file: None
-Next: 00-03-PLAN.md (docs update, version bump, release v0.5.1)
+Next: 00-03 checkpoint approval, then SUMMARY.md creation
