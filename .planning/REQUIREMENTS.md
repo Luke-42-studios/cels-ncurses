@@ -1,105 +1,98 @@
-# Requirements: cels-ncurses v1.1 Enhanced Rendering
+# Requirements: cels-ncurses v0.2.0 ECS Module Architecture
 
-**Defined:** 2026-02-20
-**Core Value:** Provide a low-level drawing primitive API that a future cels-clay module can target to render Clay UI layouts in the terminal
+**Defined:** 2026-02-26
+**Core Value:** Provide a low-level drawing primitive API that a future cels-clay module can target — the same way clay_renderer_SDL3.c targets SDL3
 
-## v1.1 Requirements
+## v0.2.0 Requirements
 
-### Mouse Input
+### Window Entity
 
-- [ ] **MOUS-01**: Developer can detect left, right, and middle mouse button clicks with cell coordinates and modifier keys (shift, ctrl, alt)
-- [ ] **MOUS-02**: Developer can detect scroll wheel up/down events with cell coordinates
-- [ ] **MOUS-03**: Developer can determine which layer received a mouse event via z-order hit testing (top-to-bottom traversal of visible layers)
-- [ ] **MOUS-04**: Developer can detect drag operations via press + motion + release state machine with drag start coordinates and current position
-- [ ] **MOUS-05**: Developer can track mouse hover position with motion updates consolidated per frame (final position only)
+- [ ] **WIN-01**: Developer can create an entity with TUI_WindowConfig component to configure terminal (title, fps, color_mode)
+- [ ] **WIN-02**: NCurses system initializes terminal from TUI_WindowConfig and attaches TUI_WindowState component (width, height, running, actual_fps) to the same entity
+- [ ] **WIN-03**: Developer can query TUI_WindowState to read terminal dimensions and running status
 
-### Sub-Cell Rendering
+### Input System
 
-- [ ] **CELL-01**: Developer can draw half-block pixels at 2x vertical resolution using upper/lower half block characters (U+2580/U+2584) with independent top/bottom colors per cell
-- [ ] **CELL-02**: Developer can draw quadrant block pixels at 2x2 resolution per cell using Unicode quadrant characters (U+2596-U+259F) with fg/bg two-color constraint
-- [ ] **CELL-03**: Developer can draw braille pattern pixels at 2x4 resolution per cell using braille characters (U+2800-U+28FF) with read-modify-write compositing for multiple pixels in same cell
+- [ ] **INP-01**: NCurses input system runs in a CELS input phase, reading getch/mouse events and writing to input state
+- [ ] **INP-02**: Developer can read input state (key presses, mouse position, button events) after the input phase completes
 
-### True Color
+### Layer Entities
 
-- [x] **COLR-01**: Color system uses packed RGB values via init_extended_pair/alloc_pair when terminal supports direct color mode (detected via tigetflag or COLORTERM)
-- [x] **COLR-02**: Color system falls back gracefully to xterm-256 color mapping when direct color is unavailable (existing tui_color_rgb behavior preserved)
-- [x] **COLR-03**: Color mode can be detected via COLORTERM=truecolor environment variable and overridden via TUI_Window configuration
+- [ ] **LAYR-01**: Developer can create an entity with TUI_Layer component (z_order, visible, dimensions) to define a layer
+- [ ] **LAYR-02**: NCurses system creates panel/WINDOW internally for each TUI_Layer entity and attaches TUI_DrawContext component
+- [ ] **LAYR-03**: Developer can get TUI_DrawContext from a layer entity and draw into it using existing draw primitives
+
+### Frame Pipeline
+
+- [ ] **FRAM-01**: NCurses registers begin-frame and end-frame systems in CELS pipeline phases
+- [ ] **FRAM-02**: Begin-frame system clears layers; end-frame system composites panels and calls doupdate()
+- [ ] **FRAM-03**: Developer systems run between begin-frame and end-frame phases (natural CELS phase ordering)
+
+### Module Boundary
+
+- [ ] **MOD-01**: Single cel_module(NCurses) replaces Engine and CelsNcurses modules, registering all components and systems
+- [ ] **MOD-02**: Developer initializes NCurses by creating entities with components (no Engine_use() or config structs)
+- [ ] **MOD-03**: Public API is entity-component based: create window entity, create layer entities, draw into contexts
+
+### Demo
+
+- [ ] **DEMO-01**: Example app creates a window entity, layer entities, and renders a button and box using the new entity-driven API
+
+## v0.3.0 Requirements (Deferred)
 
 ### Damage Tracking
 
-- [ ] **DMGT-01**: Frame pipeline tracks dirty rectangles per layer (TUI_CellRect array) instead of boolean dirty flag, accumulated from draw call clip regions
-- [ ] **DMGT-02**: Frame pipeline clears only previously-dirty regions instead of calling werase on entire layer each frame
-- [ ] **DMGT-03**: Frame pipeline skips update_panels/doupdate entirely when no draw calls were issued in a frame (zero-change detection)
+- **DMGT-01**: Frame pipeline tracks dirty rectangles per layer instead of boolean dirty flag
+- **DMGT-02**: Frame pipeline clears only previously-dirty regions instead of werase on entire layer
+- **DMGT-03**: Frame pipeline skips update_panels/doupdate when no draw calls issued
 
 ### Layer Transparency
 
-- [ ] **TRNS-01**: Developer can mark a layer as transparent so undrawn cells show content from layers below (application-level compositing for transparent layers, panel compositing for opaque layers)
-- [ ] **TRNS-02**: Developer can set layer-wide transparent background (layer has no default fill, only explicitly drawn cells are visible)
-- [ ] **TRNS-03**: Developer can set layer alpha (0.0-1.0) for RGB color blending with layers below during compositing (requires true color mode)
-- [ ] **TRNS-04**: Developer can overlay color/attribute changes without replacing base layer characters (character-preserving transparency)
+- **TRNS-01**: Developer can mark a layer as transparent so undrawn cells show content from layers below
+- **TRNS-02**: Developer can set layer alpha (0.0-1.0) for RGB color blending with layers below
 
-## v2 Requirements
+### Input Routing
 
-### Enhanced Sub-Cell
-
-- **ECLL-01**: Sextant characters (2x3 resolution, Unicode 13) for middle-ground resolution
-- **ECLL-02**: Sub-cell line drawing (Bresenham at braille resolution)
-
-### Performance
-
-- **PERF-01**: Synchronized output protocol (\033[?2026h/l) for tear-free rendering on supported terminals
-- **PERF-02**: Color pair pool caching for high-throughput true color applications
-
-### Debug
-
-- **DBUG-01**: Debug overlay showing layer boundaries, dirty regions, and compositing order
-- **DBUG-02**: Frame stats (FPS, cells written, cells skipped, damage ratio)
+- **INRT-01**: Input system can route events to an active/focused entity
+- **INRT-02**: Developer can set focus on an entity to receive input events
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Mouse gesture recognition (swipe/pinch) | Application-level logic built on raw events |
-| Custom mouse cursor rendering | Terminal emulator owns cursor rendering |
-| Sixel/Kitty image protocols | Bypasses character cell model, terminal-specific |
-| Sub-cell text rendering | Text belongs in full cells; sub-cell is for graphical elements |
-| Raw ANSI escape sequences for color | Breaks ncurses internal state tracking |
-| Per-cell shadow buffer duplicating ncurses | ncurses already tracks changes internally |
-| Multi-threaded rendering | ncurses is not thread-safe |
-| GPU-style blend modes (multiply, screen) | Only source-over alpha and binary transparency |
-| Per-cell alpha in TUI_Style | Transparency is a layer property, not per-draw-call |
-| HSL/HSV/LAB color spaces | Utility library concern, not core renderer |
-| Widget/component library | Graphics API provides primitives only |
+| Command buffer / render queue in NCurses | Not needed; Clay has its own, NCurses exposes direct draw calls |
 | Clay integration | Separate cels-clay module |
+| Widget/component library | Graphics API provides primitives only |
+| Animation/tweening | App-level concern |
+| Text measurement/layout | Clay handles via MeasureText callback |
+| Sixel/Kitty image protocols | Terminal-specific, bypasses character cell model |
+| Multi-threaded rendering | ncurses is not thread-safe |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| MOUS-01 | Phase 6 | Partial (no modifier keys -- raw press/release only) |
-| MOUS-02 | Phase 6 | Deferred |
-| MOUS-03 | Phase 6 | Deferred |
-| MOUS-04 | Phase 6 | Deferred |
-| MOUS-05 | Phase 6 | Deferred |
-| CELL-01 | Phase 8 | Pending |
-| CELL-02 | Phase 8 | Pending |
-| CELL-03 | Phase 8 | Pending |
-| COLR-01 | Phase 7 | Complete |
-| COLR-02 | Phase 7 | Complete |
-| COLR-03 | Phase 7 | Complete |
-| DMGT-01 | Phase 9 | Pending |
-| DMGT-02 | Phase 9 | Pending |
-| DMGT-03 | Phase 9 | Pending |
-| TRNS-01 | Phase 10 | Pending |
-| TRNS-02 | Phase 10 | Pending |
-| TRNS-03 | Phase 10 | Pending |
-| TRNS-04 | Phase 10 | Pending |
+| WIN-01 | TBD | Pending |
+| WIN-02 | TBD | Pending |
+| WIN-03 | TBD | Pending |
+| INP-01 | TBD | Pending |
+| INP-02 | TBD | Pending |
+| LAYR-01 | TBD | Pending |
+| LAYR-02 | TBD | Pending |
+| LAYR-03 | TBD | Pending |
+| FRAM-01 | TBD | Pending |
+| FRAM-02 | TBD | Pending |
+| FRAM-03 | TBD | Pending |
+| MOD-01 | TBD | Pending |
+| MOD-02 | TBD | Pending |
+| MOD-03 | TBD | Pending |
+| DEMO-01 | TBD | Pending |
 
 **Coverage:**
-- v1.1 requirements: 18 total
-- Mapped to phases: 18
-- Unmapped: 0
+- v0.2.0 requirements: 15 total
+- Mapped to phases: 0
+- Unmapped: 15
 
 ---
-*Requirements defined: 2026-02-20*
-*Last updated: 2026-02-21 after Phase 7 completion*
+*Requirements defined: 2026-02-26*
+*Last updated: 2026-02-26 after initial definition*
