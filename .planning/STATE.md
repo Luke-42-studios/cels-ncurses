@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-26)
 
 Milestone: v0.2.0 ECS Module Architecture
 Phase: 0 of 6 (CELS Module Registration -- prerequisite in cels repo)
-Plan: 1 of 3 in current phase
-Status: In progress -- Plan 01 complete (dual-remote + release script)
-Last activity: 2026-02-27 -- Completed 00-01-PLAN.md (dual-remote workflow + release script)
+Plan: 2 of 3 in current phase
+Status: In progress -- Plan 02 complete (CEL_Module macro fix + CELS_REGISTER removal)
+Last activity: 2026-02-27 -- Completed 00-02-PLAN.md
 
-Progress: [█░░░░░░░░░] ~3% (1/3 Phase 0 plans, 6 phases total)
+Progress: [██░░░░░░░░] ~7% (2/3 Phase 0 plans, 6 phases total)
 
 ## Performance Metrics
 
@@ -40,10 +40,12 @@ Progress: [█░░░░░░░░░] ~3% (1/3 Phase 0 plans, 6 phases tota
 - [v0.2.0]: cels_register(NCurses) is the developer API — requires Phase 0 fix in cels repo (Name_register alias)
 - [v0.2.0]: Module provides CEL_Define(NCursesWindow, ...) + call macro — developer writes NCursesWindow(.title = "X") {}
 - [v0.2.0]: cel_watch(entity, NCurses_WindowState) for reactive state reading — recomposes on resize
-- [v0.2.0]: CELS_REGISTER phase to be removed (unused) in Phase 0
+- [v0.2.0]: CELS_REGISTER phase removed in Phase 0 Plan 02 -- pipeline is now 7 phases
 - [00-01]: Dual-remote: origin=Luke-42-studios/cels (dev), public=42-Galaxies/cels -- standard for all libs
 - [00-01]: scripts/release.sh uses git archive + manual path exclusion (no git-filter-repo dependency)
 - [00-01]: Active development on v0.4 branch (ahead of main); both branches pushed to dev remote
+- [00-02]: CEL_Module(Name) now generates static inline Name_register() -- cels_register(ModuleName) works uniformly
+- [00-02]: CELS_ERROR_LIMIT_EXCEEDED kept as general-purpose error code
 
 ### Carried Forward from v1.1
 
@@ -61,6 +63,6 @@ Progress: [█░░░░░░░░░] ~3% (1/3 Phase 0 plans, 6 phases tota
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 00-01-PLAN.md (dual-remote workflow + release script in cels repo)
+Stopped at: Completed 00-02-PLAN.md (CEL_Module macro fix + CELS_REGISTER removal in cels repo)
 Resume file: None
-Next: 00-02-PLAN.md (CEL_Module macro fix + CELS_REGISTER removal)
+Next: 00-03-PLAN.md (docs update, version bump, release v0.5.1)
