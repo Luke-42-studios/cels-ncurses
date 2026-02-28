@@ -15,41 +15,23 @@
  */
 
 /*
- * TUI Window Provider - Header
+ * TUI Window - Internal Header
  *
- * ncurses-based window provider for CELS framework.
- * Owns terminal initialization (initscr/endwin) and the main frame loop.
- *
- * Usage:
- *   #include <cels-ncurses/tui_window.h>
- *
- *   static Engine_WindowState_t* windowState;
- *
- *   CEL_Build(App) {
- *       windowState = CEL_Use(TUI_Window, .title = "My App", .fps = 60);
- *   }
- *
- *   CEL_Root(AppUI) {
- *       Engine_WindowState_t* win = CEL_Watch(Engine_WindowState);
- *       if (win->state == WINDOW_STATE_READY) {
- *           CEL_Init(MainMenu) {}
- *       }
- *   }
+ * Internal-facing header for the window subsystem. Public types
+ * (NCurses_WindowConfig, NCurses_WindowState) are in tui_ncurses.h.
+ * This header provides:
+ *   - WindowState enum (internal lifecycle states)
+ *   - tui_window_get_running_ptr() bridge for input system
+ *   - ncurses_window_frame_update() called by frame pipeline
+ *   - tui_hook_frame_end() FPS throttle called by frame pipeline
  */
 
 #ifndef CELS_NCURSES_TUI_WINDOW_H
 #define CELS_NCURSES_TUI_WINDOW_H
 
-#include <cels/cels.h>
-#include <cels/backend.h>
-
 /* ===========================================
- * Window State Machine (Vulkan-aligned)
- * ===========================================
- *
- * TUI transitions:   NONE -> READY (fast-track) -> CLOSING -> CLOSED
- * Vulkan transitions: NONE -> CREATED -> SURFACE_READY -> READY -> ...
- */
+ * Window State Machine (internal lifecycle)
+ * =========================================== */
 typedef enum WindowState {
     WINDOW_STATE_NONE = 0,
     WINDOW_STATE_CREATED,
@@ -61,59 +43,15 @@ typedef enum WindowState {
     WINDOW_STATE_CLOSED
 } WindowState;
 
-/* ===========================================
- * Engine_WindowState -- Observable provider state
- * ===========================================
- *
- * Use CEL_Watch(Engine_WindowState) in CEL_Root to react to window changes.
- * The pointer returned by CEL_Use(TUI_Window, ...) points to this same state.
- */
-typedef struct Engine_WindowState_t {
-    WindowState state;
-    int width;
-    int height;
-    const char* title;
-    const char* version;
-    float target_fps;
-    float delta_time;
-} Engine_WindowState_t;
-
-extern Engine_WindowState_t Engine_WindowState;
-extern cels_entity_t Engine_WindowState_id;
-extern void Engine_WindowState_register(void);
-
-/* ===========================================
- * TUI_Window Provider Config
- * ===========================================
- *
- * Configuration struct for the TUI window provider.
- * Passed to CEL_Use(TUI_Window, .title = "X", .fps = 60).
- */
-typedef struct TUI_Window {
-    const char* title;
-    const char* version;
-    int fps;
-    int width;
-    int height;
-    int color_mode;    /* 0=auto (default), 1=256-color, 2=palette-redef, 3=direct-RGB */
-} TUI_Window;
-
-/* Provider registration function (called by Use() macro)
- * Returns pointer to Engine_WindowState */
-extern Engine_WindowState_t* TUI_Window_use(TUI_Window config);
-
 /* Get pointer to g_running flag for quit signaling from input provider */
 extern volatile int* tui_window_get_running_ptr(void);
 
-/* Access the standard CELS_WindowState for this backend */
-extern CELS_WindowState* tui_window_get_standard_state(void);
+/* Per-frame window state update (resize detection, timing, quit check).
+ * Called by the frame pipeline's frame_begin system. */
+extern void ncurses_window_frame_update(void);
 
-/* ============================================================================
- * Backward Compatibility (v0.2 -> v0.3)
- * ============================================================================ */
-typedef Engine_WindowState_t TUI_WindowState_t;
-#define TUI_WindowState Engine_WindowState
-#define TUI_WindowStateID Engine_WindowState_id
-#define TUI_WindowState_register Engine_WindowState_register
+/* FPS throttle -- sleeps to maintain target frame rate.
+ * Called by the frame pipeline's frame_end system. */
+extern void tui_hook_frame_end(void);
 
 #endif /* CELS_NCURSES_TUI_WINDOW_H */

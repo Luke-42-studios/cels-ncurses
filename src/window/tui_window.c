@@ -15,16 +15,25 @@
  */
 
 /*
- * TUI Window Provider - ncurses Implementation (Backend Descriptor)
+ * TUI Window - Observer-Based Terminal Lifecycle
  *
- * Implements the CELS_BackendDesc hook interface for ncurses TUI.
- * Core CELS owns the main loop; this module provides 6 hooks:
- *   startup, shutdown, frame_begin, frame_end, should_quit, get_delta_time
+ * Implements the NCurses window lifecycle via flecs observers:
+ *   - EcsOnSet NCurses_WindowConfig  -> initialize terminal, attach WindowState
+ *   - EcsOnRemove NCurses_WindowConfig -> shut down terminal cleanly
+ *
+ * The observer fires when a developer adds NCurses_WindowConfig to an entity
+ * (typically via the NCursesWindow() call macro). Single window entity
+ * enforced -- second config logs warning and is ignored.
+ *
+ * ncurses_window_frame_update() is called each frame by the frame pipeline
+ * to update window dimensions on resize and propagate delta_time.
  */
 
 #define _POSIX_C_SOURCE 199309L
 #include <cels-ncurses/tui_window.h>
+#include <cels-ncurses/tui_ncurses.h>
 #include <cels-ncurses/tui_color.h>
+#include <cels/cels.h>
 #include <flecs.h>
 #include <ncurses.h>
 #include <unistd.h>
@@ -33,32 +42,29 @@
 #include <stdbool.h>
 #include <locale.h>
 #include <time.h>
+#include <stdio.h>
 
 /* ============================================================================
  * Static State
  * ============================================================================ */
 
-Engine_WindowState_t Engine_WindowState = {0};
-cels_entity_t Engine_WindowState_id = 0;
+/* The single window entity (0 = no window) */
+static ecs_entity_t g_window_entity = 0;
 
-void Engine_WindowState_register(void) {
-    if (Engine_WindowState_id == 0) Engine_WindowState_id = cels_state_register("Engine_WindowState");
-}
-
-static TUI_Window g_tui_config;
 static volatile int g_running = 1;
 static int g_ncurses_active = 0;
 
-/* CEL_Window singleton entity for new CEL_Query/CEL_Watch pattern */
-static cels_entity_t g_cel_window_entity = 0;
-
-/* Standard window state for CELS_BackendDesc */
-static CELS_WindowState g_window_state = {0};
+/* Stored FPS from config for frame_end throttle */
+static int g_target_fps = 60;
 
 /* Timing state */
 static struct timespec g_frame_start = {0};
 static struct timespec g_prev_frame_start = {0};
 static float g_delta_time = 1.0f / 60.0f;
+
+/* Cached dimensions for resize detection */
+static int g_last_cols = 0;
+static int g_last_lines = 0;
 
 /* ============================================================================
  * Signal Handler
@@ -81,10 +87,15 @@ static void cleanup_endwin(void) {
 }
 
 /* ============================================================================
- * Backend Hook: startup()
- * ============================================================================ */
+ * Terminal Init (extracted from old tui_hook_startup)
+ * ============================================================================
+ *
+ * Initializes the ncurses terminal from component config data.
+ * Sets signal handler, atexit, locale, initscr, input mode, color system,
+ * and stores FPS for timing calculations.
+ */
 
-static void tui_hook_startup(void) {
+static void ncurses_terminal_init(NCurses_WindowConfig* config) {
     signal(SIGINT, tui_sigint_handler);
     atexit(cleanup_endwin);
 
@@ -106,84 +117,135 @@ static void tui_hook_startup(void) {
 
         /* Initialize color system with mode detection/override.
          * color_mode: 0=auto, 1=256, 2=palette, 3=direct */
-        int override = g_tui_config.color_mode > 0
-                     ? g_tui_config.color_mode - 1   /* Convert 1-3 to TUI_ColorMode 0-2 */
-                     : -1;                            /* 0 means auto-detect */
+        int override = config->color_mode > 0
+                     ? config->color_mode - 1   /* Convert 1-3 to TUI_ColorMode 0-2 */
+                     : -1;                       /* 0 means auto-detect */
         tui_color_init(override);
     }
 
-    int fps = g_tui_config.fps > 0 ? g_tui_config.fps : 60;
-    g_delta_time = 1.0f / (float)fps;
+    g_target_fps = config->fps > 0 ? config->fps : 60;
+    g_delta_time = 1.0f / (float)g_target_fps;
 
-    /* Populate Engine_WindowState */
-    Engine_WindowState.state = WINDOW_STATE_READY;
-    Engine_WindowState.width = g_tui_config.width > 0 ? g_tui_config.width : COLS;
-    Engine_WindowState.height = g_tui_config.height > 0 ? g_tui_config.height : LINES;
-    Engine_WindowState.title = g_tui_config.title;
-    Engine_WindowState.version = g_tui_config.version;
-    Engine_WindowState.target_fps = (float)fps;
-    Engine_WindowState.delta_time = g_delta_time;
-    cels_state_notify_change(Engine_WindowState_id);
+    /* Cache initial dimensions for resize detection */
+    g_last_cols = COLS;
+    g_last_lines = LINES;
 
-    /* Create CEL_Window singleton entity for new CEL_Query/CEL_Watch pattern */
-    CEL_Window_register();  /* Register CEL_Window component type */
-    {
-        CELS_Context* ctx = cels_get_context();
-        ecs_world_t* world = cels_get_world(ctx);
-        g_cel_window_entity = (cels_entity_t)ecs_entity(world, { .name = "CEL_Window" });
-        ecs_set_id(world, (ecs_entity_t)g_cel_window_entity, (ecs_entity_t)CEL_WindowID,
-                   sizeof(CEL_Window), &(CEL_Window){
-                       .ready = true,
-                       .width = Engine_WindowState.width,
-                       .height = Engine_WindowState.height
-                   });
-        cels_component_notify_change(CEL_WindowID);
-    }
-
-    /* Populate standard CELS_WindowState */
-    g_window_state.lifecycle = CELS_WINDOW_READY;
-    g_window_state.width = Engine_WindowState.width;
-    g_window_state.height = Engine_WindowState.height;
-    g_window_state.title = Engine_WindowState.title;
-    g_window_state.target_fps = Engine_WindowState.target_fps;
-    g_window_state.delta_time = g_delta_time;
-    g_window_state.backend_data = NULL;
-
-    /* Populate CELS_Window in context (used by cels_window_get in systems) */
-    {
-        CELS_Window cw = {
-            .width = Engine_WindowState.width,
-            .height = Engine_WindowState.height,
-            .title = Engine_WindowState.title
-        };
-        cels_window_set(cels_get_context(), &cw);
-    }
+    g_running = 1;
 }
 
 /* ============================================================================
- * Backend Hook: shutdown()
+ * Terminal Shutdown
  * ============================================================================ */
 
-static void tui_hook_shutdown(void) {
-    /* State transition */
-    Engine_WindowState.state = WINDOW_STATE_CLOSING;
-    cels_state_notify_change(Engine_WindowState_id);
-    Engine_WindowState.state = WINDOW_STATE_CLOSED;
-
-    /* Standard state transition */
-    g_window_state.lifecycle = CELS_WINDOW_CLOSING;
+static void ncurses_terminal_shutdown(void) {
     if (g_ncurses_active && !isendwin()) {
         endwin();
         g_ncurses_active = 0;
     }
-    g_window_state.lifecycle = CELS_WINDOW_CLOSED;
 }
 
 /* ============================================================================
- * Backend Hook: frame_begin()
+ * Observer: on_window_config_set (EcsOnSet NCurses_WindowConfig)
+ * ============================================================================
+ *
+ * When a developer creates an entity with NCurses_WindowConfig, this observer
+ * fires and initializes the ncurses terminal. It attaches NCurses_WindowState
+ * to the same entity with initial dimensions and running state.
+ *
+ * Single window entity enforced: if g_window_entity is already set, log
+ * warning and ignore.
+ */
+
+static void on_window_config_set(ecs_iter_t* it) {
+    if (g_window_entity != 0) {
+        fprintf(stderr, "[NCurses] Warning: only one window entity allowed, ignoring\n");
+        return;
+    }
+
+    NCurses_WindowConfig* configs = ecs_field(it, NCurses_WindowConfig, 0);
+    for (int i = 0; i < it->count; i++) {
+        g_window_entity = it->entities[i];
+
+        /* Initialize ncurses terminal */
+        ncurses_terminal_init(&configs[i]);
+
+        /* Attach NCurses_WindowState to the same entity */
+        ecs_world_t* world = it->world;
+        NCurses_WindowState state = {
+            .width = COLS,
+            .height = LINES,
+            .running = true,
+            .actual_fps = (float)g_target_fps,
+            .delta_time = g_delta_time
+        };
+        ecs_set_id(world, it->entities[i], NCurses_WindowState_id,
+                   sizeof(NCurses_WindowState), &state);
+    }
+}
+
+/* ============================================================================
+ * Observer: on_window_config_removed (EcsOnRemove NCurses_WindowConfig)
  * ============================================================================ */
 
-static void tui_hook_frame_begin(void) {
+static void on_window_config_removed(ecs_iter_t* it) {
+    (void)it;
+    ncurses_terminal_shutdown();
+    g_window_entity = 0;
+}
+
+/* ============================================================================
+ * Observer Registration Functions
+ * ============================================================================
+ *
+ * These override the weak stubs in ncurses_module.c.
+ */
+
+void ncurses_register_window_observer(void) {
+    ecs_world_t* world = cels_get_world(cels_get_context());
+
+    /* Ensure the component ID is populated in this TU */
+    cels_ensure_component(&NCurses_WindowConfig_id, "NCurses_WindowConfig",
+                          sizeof(NCurses_WindowConfig), CELS_ALIGNOF(NCurses_WindowConfig));
+
+    ecs_observer_desc_t desc = {0};
+    ecs_entity_desc_t entity_desc = {0};
+    entity_desc.name = "NCurses_WindowConfigObserver";
+    desc.entity = ecs_entity_init(world, &entity_desc);
+    desc.query.terms[0].id = NCurses_WindowConfig_id;
+    desc.events[0] = EcsOnSet;
+    desc.callback = on_window_config_set;
+    ecs_observer_init(world, &desc);
+}
+
+void ncurses_register_window_remove_observer(void) {
+    ecs_world_t* world = cels_get_world(cels_get_context());
+
+    ecs_observer_desc_t desc = {0};
+    ecs_entity_desc_t entity_desc = {0};
+    entity_desc.name = "NCurses_WindowConfigRemoveObserver";
+    desc.entity = ecs_entity_init(world, &entity_desc);
+    desc.query.terms[0].id = NCurses_WindowConfig_id;
+    desc.events[0] = EcsOnRemove;
+    desc.callback = on_window_config_removed;
+    ecs_observer_init(world, &desc);
+}
+
+/* ============================================================================
+ * Frame Update: ncurses_window_frame_update()
+ * ============================================================================
+ *
+ * Called each frame by the frame pipeline (tui_frame_begin_callback) to:
+ *   1. Update frame timing (delta_time)
+ *   2. Detect terminal resize (COLS/LINES changed) and update WindowState
+ *   3. Check g_running -- if false, set WindowState.running = false and quit
+ *
+ * On resize, ecs_set_id triggers recomposition for anything watching
+ * NCurses_WindowState via cel_watch().
+ */
+
+void ncurses_window_frame_update(void) {
+    if (g_window_entity == 0) return;
+
     /* Timing */
     g_prev_frame_start = g_frame_start;
     clock_gettime(CLOCK_MONOTONIC, &g_frame_start);
@@ -192,47 +254,57 @@ static void tui_hook_frame_begin(void) {
                        (float)(g_frame_start.tv_nsec - g_prev_frame_start.tv_nsec) / 1e9f;
     }
 
-    /* Update timing in both state structs */
-    Engine_WindowState.delta_time = g_delta_time;
-    g_window_state.delta_time = g_delta_time;
+    /* Check if quit was requested (SIGINT or input 'q') */
+    if (!g_running) {
+        ecs_world_t* world = cels_get_world(cels_get_context());
+        NCurses_WindowState state = {
+            .width = g_last_cols,
+            .height = g_last_lines,
+            .running = false,
+            .actual_fps = (g_delta_time > 0.0f) ? 1.0f / g_delta_time : 0.0f,
+            .delta_time = g_delta_time
+        };
+        ecs_set_id(world, g_window_entity, NCurses_WindowState_id,
+                   sizeof(NCurses_WindowState), &state);
+        cels_request_quit();
+        return;
+    }
 
-    /* Update CEL_Window singleton each frame */
-    if (g_cel_window_entity != 0) {
-        int new_w = COLS;
-        int new_h = LINES;
-        /* Only update + notify if dimensions actually changed */
-        if (new_w != Engine_WindowState.width || new_h != Engine_WindowState.height) {
-            Engine_WindowState.width = new_w;
-            Engine_WindowState.height = new_h;
-            g_window_state.width = new_w;
-            g_window_state.height = new_h;
+    /* Detect resize */
+    int new_w = COLS;
+    int new_h = LINES;
+    bool resized = (new_w != g_last_cols || new_h != g_last_lines);
 
-            CEL_Window win_data = {
-                .ready = true,
-                .width = new_w,
-                .height = new_h
-            };
-            ecs_world_t* world = cels_get_world(cels_get_context());
-            ecs_set_id(world, (ecs_entity_t)g_cel_window_entity, (ecs_entity_t)CEL_WindowID,
-                       sizeof(CEL_Window), &win_data);
-            cels_component_notify_change(CEL_WindowID);
-            cels_state_notify_change(Engine_WindowState_id);
+    if (resized) {
+        g_last_cols = new_w;
+        g_last_lines = new_h;
+    }
 
-            /* Keep CELS_Window in context in sync for cels_window_get() */
-            CELS_Window cw = { .width = new_w, .height = new_h, .title = Engine_WindowState.title };
-            cels_window_set(cels_get_context(), &cw);
-        }
+    /* Update WindowState on entity (always for delta_time, trigger watch on resize) */
+    if (resized) {
+        ecs_world_t* world = cels_get_world(cels_get_context());
+        NCurses_WindowState state = {
+            .width = new_w,
+            .height = new_h,
+            .running = true,
+            .actual_fps = (g_delta_time > 0.0f) ? 1.0f / g_delta_time : 0.0f,
+            .delta_time = g_delta_time
+        };
+        ecs_set_id(world, g_window_entity, NCurses_WindowState_id,
+                   sizeof(NCurses_WindowState), &state);
     }
 }
 
 /* ============================================================================
- * Backend Hook: frame_end()
- * ============================================================================ */
+ * Frame End: tui_hook_frame_end()
+ * ============================================================================
+ *
+ * FPS throttle -- sleeps to maintain target frame rate.
+ * Called by the frame pipeline's frame_end system.
+ */
 
-static void tui_hook_frame_end(void) {
-    /* FPS throttle */
-    int fps = g_tui_config.fps > 0 ? g_tui_config.fps : 60;
-    float target_delta = 1.0f / (float)fps;
+void tui_hook_frame_end(void) {
+    float target_delta = 1.0f / (float)g_target_fps;
 
     struct timespec now;
     clock_gettime(CLOCK_MONOTONIC, &now);
@@ -246,54 +318,14 @@ static void tui_hook_frame_end(void) {
 }
 
 /* ============================================================================
- * Backend Hook: should_quit()
- * ============================================================================ */
-
-static bool tui_hook_should_quit(void) {
-    return !g_running;
-}
-
-/* ============================================================================
- * Backend Hook: get_delta_time()
- * ============================================================================ */
-
-static float tui_hook_get_delta_time(void) {
-    return g_delta_time;
-}
-
-/* ============================================================================
- * Backend Descriptor (static, lives for application lifetime)
- * ============================================================================ */
-
-static CELS_BackendDesc tui_backend_desc = {
-    .name = "TUI",
-    .hooks = {
-        .startup        = tui_hook_startup,
-        .shutdown       = tui_hook_shutdown,
-        .frame_begin    = tui_hook_frame_begin,
-        .frame_end      = tui_hook_frame_end,
-        .should_quit    = tui_hook_should_quit,
-        .get_delta_time = tui_hook_get_delta_time,
-    },
-    .window_state = &g_window_state,
-};
-
-/* ============================================================================
- * TUI_Window_use -- Provider Registration
- * ============================================================================ */
-
-Engine_WindowState_t* TUI_Window_use(TUI_Window config) {
-    g_tui_config = config;
-    Engine_WindowState_register();
-    cels_backend_register(&tui_backend_desc);
-    return &Engine_WindowState;
-}
+ * Running Pointer Bridge
+ * ============================================================================
+ *
+ * Kept for backward compatibility with tui_input.c which uses it to signal
+ * quit on 'q' key press. Will be removed when input system fully transitions
+ * to cels_request_quit().
+ */
 
 volatile int* tui_window_get_running_ptr(void) {
     return &g_running;
-}
-
-/* Access standard window state (for input provider resize handling) */
-CELS_WindowState* tui_window_get_standard_state(void) {
-    return &g_window_state;
 }
