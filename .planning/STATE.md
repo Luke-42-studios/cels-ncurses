@@ -5,17 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-02-26)
 
 **Core value:** Provide a low-level drawing primitive API that a future cels-clay module can target to render Clay UI layouts in the terminal
-**Current focus:** v0.2.0 Phase 1 - Module Boundary (replace Engine with CEL_Module(NCurses))
+**Current focus:** v0.2.0 Phase 1 - Module Boundary COMPLETE, ready for Phase 3 (Input System)
 
 ## Current Position
 
 Milestone: v0.2.0 ECS Module Architecture
-Phase: 1 of 6 (Module Boundary)
-Plan: 2 of 3 in current phase
-Status: In progress
-Last activity: 2026-02-28 -- Completed 01-02-PLAN.md (observer/system wiring)
+Phase: 1 of 6 (Module Boundary) -- COMPLETE
+Plan: 3 of 3 in current phase (all done)
+Status: Phase complete -- awaiting human verification of build/run
+Last activity: 2026-02-28 -- Completed 01-03-PLAN.md (legacy cleanup + minimal example)
 
-Progress: [███░░░░░░░] 29% (2/7 phases)
+Progress: [████░░░░░░] 43% (6/14 estimated plans)
 
 ## Performance Metrics
 
@@ -31,7 +31,7 @@ Progress: [███░░░░░░░] 29% (2/7 phases)
 
 **v0.2.0 Velocity:**
 - Phase 0: 3 plans in ~16 min total
-- Phase 1: Plan 01 in 3 min, Plan 02 in 4 min
+- Phase 1: Plan 01 in 3 min, Plan 02 in 4 min, Plan 03 in 3 min (10 min total)
 
 ## Accumulated Context
 
@@ -41,9 +41,9 @@ Progress: [███░░░░░░░] 29% (2/7 phases)
 - [v0.2.0]: Window, Input, FramePipeline are components and systems, NOT sub-modules
 - [v0.2.0]: Developer configures by setting component data; NCurses systems react via ECS queries
 - [v0.2.0]: 6 phases derived from requirement categories: Module Boundary, Window Entity, Input System, Layer Entities, Frame Pipeline, Demo
-- [v0.2.0]: cels_register(NCurses) is the developer API — fixed in Phase 0 (Name_register alias)
-- [v0.2.0]: Module provides CEL_Define(NCursesWindow, ...) + call macro — developer writes NCursesWindow(.title = "X") {}
-- [v0.2.0]: cel_watch(entity, NCurses_WindowState) for reactive state reading — recomposes on resize
+- [v0.2.0]: cels_register(NCurses) is the developer API -- fixed in Phase 0 (Name_register alias)
+- [v0.2.0]: Module provides CEL_Define(NCursesWindow, ...) + call macro -- developer writes NCursesWindow(.title = "X") {}
+- [v0.2.0]: cel_watch(entity, NCurses_WindowState) for reactive state reading -- recomposes on resize
 - [v0.2.0]: CELS_REGISTER phase removed in Phase 0 (7-phase pipeline)
 - [v0.2.0]: Dual-remote: Luke-42-studios/cels (origin/dev), 42-Galaxies/cels (public)
 - [v0.2.0]: cels repo working branch is v0.6.0 (branched from main after v0.5.1 merge)
@@ -55,6 +55,9 @@ Progress: [███░░░░░░░] 29% (2/7 phases)
 - [P1-02]: ncurses_terminal_init() extracted to take NCurses_WindowConfig* instead of global config
 - [P1-02]: Strong symbol overrides of weak stubs for all 4 registration functions
 - [P1-02]: Input 'q' handler calls cels_request_quit() for session loop integration
+- [P1-03]: Deleted 11 legacy files (2318 lines) -- Engine, CelsNcurses, widgets, space_invaders
+- [P1-03]: minimal.c reference implementation proves full lifecycle: register -> entity -> watch -> session
+- [P1-03]: CMake minimal target links cels-ncurses INTERFACE library for consumer compilation
 
 ### Carried Forward from v1.1
 
@@ -67,11 +70,11 @@ Progress: [███░░░░░░░] 29% (2/7 phases)
 
 ### Blockers/Concerns
 
-- tui_window.h CELS_WindowState reference resolved in Plan 02 (header stripped, old types removed)
-- tui_engine.c still present with old Engine/CelsNcurses code -- Plan 03 handles deletion
+- Phase 1 awaiting human verification that minimal example builds and runs
+- TUI_Input_use() no-op stub still in tui_input.c (dead code, can be cleaned up in Phase 3)
 
 ## Session Continuity
 
-Last session: 2026-02-28T18:30:52Z
-Stopped at: Completed 01-02-PLAN.md (observer/system wiring)
+Last session: 2026-02-28T18:36:40Z
+Stopped at: Completed 01-03-PLAN.md, awaiting checkpoint:human-verify
 Resume file: None
