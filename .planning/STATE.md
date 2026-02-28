@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-26)
 
 Milestone: v0.2.0 ECS Module Architecture
 Phase: 1 of 6 (Module Boundary)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-02-28 -- Completed 01-01-PLAN.md (module API surface)
+Last activity: 2026-02-28 -- Completed 01-02-PLAN.md (observer/system wiring)
 
-Progress: [██░░░░░░░░] 14% (1/7 phases)
+Progress: [███░░░░░░░] 29% (2/7 phases)
 
 ## Performance Metrics
 
@@ -31,7 +31,7 @@ Progress: [██░░░░░░░░] 14% (1/7 phases)
 
 **v0.2.0 Velocity:**
 - Phase 0: 3 plans in ~16 min total
-- Phase 1: Plan 01 in 3 min
+- Phase 1: Plan 01 in 3 min, Plan 02 in 4 min
 
 ## Accumulated Context
 
@@ -51,6 +51,10 @@ Progress: [██░░░░░░░░] 14% (1/7 phases)
 - [P1-01]: Per-TU NCurses_register() static inline delegates to extern NCurses_init() for INTERFACE library pattern
 - [P1-01]: Weak stubs for observer/system registration allow incremental module assembly
 - [P1-01]: cels-widgets dependency removed from NCurses INTERFACE library
+- [P1-02]: Observer-based terminal lifecycle replaces CELS_BackendDesc hook system
+- [P1-02]: ncurses_terminal_init() extracted to take NCurses_WindowConfig* instead of global config
+- [P1-02]: Strong symbol overrides of weak stubs for all 4 registration functions
+- [P1-02]: Input 'q' handler calls cels_request_quit() for session loop integration
 
 ### Carried Forward from v1.1
 
@@ -63,10 +67,11 @@ Progress: [██░░░░░░░░] 14% (1/7 phases)
 
 ### Blockers/Concerns
 
-- tui_window.h references CELS_WindowState type removed from cels core -- will be resolved in Plan 02/03
+- tui_window.h CELS_WindowState reference resolved in Plan 02 (header stripped, old types removed)
+- tui_engine.c still present with old Engine/CelsNcurses code -- Plan 03 handles deletion
 
 ## Session Continuity
 
-Last session: 2026-02-28T18:24:13Z
-Stopped at: Completed 01-01-PLAN.md (module API surface)
+Last session: 2026-02-28T18:30:52Z
+Stopped at: Completed 01-02-PLAN.md (observer/system wiring)
 Resume file: None
