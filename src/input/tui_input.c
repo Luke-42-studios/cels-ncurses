@@ -187,6 +187,7 @@ static void tui_read_input_ncurses(void) {
             if (g_tui_running_ptr) {
                 *g_tui_running_ptr = 0;
             }
+            cels_request_quit();
             return;  /* Do NOT set any input field -- immediate quit */
 
         /* Mouse events -- drain all queued events per frame */
@@ -255,8 +256,7 @@ static void tui_read_input_ncurses(void) {
                 return;
             }
 
-            fprintf(stderr, "[resize] COLS=%d LINES=%d (was %dx%d)\n",
-                    COLS, LINES, TUI_WindowState.width, TUI_WindowState.height);
+            fprintf(stderr, "[resize] COLS=%d LINES=%d\n", COLS, LINES);
 
             /* Backend-specific cleanup: resize ncurses layers and invalidate.
              * Dimension state (Engine_WindowState, CEL_Window) is NOT updated
@@ -314,17 +314,25 @@ static void tui_input_system_callback(ecs_iter_t* it) {
 }
 
 /* ============================================================================
- * TUI_Input_use -- Provider Registration
+ * ncurses_register_input_system -- Module entry point
  * ============================================================================
  *
- * Called by Use(TUI_Input) inside Build() block.
- * Gets the running pointer from TUI_Window and registers the ECS system.
- * Initializes mouse event handling via mousemask().
+ * Called by CEL_Module(NCurses) init body. Sets up the running pointer
+ * bridge, registers custom key sequences, initializes mouse handling,
+ * and registers the ECS input system at OnLoad phase.
+ *
+ * Overrides the weak stub in ncurses_module.c.
+ *
+ * NOTE: Custom key definitions (define_key) and mouse init (mousemask)
+ * require ncurses to be active. However, the module registers this at
+ * init time before the window observer fires. These calls are deferred
+ * in practice because the ECS system callback only runs after the
+ * pipeline starts, at which point ncurses is active. The define_key
+ * and mousemask calls here are safe because ncurses tolerates them
+ * before initscr -- they take effect once initscr runs.
  */
 
-void TUI_Input_use(TUI_Input config) {
-    (void)config;
-
+void ncurses_register_input_system(void) {
     /* Get running pointer from window provider for quit signaling */
     g_tui_running_ptr = tui_window_get_running_ptr();
 
@@ -351,12 +359,11 @@ void TUI_Input_use(TUI_Input config) {
     mouseinterval(0);  /* Disable click detection -- raw press/release only */
     g_mouse_initialized = 1;
 
-    /* Register ECS system at OnLoad phase
-     * Same pattern as CELS_LifecycleSystem in cels.cpp */
+    /* Register ECS system at OnLoad phase */
     ecs_world_t* world = cels_get_world(cels_get_context());
     ecs_system_desc_t sys_desc = {0};
     ecs_entity_desc_t entity_desc = {0};
-    entity_desc.name = "TUI_InputSystem";
+    entity_desc.name = "NCurses_InputSystem";
     ecs_id_t phase_ids[3] = {
         ecs_pair(EcsDependsOn, EcsOnLoad),
         EcsOnLoad,
@@ -366,6 +373,19 @@ void TUI_Input_use(TUI_Input config) {
     sys_desc.entity = ecs_entity_init(world, &entity_desc);
     sys_desc.callback = tui_input_system_callback;
     ecs_system_init(world, &sys_desc);
+}
+
+/* ============================================================================
+ * TUI_Input_use -- Legacy Provider Registration (no-op stub)
+ * ============================================================================
+ *
+ * Kept as a no-op for backward compatibility with tui_engine.c.
+ * Plan 03 deletes tui_engine.c and this stub.
+ */
+
+void TUI_Input_use(TUI_Input config) {
+    (void)config;
+    /* No-op: input system is now registered by ncurses_register_input_system() */
 }
 
 /* ============================================================================

@@ -35,6 +35,7 @@
 #include <cels-ncurses/tui_frame.h>
 #include <cels-ncurses/tui_layer.h>
 #include <cels-ncurses/tui_subcell.h>
+#include <cels-ncurses/tui_window.h>
 #include <ncurses.h>
 #include <panel.h>
 #include <time.h>
@@ -212,12 +213,14 @@ TUI_Layer* tui_frame_get_background(void) {
 
 static void tui_frame_begin_callback(ecs_iter_t* it) {
     (void)it;
+    ncurses_window_frame_update();
     tui_frame_begin();
 }
 
 static void tui_frame_end_callback(ecs_iter_t* it) {
     (void)it;
     tui_frame_end();
+    tui_hook_frame_end();
 }
 
 /* ============================================================================
@@ -262,5 +265,18 @@ void tui_frame_register_systems(void) {
         sys_desc.callback = tui_frame_end_callback;
         ecs_system_init(world, &sys_desc);
     }
+}
+
+/* ============================================================================
+ * ncurses_register_frame_systems -- Module entry point
+ * ============================================================================
+ *
+ * Called by CEL_Module(NCurses) init body. Initializes the frame pipeline
+ * and registers the ECS frame systems. Overrides the weak stub in
+ * ncurses_module.c.
+ */
+void ncurses_register_frame_systems(void) {
+    tui_frame_init();
+    tui_frame_register_systems();
 }
 #endif /* CELS_HAS_ECS */
