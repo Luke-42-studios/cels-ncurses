@@ -30,6 +30,7 @@ find_library(PANEL_LIBRARY NAMES panelw panel)
 add_library(cels-ncurses INTERFACE)
 
 target_sources(cels-ncurses INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ncurses_module.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/window/tui_window.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/input/tui_input.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/tui_engine.c
@@ -56,7 +57,6 @@ target_link_libraries(cels-ncurses INTERFACE
     ${CURSES_LIBRARIES}
     ${PANEL_LIBRARY}
     cels
-    cels-widgets
     m
 )
 
