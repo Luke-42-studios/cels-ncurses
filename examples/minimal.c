@@ -15,76 +15,34 @@
  */
 
 /*
- * Minimal CELS ncurses Example
+ * Minimal CELS NCurses Example
  *
- * The absolute minimum to get a CELS TUI app running:
- * - CEL_Build sets up the application
- * - TUI_Engine_use configures the ncurses backend
- * - tui_widgets_register enables the standard widget renderers
- * - CEL_Root re-renders on state changes
- * - Press 'q' to quit (built into the TUI input provider)
+ * Demonstrates the Phase 1 entity-component API:
+ *   - cels_register(NCurses) to load the NCurses module
+ *   - NCursesWindow() call macro to create a window entity
+ *   - cel_watch() for reactive state reading (recomposes on resize)
+ *   - cels_session / cels_running / cels_step for the main loop
  *
- * Build & run:
- *   ./modules/cels-ncurses/examples/run_minimal.sh
+ * Opens a blank terminal window at 30fps. Press 'q' or Ctrl+C to exit.
  */
 
-#define _POSIX_C_SOURCE 200809L
 #include <cels/cels.h>
-#include <cels-widgets/widgets.h>
-#include <cels-ncurses/tui_engine.h>
-#include <cels-ncurses/tui_widgets.h>
+#include <cels-ncurses/ncurses.h>
 
-/* ============================================================================
- * Compositions
- * ============================================================================ */
+CEL_Composition(World) {
+    cel_entity_t win = NCursesWindow(.title = "Phase 1 Test", .fps = 30) {}
 
-/* Content area: centered greeting */
-#define HelloContent(...) cel_init(HelloContent, __VA_ARGS__)
-CEL_Composition(HelloContent) {
-    (void)props;
-    cel_has(W_TabContent,
-        .text = "Hello CELS!",
-        .hint = "This is a minimal cels-ncurses example"
-    );
-}
-
-/* Status bar: quit hint at the bottom */
-#define HelloStatus(...) cel_init(HelloStatus, __VA_ARGS__)
-CEL_Composition(HelloStatus) {
-    (void)props;
-    cel_has(W_StatusBar,
-        .left  = "minimal example",
-        .right = "q:quit "
-    );
-}
-
-/* ============================================================================
- * Root Composition
- * ============================================================================ */
-
-CEL_Root(AppUI, TUI_EngineContext) {
-    TUI_WindowState_t* win = CEL_WatchId(ctx.windowState, TUI_WindowState_t);
-
-    if (win->state == WINDOW_STATE_READY) {
-        HelloContent() {}
-        HelloStatus() {}
+    /* Reactive state read -- recomposes on terminal resize (SIGWINCH) */
+    const NCurses_WindowState* state = cel_watch(win, NCurses_WindowState);
+    if (state) {
+        /* Window dimensions available after observer init */
+        (void)state;  /* Phase 1: just proves cel_watch works */
     }
 }
 
-/* ============================================================================
- * Application Entry Point
- * ============================================================================ */
-
-CEL_Build(Minimal) {
-    (void)props;
-
-    Widgets_init();
-    TUI_Engine_use((TUI_EngineConfig){
-        .title   = "CELS Minimal",
-        .version = "0.1.0",
-        .fps     = 30,
-        .root    = AppUI
-    });
-
-    tui_widgets_register();
+cels_main() {
+    cels_register(NCurses);
+    cels_session(World) {
+        while (cels_running()) cels_step(0);
+    }
 }
