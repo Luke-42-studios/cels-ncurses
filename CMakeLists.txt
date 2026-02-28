@@ -33,7 +33,6 @@ target_sources(cels-ncurses INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ncurses_module.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/window/tui_window.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/input/tui_input.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/tui_engine.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_color.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_draw.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_scissor.c
@@ -79,4 +78,11 @@ target_include_directories(draw_test PRIVATE
 target_compile_definitions(draw_test PRIVATE _XOPEN_SOURCE=700 _DEFAULT_SOURCE)
 target_link_libraries(draw_test PRIVATE ${CURSES_LIBRARIES} ${PANEL_LIBRARY} m)
 set_target_properties(draw_test PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED ON)
+
+# ============================================================================
+# Minimal example (uses CELS framework via cels-ncurses INTERFACE library)
+# ============================================================================
+add_executable(minimal ${CMAKE_CURRENT_SOURCE_DIR}/examples/minimal.c)
+target_link_libraries(minimal PRIVATE cels-ncurses)
+set_target_properties(minimal PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED ON)
 
