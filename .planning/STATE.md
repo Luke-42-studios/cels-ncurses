@@ -5,15 +5,15 @@
 See: .planning/PROJECT.md (updated 2026-02-26)
 
 **Core value:** Provide a low-level drawing primitive API that a future cels-clay module can target to render Clay UI layouts in the terminal
-**Current focus:** v0.2.0 Phase 2 - Window Entity (Phase 1.1 CELS API Purge COMPLETE)
+**Current focus:** v0.2.0 Phase 3 - Input System (Phases 1, 1.1 COMPLETE, Phase 2 absorbed into P1)
 
 ## Current Position
 
 Milestone: v0.2.0 ECS Module Architecture
-Phase: 1.1 of 6 (CELS API Purge) -- COMPLETE
+Phase: 1.1 of 6 (CELS API Purge) -- COMPLETE, verified 7/7 must-haves
 Plan: 2 of 2 in current phase (phase complete)
-Status: Phase 1.1 complete -- ready for Phase 2 (Window Entity)
-Last activity: 2026-02-28 -- Completed 01.1-02-PLAN.md (system registration purge + build verification)
+Status: Phase 1.1 verified -- ready for Phase 3 (Input System)
+Last activity: 2026-02-28 -- Phase 1.1 execution complete and verified
 
 Progress: [██████░░░░] 57% (8/14 estimated plans)
 
@@ -83,6 +83,7 @@ Progress: [██████░░░░] 57% (8/14 estimated plans)
 ### Blockers/Concerns
 
 - Phase 1 awaiting human verification that minimal example builds and runs
+- Phase 1.1 verified structurally; runtime build/run confirmation recommended
 - cmake-build-debug directory configured standalone (no cels dependency); build verified via temporary wrapper project
 
 ## Session Continuity
