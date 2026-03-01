@@ -5,17 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-02-26)
 
 **Core value:** Provide a low-level drawing primitive API that a future cels-clay module can target to render Clay UI layouts in the terminal
-**Current focus:** v0.2.0 Phase 1.2 - Window Lifecycle Rewrite
+**Current focus:** v0.2.0 Phase 3 - Input System (next)
 
 ## Current Position
 
 Milestone: v0.2.0 ECS Module Architecture
 Phase: 1.2 of 6 (Window Lifecycle Rewrite)
-Plan: 1 of 2 in current phase
-Status: In progress -- CELS entity component get/set API added
-Last activity: 2026-03-01 -- Completed 01.2-01-PLAN.md
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-03-01 -- Completed 01.2-02-PLAN.md
 
-Progress: [██████░░░░] 60% (9/15 estimated plans)
+Progress: [███████░░░] 70% (10/15 estimated plans)
 
 ## Performance Metrics
 
@@ -33,7 +33,7 @@ Progress: [██████░░░░] 60% (9/15 estimated plans)
 - Phase 0: 3 plans in ~16 min total
 - Phase 1: Plan 01 in 3 min, Plan 02 in 4 min, Plan 03 in 3 min (10 min total)
 - Phase 1.1: Plan 01 in 4 min, Plan 02 in 18 min (22 min total; Plan 02 included build config debugging)
-- Phase 1.2: Plan 01 in 2 min (CELS repo entity component API)
+- Phase 1.2: Plan 01 in 2 min, Plan 02 in 7 min (9 min total)
 
 ## Accumulated Context
 
@@ -70,6 +70,12 @@ Progress: [██████░░░░] 60% (9/15 estimated plans)
 - [P1.2-01]: cels_entity_set_component() wraps ecs_set_id -- entity component mutation without flecs.h
 - [P1.2-01]: cels_entity_get_component() wraps ecs_get_id -- entity component read without flecs.h
 - [P1.2-01]: Work done in CELS repo v0.5.2 branch (not v0.6.0)
+- [P1.2-02]: CEL_Lifecycle + CEL_Observe replaces flecs bridge for window lifecycle
+- [P1.2-02]: Lifecycle/observers/composition colocated in ncurses_module.c (same TU for static variable visibility)
+- [P1.2-02]: on_create observer does NOT set components -- initial WindowState via cel_has in composition
+- [P1.2-02]: cels_lifecycle_bind_entity() used (cel_lifecycle() composition verb does not exist)
+- [P1.2-02]: cels_entity_set_component always paired with cels_component_notify_change for reactivity
+- [P1.2-02]: Bridge files deleted, flecs INTERFACE link removed -- zero flecs.h in cels-ncurses
 
 ### Carried Forward from v1.1
 
@@ -83,17 +89,18 @@ Progress: [██████░░░░] 60% (9/15 estimated plans)
 ### Roadmap Evolution
 
 - Phase 1.1 inserted after Phase 1: CELS API Purge -- COMPLETED (all flecs API calls confined to bridge file)
-- Phase 1.2 inserted after Phase 1.1: Window Lifecycle Rewrite -- CELS entity component API added (Plan 01), bridge replacement pending (Plan 02)
+- Phase 1.2 inserted after Phase 1.1: Window Lifecycle Rewrite -- COMPLETED (bridge deleted, lifecycle-driven window, zero flecs.h)
 
 ### Blockers/Concerns
 
 - Phase 1 awaiting human verification that minimal example builds and runs
 - Phase 1.1 verified structurally; runtime build/run confirmation recommended
-- cmake-build-debug directory configured standalone (no cels dependency); build verified via temporary wrapper project
+- Phase 1.2 build verified via wrapper project; runtime confirmation recommended
+- cmake-build-debug directory configured standalone (no cels dependency); wrapper build at /tmp/cels-ncurses-build used for verification
 - Phase 1.2 Plan 01 committed to CELS v0.5.2 branch -- must be available when cels-ncurses builds against cels
 
 ## Session Continuity
 
-Last session: 2026-03-01T20:30:01Z
-Stopped at: Completed 01.2-01-PLAN.md (CELS entity component get/set API)
+Last session: 2026-03-01T20:39:06Z
+Stopped at: Completed 01.2-02-PLAN.md (bridge deletion, lifecycle rewrite)
 Resume file: None
