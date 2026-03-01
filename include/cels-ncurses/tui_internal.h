@@ -17,11 +17,11 @@
 /*
  * NCurses Module - Internal Function Declarations
  *
- * Forward declarations for observer/system registration functions called
- * by the CEL_Module(NCurses) init body. These are implemented in:
- *   - tui_window.c  (window observer, Plan 02)
- *   - tui_input.c   (input system, Phase 3)
- *   - tui_frame.c   (frame pipeline systems)
+ * Forward declarations for lifecycle accessors and system registration
+ * functions called by ncurses_module.c. Implementations live in:
+ *   - tui_window.c  (terminal init/shutdown, window accessors)
+ *   - tui_input.c   (input system registration)
+ *   - tui_frame.c   (frame pipeline systems registration)
  *
  * This header is NOT included by consumers -- only by ncurses_module.c.
  */
@@ -29,20 +29,20 @@
 #ifndef CELS_NCURSES_TUI_INTERNAL_H
 #define CELS_NCURSES_TUI_INTERNAL_H
 
-/* Window observer: reacts to NCurses_WindowConfig being added to an entity.
- * Initializes ncurses terminal and attaches NCurses_WindowState. */
-extern void ncurses_register_window_observer(void);
+#include <cels-ncurses/tui_ncurses.h>
+#include <stdbool.h>
 
-/* Window remove observer: reacts to NCurses_WindowConfig being removed.
- * Shuts down ncurses terminal cleanly. */
-extern void ncurses_register_window_remove_observer(void);
+/* Window lifecycle accessors -- called by observers in ncurses_module.c */
+extern void ncurses_terminal_init(NCurses_WindowConfig* config);
+extern void ncurses_terminal_shutdown(void);
+extern void ncurses_window_set_entity(cels_entity_t entity);
+extern cels_entity_t ncurses_window_get_entity(void);
+extern bool ncurses_window_is_active(void);
 
-/* Input system: runs at OnLoad phase, reads getch() each frame,
- * populates input state. */
+/* Input system registration */
 extern void ncurses_register_input_system(void);
 
-/* Frame pipeline systems: registers frame_begin (PreStore) and
- * frame_end (PostFrame) systems. */
+/* Frame pipeline systems registration */
 extern void ncurses_register_frame_systems(void);
 
 #endif /* CELS_NCURSES_TUI_INTERNAL_H */

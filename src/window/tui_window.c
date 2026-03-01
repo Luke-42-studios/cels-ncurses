@@ -18,19 +18,19 @@
  * TUI Window - Terminal Lifecycle
  *
  * Provides terminal initialization, shutdown, and per-frame update.
- * Observer callbacks and registration live in ncurses_ecs_bridge.c;
- * this file exposes accessor functions for the bridge to reach
- * g_window_entity and the terminal init/shutdown routines.
+ * Lifecycle observers in ncurses_module.c call ncurses_terminal_init()
+ * and ncurses_terminal_shutdown() via extern declarations in tui_internal.h.
  *
  * ncurses_window_frame_update() is called each frame by the frame pipeline
  * to update window dimensions on resize and propagate delta_time.
+ * Component mutations use cels_entity_set_component() + cels_component_notify_change()
+ * to trigger cel_watch reactivity in application compositions.
  */
 
 #define _POSIX_C_SOURCE 199309L
 #include <cels-ncurses/tui_window.h>
 #include <cels-ncurses/tui_ncurses.h>
 #include <cels-ncurses/tui_color.h>
-#include "ncurses_ecs_bridge.h"
 #include <cels/cels.h>
 #include <ncurses.h>
 #include <unistd.h>
@@ -84,16 +84,17 @@ static void cleanup_endwin(void) {
 }
 
 /* ============================================================================
- * Bridge Accessor Functions
+ * Window Lifecycle Accessors
  * ============================================================================
  *
- * The ECS bridge (ncurses_ecs_bridge.c) needs access to g_window_entity
- * and terminal init/shutdown. These accessors keep g_window_entity static
- * to this file while allowing the bridge to read and write it.
+ * Called by CEL_Observe(NCursesWindowLC, on_create/on_destroy) in
+ * ncurses_module.c. These accessors keep g_window_entity static to this
+ * file while allowing the lifecycle observers to read and write it.
  */
 
-cels_entity_t ncurses_bridge_get_window_entity(void) { return g_window_entity; }
-void ncurses_bridge_set_window_entity(cels_entity_t entity) { g_window_entity = entity; }
+void ncurses_window_set_entity(cels_entity_t entity) { g_window_entity = entity; }
+cels_entity_t ncurses_window_get_entity(void) { return g_window_entity; }
+bool ncurses_window_is_active(void) { return g_ncurses_active != 0; }
 
 /* ============================================================================
  * Terminal Init (extracted from old tui_hook_startup)
@@ -162,8 +163,8 @@ void ncurses_terminal_shutdown(void) {
  *   2. Detect terminal resize (COLS/LINES changed) and update WindowState
  *   3. Check g_running -- if false, set WindowState.running = false and quit
  *
- * On resize, ncurses_component_set triggers recomposition for anything
- * watching NCurses_WindowState via cel_watch().
+ * On resize, cels_entity_set_component + cels_component_notify_change
+ * triggers recomposition for anything watching NCurses_WindowState via cel_watch().
  */
 
 void ncurses_window_frame_update(void) {
@@ -186,8 +187,9 @@ void ncurses_window_frame_update(void) {
             .actual_fps = (g_delta_time > 0.0f) ? 1.0f / g_delta_time : 0.0f,
             .delta_time = g_delta_time
         };
-        ncurses_component_set(g_window_entity, NCurses_WindowState_id,
-                               &state, sizeof(NCurses_WindowState));
+        cels_entity_set_component(g_window_entity, NCurses_WindowState_id,
+                                   &state, sizeof(NCurses_WindowState));
+        cels_component_notify_change(NCurses_WindowState_id);
         cels_request_quit();
         return;
     }
@@ -211,8 +213,9 @@ void ncurses_window_frame_update(void) {
             .actual_fps = (g_delta_time > 0.0f) ? 1.0f / g_delta_time : 0.0f,
             .delta_time = g_delta_time
         };
-        ncurses_component_set(g_window_entity, NCurses_WindowState_id,
-                               &state, sizeof(NCurses_WindowState));
+        cels_entity_set_component(g_window_entity, NCurses_WindowState_id,
+                                   &state, sizeof(NCurses_WindowState));
+        cels_component_notify_change(NCurses_WindowState_id);
     }
 }
 
