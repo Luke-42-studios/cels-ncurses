@@ -37,7 +37,7 @@
 #include "cels-ncurses/tui_layer.h"
 #include "cels-ncurses/tui_frame.h"
 #include <ncurses.h>
-#include <flecs.h>
+#include <cels/cels.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -301,16 +301,17 @@ static void tui_read_input_ncurses(void) {
 }
 
 /* ============================================================================
- * ECS System Callback
+ * ECS System Definition -- replaces raw ecs_system_init boilerplate
  * ============================================================================
  *
- * Standalone system (no query terms) registered at OnLoad phase.
- * Runs once per frame inside Engine_Progress().
+ * CEL_System generates NCurses_InputSystem_register() with external linkage.
+ * The system runs once per frame at OnLoad phase (before rendering).
  */
 
-static void tui_input_system_callback(ecs_iter_t* it) {
-    (void)it;
-    tui_read_input_ncurses();
+CEL_System(NCurses_InputSystem, .phase = OnLoad) {
+    cel_run {
+        tui_read_input_ncurses();
+    }
 }
 
 /* ============================================================================
@@ -359,33 +360,8 @@ void ncurses_register_input_system(void) {
     mouseinterval(0);  /* Disable click detection -- raw press/release only */
     g_mouse_initialized = 1;
 
-    /* Register ECS system at OnLoad phase */
-    ecs_world_t* world = cels_get_world(cels_get_context());
-    ecs_system_desc_t sys_desc = {0};
-    ecs_entity_desc_t entity_desc = {0};
-    entity_desc.name = "NCurses_InputSystem";
-    ecs_id_t phase_ids[3] = {
-        ecs_pair(EcsDependsOn, EcsOnLoad),
-        EcsOnLoad,
-        0
-    };
-    entity_desc.add = phase_ids;
-    sys_desc.entity = ecs_entity_init(world, &entity_desc);
-    sys_desc.callback = tui_input_system_callback;
-    ecs_system_init(world, &sys_desc);
-}
-
-/* ============================================================================
- * TUI_Input_use -- Legacy Provider Registration (no-op stub)
- * ============================================================================
- *
- * Kept as a no-op for backward compatibility with tui_engine.c.
- * Plan 03 deletes tui_engine.c and this stub.
- */
-
-void TUI_Input_use(TUI_Input config) {
-    (void)config;
-    /* No-op: input system is now registered by ncurses_register_input_system() */
+    /* Register ECS system at OnLoad phase via CELS macro */
+    NCurses_InputSystem_register();
 }
 
 /* ============================================================================

@@ -130,19 +130,6 @@ extern const TUI_InputState* tui_input_get_state(void);
 /* Convenience getter for mouse position (NULL-safe for either parameter) */
 extern void tui_input_get_mouse_position(int *x, int *y);
 
-/* ============================================================================
- * TUI_Input Provider Config
- * ============================================================================
- *
- * Zero-config provider. C requires at least one struct field.
- */
-typedef struct TUI_Input {
-    int _placeholder;
-} TUI_Input;
-
-/* Provider registration function (called by Use() macro) */
-extern void TUI_Input_use(TUI_Input config);
-
 /*
  * Quit guard: when set, 'q'/'Q' calls the guard function before quitting.
  * If guard returns true, the key is passed through as raw_key instead of
