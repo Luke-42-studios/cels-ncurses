@@ -54,7 +54,6 @@ add_library(cels-ncurses INTERFACE)
 
 target_sources(cels-ncurses INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ncurses_module.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/ncurses_ecs_bridge.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/window/tui_window.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/input/tui_input.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_color.c
@@ -67,7 +66,6 @@ target_sources(cels-ncurses INTERFACE
 
 target_include_directories(cels-ncurses INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/src       # internal headers (ncurses_ecs_bridge.h)
     ${CURSES_INCLUDE_DIRS}
 )
 
@@ -83,14 +81,6 @@ target_link_libraries(cels-ncurses INTERFACE
     cels
     m
 )
-
-# Temporary: bridge file includes <flecs.h> directly.
-# Removed in Phase 1.2 when bridge is replaced by CEL_Lifecycle + CEL_Observe.
-if(TARGET flecs::flecs_static)
-    target_link_libraries(cels-ncurses INTERFACE flecs::flecs_static)
-elseif(TARGET flecs)
-    target_link_libraries(cels-ncurses INTERFACE flecs)
-endif()
 
 # ============================================================================
 # Drawing primitives visual test (standalone, no CELS framework)

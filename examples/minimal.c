@@ -30,7 +30,10 @@
 #include <cels-ncurses/ncurses.h>
 
 CEL_Composition(World) {
-    cel_entity_t win = NCursesWindow(.title = "Phase 1 Test", .fps = 30) {}
+    cels_entity_t win = 0;
+    NCursesWindow(.title = "Phase 1.2 Lifecycle Test", .fps = 30) {
+        win = cels_get_current_entity();
+    }
 
     /* Reactive state read -- recomposes on terminal resize (SIGWINCH) */
     const NCurses_WindowState* state = cel_watch(win, NCurses_WindowState);
