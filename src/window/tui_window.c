@@ -15,15 +15,12 @@
  */
 
 /*
- * TUI Window - Observer-Based Terminal Lifecycle
+ * TUI Window - Terminal Lifecycle
  *
- * Implements the NCurses window lifecycle via flecs observers:
- *   - EcsOnSet NCurses_WindowConfig  -> initialize terminal, attach WindowState
- *   - EcsOnRemove NCurses_WindowConfig -> shut down terminal cleanly
- *
- * The observer fires when a developer adds NCurses_WindowConfig to an entity
- * (typically via the NCursesWindow() call macro). Single window entity
- * enforced -- second config logs warning and is ignored.
+ * Provides terminal initialization, shutdown, and per-frame update.
+ * Observer callbacks and registration live in ncurses_ecs_bridge.c;
+ * this file exposes accessor functions for the bridge to reach
+ * g_window_entity and the terminal init/shutdown routines.
  *
  * ncurses_window_frame_update() is called each frame by the frame pipeline
  * to update window dimensions on resize and propagate delta_time.
@@ -33,8 +30,8 @@
 #include <cels-ncurses/tui_window.h>
 #include <cels-ncurses/tui_ncurses.h>
 #include <cels-ncurses/tui_color.h>
+#include "ncurses_ecs_bridge.h"
 #include <cels/cels.h>
-#include <flecs.h>
 #include <ncurses.h>
 #include <unistd.h>
 #include <signal.h>
@@ -49,7 +46,7 @@
  * ============================================================================ */
 
 /* The single window entity (0 = no window) */
-static ecs_entity_t g_window_entity = 0;
+static cels_entity_t g_window_entity = 0;
 
 static volatile int g_running = 1;
 static int g_ncurses_active = 0;
@@ -87,6 +84,18 @@ static void cleanup_endwin(void) {
 }
 
 /* ============================================================================
+ * Bridge Accessor Functions
+ * ============================================================================
+ *
+ * The ECS bridge (ncurses_ecs_bridge.c) needs access to g_window_entity
+ * and terminal init/shutdown. These accessors keep g_window_entity static
+ * to this file while allowing the bridge to read and write it.
+ */
+
+cels_entity_t ncurses_bridge_get_window_entity(void) { return g_window_entity; }
+void ncurses_bridge_set_window_entity(cels_entity_t entity) { g_window_entity = entity; }
+
+/* ============================================================================
  * Terminal Init (extracted from old tui_hook_startup)
  * ============================================================================
  *
@@ -95,7 +104,7 @@ static void cleanup_endwin(void) {
  * and stores FPS for timing calculations.
  */
 
-static void ncurses_terminal_init(NCurses_WindowConfig* config) {
+void ncurses_terminal_init(NCurses_WindowConfig* config) {
     signal(SIGINT, tui_sigint_handler);
     atexit(cleanup_endwin);
 
@@ -137,97 +146,11 @@ static void ncurses_terminal_init(NCurses_WindowConfig* config) {
  * Terminal Shutdown
  * ============================================================================ */
 
-static void ncurses_terminal_shutdown(void) {
+void ncurses_terminal_shutdown(void) {
     if (g_ncurses_active && !isendwin()) {
         endwin();
         g_ncurses_active = 0;
     }
-}
-
-/* ============================================================================
- * Observer: on_window_config_set (EcsOnSet NCurses_WindowConfig)
- * ============================================================================
- *
- * When a developer creates an entity with NCurses_WindowConfig, this observer
- * fires and initializes the ncurses terminal. It attaches NCurses_WindowState
- * to the same entity with initial dimensions and running state.
- *
- * Single window entity enforced: if g_window_entity is already set, log
- * warning and ignore.
- */
-
-static void on_window_config_set(ecs_iter_t* it) {
-    if (g_window_entity != 0) {
-        fprintf(stderr, "[NCurses] Warning: only one window entity allowed, ignoring\n");
-        return;
-    }
-
-    NCurses_WindowConfig* configs = ecs_field(it, NCurses_WindowConfig, 0);
-    for (int i = 0; i < it->count; i++) {
-        g_window_entity = it->entities[i];
-
-        /* Initialize ncurses terminal */
-        ncurses_terminal_init(&configs[i]);
-
-        /* Attach NCurses_WindowState to the same entity */
-        ecs_world_t* world = it->world;
-        NCurses_WindowState state = {
-            .width = COLS,
-            .height = LINES,
-            .running = true,
-            .actual_fps = (float)g_target_fps,
-            .delta_time = g_delta_time
-        };
-        ecs_set_id(world, it->entities[i], NCurses_WindowState_id,
-                   sizeof(NCurses_WindowState), &state);
-    }
-}
-
-/* ============================================================================
- * Observer: on_window_config_removed (EcsOnRemove NCurses_WindowConfig)
- * ============================================================================ */
-
-static void on_window_config_removed(ecs_iter_t* it) {
-    (void)it;
-    ncurses_terminal_shutdown();
-    g_window_entity = 0;
-}
-
-/* ============================================================================
- * Observer Registration Functions
- * ============================================================================
- *
- * These override the weak stubs in ncurses_module.c.
- */
-
-void ncurses_register_window_observer(void) {
-    ecs_world_t* world = cels_get_world(cels_get_context());
-
-    /* Ensure the component ID is populated in this TU */
-    cels_ensure_component(&NCurses_WindowConfig_id, "NCurses_WindowConfig",
-                          sizeof(NCurses_WindowConfig), CELS_ALIGNOF(NCurses_WindowConfig));
-
-    ecs_observer_desc_t desc = {0};
-    ecs_entity_desc_t entity_desc = {0};
-    entity_desc.name = "NCurses_WindowConfigObserver";
-    desc.entity = ecs_entity_init(world, &entity_desc);
-    desc.query.terms[0].id = NCurses_WindowConfig_id;
-    desc.events[0] = EcsOnSet;
-    desc.callback = on_window_config_set;
-    ecs_observer_init(world, &desc);
-}
-
-void ncurses_register_window_remove_observer(void) {
-    ecs_world_t* world = cels_get_world(cels_get_context());
-
-    ecs_observer_desc_t desc = {0};
-    ecs_entity_desc_t entity_desc = {0};
-    entity_desc.name = "NCurses_WindowConfigRemoveObserver";
-    desc.entity = ecs_entity_init(world, &entity_desc);
-    desc.query.terms[0].id = NCurses_WindowConfig_id;
-    desc.events[0] = EcsOnRemove;
-    desc.callback = on_window_config_removed;
-    ecs_observer_init(world, &desc);
 }
 
 /* ============================================================================
@@ -239,8 +162,8 @@ void ncurses_register_window_remove_observer(void) {
  *   2. Detect terminal resize (COLS/LINES changed) and update WindowState
  *   3. Check g_running -- if false, set WindowState.running = false and quit
  *
- * On resize, ecs_set_id triggers recomposition for anything watching
- * NCurses_WindowState via cel_watch().
+ * On resize, ncurses_component_set triggers recomposition for anything
+ * watching NCurses_WindowState via cel_watch().
  */
 
 void ncurses_window_frame_update(void) {
@@ -256,7 +179,6 @@ void ncurses_window_frame_update(void) {
 
     /* Check if quit was requested (SIGINT or input 'q') */
     if (!g_running) {
-        ecs_world_t* world = cels_get_world(cels_get_context());
         NCurses_WindowState state = {
             .width = g_last_cols,
             .height = g_last_lines,
@@ -264,8 +186,8 @@ void ncurses_window_frame_update(void) {
             .actual_fps = (g_delta_time > 0.0f) ? 1.0f / g_delta_time : 0.0f,
             .delta_time = g_delta_time
         };
-        ecs_set_id(world, g_window_entity, NCurses_WindowState_id,
-                   sizeof(NCurses_WindowState), &state);
+        ncurses_component_set(g_window_entity, NCurses_WindowState_id,
+                               &state, sizeof(NCurses_WindowState));
         cels_request_quit();
         return;
     }
@@ -282,7 +204,6 @@ void ncurses_window_frame_update(void) {
 
     /* Update WindowState on entity (always for delta_time, trigger watch on resize) */
     if (resized) {
-        ecs_world_t* world = cels_get_world(cels_get_context());
         NCurses_WindowState state = {
             .width = new_w,
             .height = new_h,
@@ -290,8 +211,8 @@ void ncurses_window_frame_update(void) {
             .actual_fps = (g_delta_time > 0.0f) ? 1.0f / g_delta_time : 0.0f,
             .delta_time = g_delta_time
         };
-        ecs_set_id(world, g_window_entity, NCurses_WindowState_id,
-                   sizeof(NCurses_WindowState), &state);
+        ncurses_component_set(g_window_entity, NCurses_WindowState_id,
+                               &state, sizeof(NCurses_WindowState));
     }
 }
 

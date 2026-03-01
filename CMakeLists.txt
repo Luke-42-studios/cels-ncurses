@@ -31,6 +31,7 @@ add_library(cels-ncurses INTERFACE)
 
 target_sources(cels-ncurses INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ncurses_module.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ncurses_ecs_bridge.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/window/tui_window.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/input/tui_input.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_color.c
@@ -85,4 +86,16 @@ set_target_properties(draw_test PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED ON)
 add_executable(minimal ${CMAKE_CURRENT_SOURCE_DIR}/examples/minimal.c)
 target_link_libraries(minimal PRIVATE cels-ncurses)
 set_target_properties(minimal PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED ON)
+
+# Run targets -- launch in kitty for proper ncurses rendering
+add_custom_target(run_minimal
+    COMMAND kitty --title "minimal" $<TARGET_FILE:minimal>
+    DEPENDS minimal
+    COMMENT "Launching minimal in kitty"
+)
+add_custom_target(run_draw_test
+    COMMAND kitty --title "draw_test" $<TARGET_FILE:draw_test>
+    DEPENDS draw_test
+    COMMENT "Launching draw_test in kitty"
+)
 
