@@ -18,16 +18,20 @@
  * NCurses Module - CEL_Module(NCurses) Definition
  *
  * Single module entry point replacing the old Engine + CelsNcurses facade.
- * Registers all NCurses component types and calls registration stubs for
- * observers and systems.
+ * Registers all NCurses component types, lifecycle, and systems.
  *
  * CEL_Module(NCurses) expands to define:
  *   - cels_entity_t NCurses = 0;   (module entity, file scope)
  *   - void NCurses_init(void)      (idempotent init function)
  *   - NCurses_init_body(void)      (user-provided init body below)
  *
- * CEL_Compose(NCursesWindow) provides the composition body for the
- * NCursesWindow call macro defined in tui_ncurses.h.
+ * CEL_Lifecycle(NCursesWindowLC) defines the window lifecycle with an
+ * active condition. CEL_Observe hooks handle terminal init/shutdown.
+ * CEL_Compose(NCursesWindow) declares both components and binds lifecycle.
+ *
+ * NOTE: Lifecycle, observers, and composition are in the SAME translation
+ * unit because CEL_Lifecycle creates static variables (NCursesWindowLC_id)
+ * that CEL_Compose references via cels_lifecycle_bind_entity().
  *
  * NOTE: This file compiles in the CONSUMER's context (INTERFACE library).
  * The CEL_Module macro generates non-static globals, so this must be the
@@ -35,23 +39,72 @@
  * extern declarations only.
  */
 
+/* Prevent tui_ncurses.h from defining NCurses_register() --
+ * CEL_Module(NCurses) below generates its own. */
+#define _NCURSES_MODULE_IMPL
 #include "cels-ncurses/tui_ncurses.h"
 #include "cels-ncurses/tui_internal.h"
+#include <ncurses.h>
+#include <stdio.h>
+
+/* ============================================================================
+ * Window Lifecycle -- Condition, Lifecycle, Observers
+ * ============================================================================
+ *
+ * NCursesActive condition: returns true when ncurses terminal is active.
+ * NCursesWindowLC lifecycle: driven by NCursesActive condition.
+ * on_create observer: initializes terminal (does NOT set components).
+ * on_destroy observer: shuts down terminal.
+ */
+
+CEL_Condition(NCursesActive) {
+    return ncurses_window_is_active();
+}
+
+CEL_Lifecycle(NCursesWindowLC, .active = &NCursesActive);
+
+CEL_Observe(NCursesWindowLC, on_create) {
+    if (ncurses_window_get_entity() != 0) {
+        fprintf(stderr, "[NCurses] Warning: only one window entity allowed\n");
+        return;
+    }
+    ncurses_window_set_entity(entity);
+
+    /* Read config from entity using CELS public API */
+    const NCurses_WindowConfig* config =
+        (const NCurses_WindowConfig*)cels_entity_get_component(entity, NCurses_WindowConfig_id);
+    if (!config) {
+        fprintf(stderr, "[NCurses] Error: on_create fired but no WindowConfig on entity\n");
+        ncurses_window_set_entity(0);
+        return;
+    }
+
+    ncurses_terminal_init((NCurses_WindowConfig*)config);
+}
+
+CEL_Observe(NCursesWindowLC, on_destroy) {
+    (void)entity;
+    ncurses_terminal_shutdown();
+    ncurses_window_set_entity(0);
+}
+
+/* ============================================================================
+ * CEL_Module(NCurses) -- Module Init Body
+ * ============================================================================ */
 
 CEL_Module(NCurses) {
-    /* Register component types -- cels_ensure_component deduplicates by name */
+    /* Register component types */
     cels_ensure_component(&NCurses_WindowConfig_id, "NCurses_WindowConfig",
                           sizeof(NCurses_WindowConfig), CELS_ALIGNOF(NCurses_WindowConfig));
     cels_ensure_component(&NCurses_WindowState_id, "NCurses_WindowState",
                           sizeof(NCurses_WindowState), CELS_ALIGNOF(NCurses_WindowState));
 
-    /* Register observers (reactive initialization) */
-    ncurses_register_window_observer();        /* EcsOnSet NCurses_WindowConfig -> init terminal */
-    ncurses_register_window_remove_observer(); /* EcsOnRemove -> clean shutdown */
+    /* Register lifecycle (observers auto-register via constructor attribute) */
+    NCursesWindowLC_register();
 
     /* Register systems (frame pipeline) */
-    ncurses_register_input_system();           /* OnLoad: read getch() each frame */
-    ncurses_register_frame_systems();          /* PreStore: frame_begin, PostFrame: frame_end */
+    ncurses_register_input_system();
+    ncurses_register_frame_systems();
 }
 
 /* ============================================================================
@@ -64,9 +117,13 @@ CEL_Module(NCurses) {
  * which calls NCursesWindow_factory -> NCursesWindow_impl.
  *
  * The composition body receives `cel` of type NCursesWindow_props with
- * fields: .title, .fps, .color_mode. It attaches NCurses_WindowConfig
- * to the current entity. The window observer reacts to this component
- * being set and initializes the ncurses terminal.
+ * fields: .title, .fps, .color_mode.
+ *
+ * Declares BOTH NCurses_WindowConfig and NCurses_WindowState via cel_has,
+ * then binds the entity to NCursesWindowLC lifecycle which fires on_create.
+ *
+ * ORDERING: cel_has(WindowConfig) and cel_has(WindowState) MUST come before
+ * cels_lifecycle_bind_entity() because on_create reads config from entity.
  */
 CEL_Compose(NCursesWindow) {
     cel_has(NCurses_WindowConfig,
@@ -74,30 +131,34 @@ CEL_Compose(NCursesWindow) {
         .fps = cel.fps,
         .color_mode = cel.color_mode
     );
+    /* SC5: Declare initial placeholder WindowState in composition.
+     * Real values (COLS/LINES) are set by ncurses_window_frame_update() on first frame. */
+    cel_has(NCurses_WindowState,
+        .width = 0,
+        .height = 0,
+        .running = true,
+        .actual_fps = 0,
+        .delta_time = 0
+    );
+    /* Bind entity to window lifecycle -- fires on_create observer.
+     * Uses cels_lifecycle_bind_entity() because cel_lifecycle() does not exist
+     * as a CELS composition verb. */
+    cels_lifecycle_bind_entity(NCursesWindowLC_id, cels_get_current_entity());
 }
 
 /* ============================================================================
- * Stubs -- replaced by real implementations in later plans/phases
+ * Stubs -- replaced by real implementations when linked
  * ============================================================================
  *
  * These weak symbols allow the module to compile before the real
- * observer/system implementations are wired in. When tui_window.c (Plan 02),
- * tui_input.c (Phase 3), and tui_frame.c provide strong definitions,
- * the linker picks those instead.
+ * system implementations are wired in. When tui_input.c and tui_frame.c
+ * provide strong definitions, the linker picks those instead.
  */
 
-/* Window observer stub -- Plan 02 provides real implementation in tui_window.c */
-__attribute__((weak))
-void ncurses_register_window_observer(void) {}
-
-/* Window remove observer stub -- Plan 02 provides real implementation */
-__attribute__((weak))
-void ncurses_register_window_remove_observer(void) {}
-
-/* Input system stub -- Phase 3 wires tui_input.c's existing system */
+/* Input system stub -- real implementation in tui_input.c */
 __attribute__((weak))
 void ncurses_register_input_system(void) {}
 
-/* Frame systems stub -- Plan 02 wires tui_frame.c's existing systems */
+/* Frame systems stub -- real implementation in tui_frame.c */
 __attribute__((weak))
 void ncurses_register_frame_systems(void) {}
