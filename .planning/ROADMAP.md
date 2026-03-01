@@ -111,7 +111,10 @@ Plans:
   7. No `#include <flecs.h>` in any cels-ncurses source file
   8. Minimal example uses `cel_watch(win, NCurses_WindowState)` for reactive window state
   9. Both minimal and draw_test targets build successfully
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 01.2-01-PLAN.md -- Add cels_entity_set/get_component API to CELS (prerequisite)
+- [ ] 01.2-02-PLAN.md -- Lifecycle rewrite, bridge deletion, build verification
 
 ### Phase 2: Window Entity
 **Goal**: (Absorbed into Phase 1)
@@ -170,7 +173,7 @@ Phases execute in numeric order: 0 (cels repo) -> 1 -> 1.1 -> 1.2 -> 3 -> 4 -> 5
 | 0. CELS Module Registration | v0.2.0 | 3/3 | Complete | 2026-02-27 |
 | 1. Module Boundary | v0.2.0 | 3/3 | Complete | 2026-02-28 |
 | 1.1 CELS API Purge | v0.2.0 | 2/2 | Complete | 2026-02-28 |
-| 1.2 Window Lifecycle Rewrite | v0.2.0 | 0/TBD | Blocked (CELS 30.1) | - |
+| 1.2 Window Lifecycle Rewrite | v0.2.0 | 0/2 | In Progress | - |
 | 2. Window Entity | v0.2.0 | -- | Absorbed into P1 | - |
 | 3. Input System | v0.2.0 | 0/TBD | Not started | - |
 | 4. Layer Entities | v0.2.0 | 0/TBD | Not started | - |
