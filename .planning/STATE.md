@@ -5,17 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-02-26)
 
 **Core value:** Provide a low-level drawing primitive API that a future cels-clay module can target to render Clay UI layouts in the terminal
-**Current focus:** v0.2.0 Phase 1.1 - CELS API Purge IN PROGRESS (Plan 01 done, Plan 02 next)
+**Current focus:** v0.2.0 Phase 2 - Window Entity (Phase 1.1 CELS API Purge COMPLETE)
 
 ## Current Position
 
 Milestone: v0.2.0 ECS Module Architecture
-Phase: 1.1 of 6 (CELS API Purge)
-Plan: 1 of 2 in current phase
-Status: In progress -- Plan 01 complete, Plan 02 (system registration purge) next
-Last activity: 2026-02-28 -- Completed 01.1-01-PLAN.md (ECS bridge + window purge)
+Phase: 1.1 of 6 (CELS API Purge) -- COMPLETE
+Plan: 2 of 2 in current phase (phase complete)
+Status: Phase 1.1 complete -- ready for Phase 2 (Window Entity)
+Last activity: 2026-02-28 -- Completed 01.1-02-PLAN.md (system registration purge + build verification)
 
-Progress: [█████░░░░░] 50% (7/14 estimated plans)
+Progress: [██████░░░░] 57% (8/14 estimated plans)
 
 ## Performance Metrics
 
@@ -32,7 +32,7 @@ Progress: [█████░░░░░] 50% (7/14 estimated plans)
 **v0.2.0 Velocity:**
 - Phase 0: 3 plans in ~16 min total
 - Phase 1: Plan 01 in 3 min, Plan 02 in 4 min, Plan 03 in 3 min (10 min total)
-- Phase 1.1: Plan 01 in 4 min
+- Phase 1.1: Plan 01 in 4 min, Plan 02 in 18 min (22 min total; Plan 02 included build config debugging)
 
 ## Accumulated Context
 
@@ -62,6 +62,10 @@ Progress: [█████░░░░░] 50% (7/14 estimated plans)
 - [P1.1-01]: ncurses_ecs_bridge.c is sole flecs.h contact point for observer/component-set operations
 - [P1.1-01]: Observer callbacks moved to bridge; tui_window.c has zero flecs API references
 - [P1.1-01]: Bridge accessor pattern (get/set) for cross-TU static state access
+- [P1.1-02]: CEL_System(Name, .phase = Phase) { cel_run { body } } pattern for queryless systems
+- [P1.1-02]: TUI_Input_use and TUI_Input type removed (dead code cleanup)
+- [P1.1-02]: flecs::flecs_static added as INTERFACE link for bridge file flecs.h access
+- [P1.1-02]: src/ added as INTERFACE include directory for bridge header access
 
 ### Carried Forward from v1.1
 
@@ -74,17 +78,15 @@ Progress: [█████░░░░░] 50% (7/14 estimated plans)
 
 ### Roadmap Evolution
 
-- Phase 1.1 inserted after Phase 1: CELS API Purge -- replace all direct flecs/ecs calls with CELS abstractions (URGENT)
+- Phase 1.1 inserted after Phase 1: CELS API Purge -- COMPLETED (all flecs API calls confined to bridge file)
 
 ### Blockers/Concerns
 
 - Phase 1 awaiting human verification that minimal example builds and runs
-- tui_window.c purged of flecs API (Plan 01 done); tui_input.c and tui_frame.c still need purge (Plan 02)
-- Build verification deferred to Plan 02 final build
-- TUI_Input_use() no-op stub still in tui_input.c (dead code, can be cleaned up in Phase 3)
+- cmake-build-debug directory configured standalone (no cels dependency); build verified via temporary wrapper project
 
 ## Session Continuity
 
-Last session: 2026-03-01T01:18:26Z
-Stopped at: Completed 01.1-01-PLAN.md (ECS bridge + window purge)
+Last session: 2026-03-01T01:39:23Z
+Stopped at: Completed 01.1-02-PLAN.md (system registration purge + build verification)
 Resume file: None
