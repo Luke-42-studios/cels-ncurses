@@ -5,17 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-02-26)
 
 **Core value:** Provide a low-level drawing primitive API that a future cels-clay module can target to render Clay UI layouts in the terminal
-**Current focus:** v0.2.0 Phase 1.2 - Window Lifecycle Rewrite (BLOCKED on CELS Phase 30.1)
+**Current focus:** v0.2.0 Phase 1.2 - Window Lifecycle Rewrite
 
 ## Current Position
 
 Milestone: v0.2.0 ECS Module Architecture
-Phase: 1.2 of 6 (Window Lifecycle Rewrite) -- BLOCKED on CELS Phase 30.1
-Plan: 0 of TBD in current phase
-Status: Phase 1.2 inserted -- waiting for CEL_Lifecycle + CEL_Observe in CELS
-Last activity: 2026-03-01 -- Phase 1.2 inserted into roadmap
+Phase: 1.2 of 6 (Window Lifecycle Rewrite)
+Plan: 1 of 2 in current phase
+Status: In progress -- CELS entity component get/set API added
+Last activity: 2026-03-01 -- Completed 01.2-01-PLAN.md
 
-Progress: [██████░░░░] 57% (8/14 estimated plans)
+Progress: [██████░░░░] 60% (9/15 estimated plans)
 
 ## Performance Metrics
 
@@ -33,6 +33,7 @@ Progress: [██████░░░░] 57% (8/14 estimated plans)
 - Phase 0: 3 plans in ~16 min total
 - Phase 1: Plan 01 in 3 min, Plan 02 in 4 min, Plan 03 in 3 min (10 min total)
 - Phase 1.1: Plan 01 in 4 min, Plan 02 in 18 min (22 min total; Plan 02 included build config debugging)
+- Phase 1.2: Plan 01 in 2 min (CELS repo entity component API)
 
 ## Accumulated Context
 
@@ -66,6 +67,9 @@ Progress: [██████░░░░] 57% (8/14 estimated plans)
 - [P1.1-02]: TUI_Input_use and TUI_Input type removed (dead code cleanup)
 - [P1.1-02]: flecs::flecs_static added as INTERFACE link for bridge file flecs.h access
 - [P1.1-02]: src/ added as INTERFACE include directory for bridge header access
+- [P1.2-01]: cels_entity_set_component() wraps ecs_set_id -- entity component mutation without flecs.h
+- [P1.2-01]: cels_entity_get_component() wraps ecs_get_id -- entity component read without flecs.h
+- [P1.2-01]: Work done in CELS repo v0.5.2 branch (not v0.6.0)
 
 ### Carried Forward from v1.1
 
@@ -79,16 +83,17 @@ Progress: [██████░░░░] 57% (8/14 estimated plans)
 ### Roadmap Evolution
 
 - Phase 1.1 inserted after Phase 1: CELS API Purge -- COMPLETED (all flecs API calls confined to bridge file)
-- Phase 1.2 inserted after Phase 1.1: Window Lifecycle Rewrite -- replace bridge with CEL_Lifecycle + CEL_Observe (blocked on CELS Phase 30.1)
+- Phase 1.2 inserted after Phase 1.1: Window Lifecycle Rewrite -- CELS entity component API added (Plan 01), bridge replacement pending (Plan 02)
 
 ### Blockers/Concerns
 
 - Phase 1 awaiting human verification that minimal example builds and runs
 - Phase 1.1 verified structurally; runtime build/run confirmation recommended
 - cmake-build-debug directory configured standalone (no cels dependency); build verified via temporary wrapper project
+- Phase 1.2 Plan 01 committed to CELS v0.5.2 branch -- must be available when cels-ncurses builds against cels
 
 ## Session Continuity
 
-Last session: 2026-03-01T01:39:23Z
-Stopped at: Completed 01.1-02-PLAN.md (system registration purge + build verification)
+Last session: 2026-03-01T20:30:01Z
+Stopped at: Completed 01.2-01-PLAN.md (CELS entity component get/set API)
 Resume file: None
