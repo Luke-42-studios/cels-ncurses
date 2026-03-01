@@ -106,8 +106,8 @@ Plans:
   2. `NCursesWindowLC` lifecycle defined with `.active` condition driving window active/suspended state
   3. `CEL_Observe(NCursesWindowLC, on_create)` calls `ncurses_terminal_init()` -- no component setting in observer
   4. `CEL_Observe(NCursesWindowLC, on_destroy)` calls `ncurses_terminal_shutdown()`
-  5. `NCursesWindow` composition declares both `NCurses_WindowConfig` and `NCurses_WindowState` via `cel_has` and attaches lifecycle via `cel_lifecycle(NCursesWindowLC)`
-  6. Frame system updates `NCurses_WindowState` per-frame; `cel_watch` in application composition triggers recomposition only on actual state changes (resize, quit)
+  5. `NCursesWindow` composition declares both `NCurses_WindowConfig` and `NCurses_WindowState` via `cel_has` and attaches lifecycle via `cels_lifecycle_bind_entity(NCursesWindowLC_id, ...)`
+  6. Frame system updates `NCurses_WindowState` per-frame; every `cels_entity_set_component` call is paired with `cels_component_notify_change`; `cel_watch` in application composition triggers recomposition only on actual state changes (resize, quit)
   7. No `#include <flecs.h>` in any cels-ncurses source file
   8. Minimal example uses `cel_watch(win, NCurses_WindowState)` for reactive window state
   9. Both minimal and draw_test targets build successfully
