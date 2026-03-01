@@ -34,8 +34,9 @@ Closed early. Phases 9-10 dropped for v2.0 architecture rethink.
 
 **Milestone Goal:** Restructure cels-ncurses from a monolithic Engine module into a proper CELS ECS module. One `CEL_Module(NCurses)` that registers components, systems, and entities. Developer configures by setting component data on entities; NCurses systems react through ECS queries in pipeline phases.
 
-- [ ] **Phase 0: CELS Module Registration** - Fix CEL_Module macro, remove CELS_REGISTER phase, update docs, set up dual-remote, release v0.5.1 (work in cels repo)
+- [x] **Phase 0: CELS Module Registration** - Fix CEL_Module macro, remove CELS_REGISTER phase, update docs, set up dual-remote, release v0.5.1 (work in cels repo) ✓ 2026-02-27
 - [ ] **Phase 1: Module Boundary** - Replace Engine + CelsNcurses with a single CEL_Module(NCurses) + working window lifecycle (absorbs Phase 2)
+- [ ] **Phase 1.1: CELS API Purge** - Replace all direct flecs/ecs API calls with CELS abstractions (INSERTED)
 - [ ] **Phase 2: Window Entity** - (Absorbed into Phase 1)
 - [ ] **Phase 3: Input System** - Per-frame input reading as a CELS phase system with queryable state
 - [ ] **Phase 4: Layer Entities** - Panel-backed layers created from TUI_Layer components with TUI_DrawContext attachment
@@ -59,9 +60,9 @@ Closed early. Phases 9-10 dropped for v2.0 architecture rethink.
   8. All existing tests pass, review.md and research/ excluded from public
 **Plans:** 3 plans
 Plans:
-- [ ] 00-01-PLAN.md -- Dual-remote setup + release script
-- [ ] 00-02-PLAN.md -- CEL_Module macro fix + CELS_REGISTER phase removal
-- [ ] 00-03-PLAN.md -- Doc updates, version bump, release to public
+- [x] 00-01-PLAN.md -- Dual-remote setup + release script
+- [x] 00-02-PLAN.md -- CEL_Module macro fix + CELS_REGISTER phase removal
+- [x] 00-03-PLAN.md -- Doc updates, version bump, release to public
 
 ### Phase 1: Module Boundary
 **Goal**: Developer imports a single NCurses module that owns all terminal components and systems -- no more Engine facade or sub-module registration. Absorbs Phase 2 (Window Entity) -- module skeleton AND working window lifecycle delivered together.
@@ -79,6 +80,22 @@ Plans:
 - [ ] 01-01-PLAN.md -- New public API headers + module skeleton + CMake update
 - [ ] 01-02-PLAN.md -- Refactor window/input/frame to observer and module-registered systems
 - [ ] 01-03-PLAN.md -- Delete legacy files, rebuild example, verify build
+
+### Phase 1.1: CELS API Purge (INSERTED)
+**Goal**: Eliminate all direct flecs/ecs API usage from cels-ncurses source files. All observer registration, system registration, component manipulation, and world access must go through CELS abstractions (CEL_System, cel_query, cels_ensure_component, cels_component_add, etc.). No `#include <flecs.h>` in any cels-ncurses source file outside of `#ifdef` guards for features CELS doesn't yet wrap.
+**Depends on**: Phase 1 (Module Boundary)
+**Success Criteria** (what must be TRUE):
+  1. No cels-ncurses .c file includes `<flecs.h>` directly (except behind feature guards if CELS lacks an abstraction)
+  2. Observer registration uses CELS abstractions or a thin wrapper -- no raw `ecs_observer_init` calls
+  3. System registration uses `CEL_System()` macro -- no raw `ecs_system_init` calls
+  4. Component manipulation on entities uses CELS functions -- no raw `ecs_set_id` or `ecs_field` calls
+  5. World access uses `cels_get_world(cels_get_context())` pattern only where absolutely unavoidable
+  6. Minimal example still builds and runs correctly after the purge
+  7. draw_test standalone target still compiles
+**Plans:** 2 plans
+Plans:
+- [ ] 01.1-01-PLAN.md -- Bridge file creation + window flecs purge
+- [ ] 01.1-02-PLAN.md -- System purge (input + frame) + final build verification
 
 ### Phase 2: Window Entity
 **Goal**: (Absorbed into Phase 1)
@@ -128,14 +145,15 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 0 (cels repo) -> 1 -> 3 -> 4 -> 5 -> 6 (Phase 2 absorbed into Phase 1)
+Phases execute in numeric order: 0 (cels repo) -> 1 -> 1.1 -> 3 -> 4 -> 5 -> 6 (Phase 2 absorbed into Phase 1)
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 1-5 | v1.0 | 15/15 | Complete | 2026-02-20 |
 | 6-8 | v1.1 | 6/6 | Closed | 2026-02-26 |
-| 0. CELS Module Registration | v0.2.0 | 0/3 | Planned | - |
+| 0. CELS Module Registration | v0.2.0 | 3/3 | Complete | 2026-02-27 |
 | 1. Module Boundary | v0.2.0 | 0/3 | Planned | - |
+| 1.1 CELS API Purge | v0.2.0 | 0/2 | Planned | - |
 | 2. Window Entity | v0.2.0 | -- | Absorbed into P1 | - |
 | 3. Input System | v0.2.0 | 0/TBD | Not started | - |
 | 4. Layer Entities | v0.2.0 | 0/TBD | Not started | - |
