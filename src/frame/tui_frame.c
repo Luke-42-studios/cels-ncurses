@@ -27,9 +27,9 @@
  * A default fullscreen background layer (z=0) is created at init time,
  * providing an immediate drawing surface that replaces stdscr usage.
  *
- * ECS integration: two standalone systems registered via ecs_system_init():
- * - TUI_FrameBeginSystem at EcsPreStore (before renderer)
- * - TUI_FrameEndSystem at EcsPostFrame (after renderer)
+ * ECS integration: two standalone systems defined via CEL_System macro:
+ * - TUI_FrameBeginSystem at PreRender (before renderer)
+ * - TUI_FrameEndSystem at PostRender (after renderer)
  */
 
 #include <cels-ncurses/tui_frame.h>
@@ -43,7 +43,6 @@
 #include <signal.h>
 #ifdef CELS_HAS_ECS
 #include <cels/cels.h>
-#include <flecs.h>
 #endif
 
 /* ============================================================================
@@ -204,66 +203,25 @@ TUI_Layer* tui_frame_get_background(void) {
 
 #ifdef CELS_HAS_ECS
 /* ============================================================================
- * ECS System Callbacks
+ * ECS System Definitions -- replace raw ecs_system_init boilerplate
  * ============================================================================
  *
- * Standalone system callbacks (no query terms). Registered at specific
- * ECS phases to bracket the renderer.
+ * CEL_System generates Name_register() with external linkage.
+ * TUI_FrameBeginSystem at PreRender (maps to EcsPreStore -- before renderer)
+ * TUI_FrameEndSystem at PostRender (maps to EcsPostFrame -- after renderer)
  */
 
-static void tui_frame_begin_callback(ecs_iter_t* it) {
-    (void)it;
-    ncurses_window_frame_update();
-    tui_frame_begin();
-}
-
-static void tui_frame_end_callback(ecs_iter_t* it) {
-    (void)it;
-    tui_frame_end();
-    tui_hook_frame_end();
-}
-
-/* ============================================================================
- * tui_frame_register_systems -- Register ECS systems at PreStore/PostFrame
- * ============================================================================
- *
- * Follows the exact pattern from tui_input.c (lines 149-161).
- * - TUI_FrameBeginSystem at EcsPreStore (runs before renderer at OnStore)
- * - TUI_FrameEndSystem at EcsPostFrame (runs after renderer at OnStore)
- */
-void tui_frame_register_systems(void) {
-    ecs_world_t* world = cels_get_world(cels_get_context());
-
-    /* frame_begin at PreStore (before renderer) */
-    {
-        ecs_system_desc_t sys_desc = {0};
-        ecs_entity_desc_t entity_desc = {0};
-        entity_desc.name = "TUI_FrameBeginSystem";
-        ecs_id_t phase_ids[3] = {
-            ecs_pair(EcsDependsOn, EcsPreStore),
-            EcsPreStore,
-            0
-        };
-        entity_desc.add = phase_ids;
-        sys_desc.entity = ecs_entity_init(world, &entity_desc);
-        sys_desc.callback = tui_frame_begin_callback;
-        ecs_system_init(world, &sys_desc);
+CEL_System(TUI_FrameBeginSystem, .phase = PreRender) {
+    cel_run {
+        ncurses_window_frame_update();
+        tui_frame_begin();
     }
+}
 
-    /* frame_end at PostFrame (after renderer) */
-    {
-        ecs_system_desc_t sys_desc = {0};
-        ecs_entity_desc_t entity_desc = {0};
-        entity_desc.name = "TUI_FrameEndSystem";
-        ecs_id_t phase_ids[3] = {
-            ecs_pair(EcsDependsOn, EcsPostFrame),
-            EcsPostFrame,
-            0
-        };
-        entity_desc.add = phase_ids;
-        sys_desc.entity = ecs_entity_init(world, &entity_desc);
-        sys_desc.callback = tui_frame_end_callback;
-        ecs_system_init(world, &sys_desc);
+CEL_System(TUI_FrameEndSystem, .phase = PostRender) {
+    cel_run {
+        tui_frame_end();
+        tui_hook_frame_end();
     }
 }
 
@@ -277,6 +235,7 @@ void tui_frame_register_systems(void) {
  */
 void ncurses_register_frame_systems(void) {
     tui_frame_init();
-    tui_frame_register_systems();
+    TUI_FrameBeginSystem_register();
+    TUI_FrameEndSystem_register();
 }
 #endif /* CELS_HAS_ECS */

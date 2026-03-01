@@ -44,6 +44,7 @@ target_sources(cels-ncurses INTERFACE
 
 target_include_directories(cels-ncurses INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/src       # internal headers (ncurses_ecs_bridge.h)
     ${CURSES_INCLUDE_DIRS}
 )
 
@@ -57,6 +58,7 @@ target_link_libraries(cels-ncurses INTERFACE
     ${CURSES_LIBRARIES}
     ${PANEL_LIBRARY}
     cels
+    flecs::flecs_static   # ncurses_ecs_bridge.c includes <flecs.h> directly
     m
 )
 
