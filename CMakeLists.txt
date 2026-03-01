@@ -15,6 +15,29 @@
 # cels-ncurses - ncurses-based providers for CELS framework
 # INTERFACE library: sources compile in the consumer's context
 cmake_minimum_required(VERSION 3.21)
+project(cels-ncurses VERSION 0.2.0 LANGUAGES C)
+
+# ============================================================================
+# Dependencies
+# ============================================================================
+# cels-ncurses is an addon library -- the consumer must provide cels.
+# Typical consumer CMakeLists.txt:
+#
+#   FetchContent_Declare(cels
+#       GIT_REPOSITORY https://github.com/42-Galaxies/cels.git
+#       GIT_TAG        v0.5.1)
+#   FetchContent_Declare(cels-ncurses
+#       GIT_REPOSITORY https://github.com/42-Galaxies/cels-ncurses.git
+#       GIT_TAG        v0.2.0)
+#   FetchContent_MakeAvailable(cels cels-ncurses)
+#
+#   target_link_libraries(your_app PRIVATE cels cels-ncurses)
+#
+if(NOT TARGET cels)
+    message(FATAL_ERROR
+        "cels-ncurses requires the 'cels' target. "
+        "Add cels via FetchContent or add_subdirectory before cels-ncurses.")
+endif()
 
 # ============================================================================
 # Find ncurses (wide-character variant)
@@ -58,9 +81,16 @@ target_link_libraries(cels-ncurses INTERFACE
     ${CURSES_LIBRARIES}
     ${PANEL_LIBRARY}
     cels
-    flecs::flecs_static   # ncurses_ecs_bridge.c includes <flecs.h> directly
     m
 )
+
+# Temporary: bridge file includes <flecs.h> directly.
+# Removed in Phase 1.2 when bridge is replaced by CEL_Lifecycle + CEL_Observe.
+if(TARGET flecs::flecs_static)
+    target_link_libraries(cels-ncurses INTERFACE flecs::flecs_static)
+elseif(TARGET flecs)
+    target_link_libraries(cels-ncurses INTERFACE flecs)
+endif()
 
 # ============================================================================
 # Drawing primitives visual test (standalone, no CELS framework)
