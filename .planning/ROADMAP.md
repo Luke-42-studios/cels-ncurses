@@ -37,6 +37,7 @@ Closed early. Phases 9-10 dropped for v2.0 architecture rethink.
 - [x] **Phase 0: CELS Module Registration** - Fix CEL_Module macro, remove CELS_REGISTER phase, update docs, set up dual-remote, release v0.5.1 (work in cels repo) ✓ 2026-02-27
 - [x] **Phase 1: Module Boundary** - Replace Engine + CelsNcurses with a single CEL_Module(NCurses) + working window lifecycle (absorbs Phase 2) ✓ 2026-02-28
 - [x] **Phase 1.1: CELS API Purge** - Replace all direct flecs/ecs API calls with CELS abstractions (INSERTED) ✓ 2026-02-28
+- [ ] **Phase 1.2: Window Lifecycle Rewrite** - Replace bridge + flecs observers with CEL_Lifecycle + CEL_Observe pattern (INSERTED)
 - [ ] **Phase 2: Window Entity** - (Absorbed into Phase 1)
 - [ ] **Phase 3: Input System** - Per-frame input reading as a CELS phase system with queryable state
 - [ ] **Phase 4: Layer Entities** - Panel-backed layers created from TUI_Layer components with TUI_DrawContext attachment
@@ -97,6 +98,21 @@ Plans:
 - [x] 01.1-01-PLAN.md -- Bridge file creation + window flecs purge
 - [x] 01.1-02-PLAN.md -- System purge (input + frame) + final build verification
 
+### Phase 1.2: Window Lifecycle Rewrite (INSERTED)
+**Goal**: Replace the ECS bridge file and raw flecs observers with the new CEL_Lifecycle + CEL_Observe pattern. Window init/shutdown becomes lifecycle-driven. Composition declares components, observers handle side effects, systems update per-frame state. No flecs.h in any cels-ncurses file.
+**Depends on**: Phase 1.1 (CELS API Purge), CELS Phase 30.1 (Lifecycle Hooks)
+**Success Criteria** (what must be TRUE):
+  1. `ncurses_ecs_bridge.c` and `ncurses_ecs_bridge.h` deleted -- no bridge file exists
+  2. `NCursesWindowLC` lifecycle defined with `.active` condition driving window active/suspended state
+  3. `CEL_Observe(NCursesWindowLC, on_create)` calls `ncurses_terminal_init()` -- no component setting in observer
+  4. `CEL_Observe(NCursesWindowLC, on_destroy)` calls `ncurses_terminal_shutdown()`
+  5. `NCursesWindow` composition declares both `NCurses_WindowConfig` and `NCurses_WindowState` via `cel_has` and attaches lifecycle via `cel_lifecycle(NCursesWindowLC)`
+  6. Frame system updates `NCurses_WindowState` per-frame; `cel_watch` in application composition triggers recomposition only on actual state changes (resize, quit)
+  7. No `#include <flecs.h>` in any cels-ncurses source file
+  8. Minimal example uses `cel_watch(win, NCurses_WindowState)` for reactive window state
+  9. Both minimal and draw_test targets build successfully
+**Plans**: TBD
+
 ### Phase 2: Window Entity
 **Goal**: (Absorbed into Phase 1)
 **Status**: Merged with Phase 1 per CONTEXT.md decision
@@ -145,7 +161,7 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 0 (cels repo) -> 1 -> 1.1 -> 3 -> 4 -> 5 -> 6 (Phase 2 absorbed into Phase 1)
+Phases execute in numeric order: 0 (cels repo) -> 1 -> 1.1 -> 1.2 -> 3 -> 4 -> 5 -> 6 (Phase 2 absorbed into Phase 1)
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -154,6 +170,7 @@ Phases execute in numeric order: 0 (cels repo) -> 1 -> 1.1 -> 3 -> 4 -> 5 -> 6 (
 | 0. CELS Module Registration | v0.2.0 | 3/3 | Complete | 2026-02-27 |
 | 1. Module Boundary | v0.2.0 | 3/3 | Complete | 2026-02-28 |
 | 1.1 CELS API Purge | v0.2.0 | 2/2 | Complete | 2026-02-28 |
+| 1.2 Window Lifecycle Rewrite | v0.2.0 | 0/TBD | Blocked (CELS 30.1) | - |
 | 2. Window Entity | v0.2.0 | -- | Absorbed into P1 | - |
 | 3. Input System | v0.2.0 | 0/TBD | Not started | - |
 | 4. Layer Entities | v0.2.0 | 0/TBD | Not started | - |

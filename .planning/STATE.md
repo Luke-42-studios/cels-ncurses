@@ -5,15 +5,15 @@
 See: .planning/PROJECT.md (updated 2026-02-26)
 
 **Core value:** Provide a low-level drawing primitive API that a future cels-clay module can target to render Clay UI layouts in the terminal
-**Current focus:** v0.2.0 Phase 3 - Input System (Phases 1, 1.1 COMPLETE, Phase 2 absorbed into P1)
+**Current focus:** v0.2.0 Phase 1.2 - Window Lifecycle Rewrite (BLOCKED on CELS Phase 30.1)
 
 ## Current Position
 
 Milestone: v0.2.0 ECS Module Architecture
-Phase: 1.1 of 6 (CELS API Purge) -- COMPLETE, verified 7/7 must-haves
-Plan: 2 of 2 in current phase (phase complete)
-Status: Phase 1.1 verified -- ready for Phase 3 (Input System)
-Last activity: 2026-02-28 -- Phase 1.1 execution complete and verified
+Phase: 1.2 of 6 (Window Lifecycle Rewrite) -- BLOCKED on CELS Phase 30.1
+Plan: 0 of TBD in current phase
+Status: Phase 1.2 inserted -- waiting for CEL_Lifecycle + CEL_Observe in CELS
+Last activity: 2026-03-01 -- Phase 1.2 inserted into roadmap
 
 Progress: [██████░░░░] 57% (8/14 estimated plans)
 
@@ -79,6 +79,7 @@ Progress: [██████░░░░] 57% (8/14 estimated plans)
 ### Roadmap Evolution
 
 - Phase 1.1 inserted after Phase 1: CELS API Purge -- COMPLETED (all flecs API calls confined to bridge file)
+- Phase 1.2 inserted after Phase 1.1: Window Lifecycle Rewrite -- replace bridge with CEL_Lifecycle + CEL_Observe (blocked on CELS Phase 30.1)
 
 ### Blockers/Concerns
 
