@@ -20,50 +20,58 @@
  * Demonstrates the entity-component API:
  *   - cels_register(NCurses) to load the NCurses module
  *   - NCursesWindow() call macro to create a window entity
- *   - cel_watch() for reactive state reading (window + input)
+ *   - CEL_System with cel_query(NCurses_InputState) for raw input
  *   - cels_session / cels_running / cels_step for the main loop
  *
- * Opens a terminal window at 30fps showing window state and input events.
- * Press 'q' or Ctrl+C to exit.
+ * Opens a terminal window at 30fps showing raw input events.
+ * Press 'q' to exit.
  */
 
 #include <cels/cels.h>
 #include <cels-ncurses/ncurses.h>
 #include <ncurses.h>
 
+/* Composition: just creates the window entity */
 CEL_Composition(World) {
-    cels_entity_t win = 0;
-    NCursesWindow(.title = "Phase 3 Input Test", .fps = 30) {
-        win = cels_get_current_entity();
-    }
+    NCursesWindow(.title = "Input Test", .fps = 30) {}
+}
 
-    /* Reactive state reads -- recomposes when state changes */
-    const NCurses_WindowState* state = cel_watch(win, NCurses_WindowState);
-    const NCurses_InputState* input = cel_watch(win, NCurses_InputState);
+/* System: reads raw input each frame */
+CEL_System(GameInput, .phase = OnUpdate) {
+    cel_query(NCurses_InputState);
+    cel_each(NCurses_InputState) {
+        for (int i = 0; i < NCurses_InputState->key_count; i++) {
+            int key = NCurses_InputState->keys[i];
 
-    if (state && input) {
-        mvprintw(0, 0, "Window: %dx%d  fps: %.1f  dt: %.4f",
-                 state->width, state->height,
-                 state->actual_fps, state->delta_time);
+            if (key == 'q' || key == 'Q') {
+                cels_request_quit();
+                return;
+            }
 
-        mvprintw(1, 0, "Axis: %.0f, %.0f  Mouse: %d,%d",
-                 input->axis_x, input->axis_y,
-                 input->mouse_x, input->mouse_y);
+            mvprintw(0, 0, "Keys this frame: %d  ", NCurses_InputState->key_count);
 
-        if (input->accept)
-            mvprintw(2, 0, "ENTER pressed!");
-        if (input->cancel)
-            mvprintw(2, 20, "ESC pressed!");
-        if (input->has_raw_key)
-            mvprintw(3, 0, "Raw key: %d ('%c')",
-                     input->raw_key,
-                     (input->raw_key >= 32 && input->raw_key < 127)
-                         ? (char)input->raw_key : '?');
+            if (key >= 32 && key < 127)
+                mvprintw(1, 0, "Key: '%c' (%d)       ", (char)key, key);
+            else
+                mvprintw(1, 0, "Key: (%d)            ", key);
+        }
+
+        mvprintw(2, 0, "Mouse: %d,%d  btn=%d  %s%s     ",
+                 NCurses_InputState->mouse_x, NCurses_InputState->mouse_y,
+                 NCurses_InputState->mouse_button,
+                 NCurses_InputState->mouse_pressed ? "PRESS " : "",
+                 NCurses_InputState->mouse_released ? "RELEASE " : "");
+
+        mvprintw(3, 0, "Held: L=%d M=%d R=%d",
+                 NCurses_InputState->mouse_left_held,
+                 NCurses_InputState->mouse_middle_held,
+                 NCurses_InputState->mouse_right_held);
     }
 }
 
 cels_main() {
     cels_register(NCurses);
+    cels_register(GameInput);
     cels_session(World) {
         while (cels_running()) cels_step(0);
     }

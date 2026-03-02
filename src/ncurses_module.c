@@ -139,12 +139,6 @@ CEL_Compose(NCursesWindow) {
         .actual_fps = 0,
         .delta_time = 0
     );
-    /* SC6: Declare initial placeholder InputState in composition.
-     * Real values arrive from input system on first frame at OnLoad. */
-    cel_has(NCurses_InputState,
-        .axis_x = 0, .axis_y = 0,
-        .mouse_x = -1, .mouse_y = -1
-    );
     /* Bind lifecycle after components -- fires on_create which reads config. */
     cels_lifecycle_bind_entity(NCursesWindowLC_id, cels_get_current_entity());
 }

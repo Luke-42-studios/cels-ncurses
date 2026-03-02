@@ -98,50 +98,34 @@ CEL_Component(NCurses_WindowState) {
 };
 
 /*
- * Per-frame input state. NCurses input system fills this each frame at OnLoad.
- * Developer reads via cel_watch(entity, NCurses_InputState) or
- * cels_entity_get_component(entity, NCurses_InputState_id).
+ * Per-frame raw input state. Lives on a standalone input entity (not the window).
+ * NCurses input system drains all queued keys and mouse events each frame at OnLoad.
  *
- * Per-frame fields reset each frame. Persistent fields (mouse position,
- * held buttons) carry across frames.
+ * Developer reads via cel_query(NCurses_InputState) in a CEL_System:
+ *
+ *   CEL_System(MyInput, .phase = OnUpdate) {
+ *       cel_query(NCurses_InputState);
+ *       cel_each(NCurses_InputState) {
+ *           for (int i = 0; i < input->key_count; i++) { ... }
+ *       }
+ *   }
+ *
+ * Raw keys only -- no semantic interpretation. The developer decides what
+ * each key means (quit, accept, navigate, etc.) in their own systems.
+ *
+ * Per-frame fields reset each frame. Mouse position and held state persist.
  */
 CEL_Component(NCurses_InputState) {
-    /* Keyboard: directional input (-1.0/0.0/1.0 for x/y) */
-    float axis_x;
-    float axis_y;
-
-    /* Keyboard: action buttons (per-frame) */
-    bool accept;        /* Enter/Return */
-    bool cancel;        /* Escape */
-
-    /* Keyboard: navigation (per-frame) */
-    bool tab;
-    bool shift_tab;
-    bool home;
-    bool end;
-    bool page_up;
-    bool page_down;
-    bool backspace;
-    bool delete_key;
-
-    /* Keyboard: number keys (per-frame) */
-    int  number;
-    bool has_number;
-
-    /* Keyboard: function keys (per-frame) */
-    int  function_key;
-    bool has_function;
-
-    /* Keyboard: raw key passthrough (per-frame) */
-    int  raw_key;
-    bool has_raw_key;
+    /* Keyboard: all keys pressed this frame (per-frame, drained from getch queue) */
+    int  keys[16];
+    int  key_count;
 
     /* Mouse: position (persistent across frames) */
-    int mouse_x;
-    int mouse_y;
+    int  mouse_x;
+    int  mouse_y;
 
     /* Mouse: button event (per-frame) */
-    int  mouse_button;   /* 0=none, 1=left, 2=middle, 3=right */
+    int  mouse_button;      /* 0=none, 1=left, 2=middle, 3=right */
     bool mouse_pressed;
     bool mouse_released;
 

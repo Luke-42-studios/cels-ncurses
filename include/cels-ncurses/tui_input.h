@@ -2,16 +2,13 @@
  *
  * Internal-only declarations for the input subsystem.
  * Public input type (NCurses_InputState) is in tui_ncurses.h.
- * Consumers read input via cels_entity_get_component() or cel_watch().
+ * Consumers query input via cel_query(NCurses_InputState) in a CEL_System.
+ *
+ * No public API here -- the input system is fully raw. Developers interpret
+ * key codes in their own systems. Quit, navigation, actions are all
+ * developer-defined.
  */
 #ifndef CELS_NCURSES_TUI_INPUT_H
 #define CELS_NCURSES_TUI_INPUT_H
-
-#include <stdbool.h>
-
-/* Quit guard: when set, 'q'/'Q' calls guard before quitting.
- * If guard returns true, key passes as raw_key instead of quit.
- * Used by cels-widgets to suppress quit during text input. */
-extern void tui_input_set_quit_guard(bool (*guard_fn)(void));
 
 #endif /* CELS_NCURSES_TUI_INPUT_H */
