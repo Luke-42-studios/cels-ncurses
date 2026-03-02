@@ -38,8 +38,6 @@
 #include "cels-ncurses/tui_frame.h"
 #include <ncurses.h>
 #include <cels/cels.h>
-#include <stdio.h>
-#include <string.h>
 
 /* Custom key codes for Ctrl+Arrow (above KEY_MAX, below INT_MAX) */
 #define CELS_KEY_CTRL_UP    600
@@ -236,7 +234,7 @@ static void tui_read_input_ncurses(void) {
                 return;
             }
 
-            fprintf(stderr, "[resize] COLS=%d LINES=%d\n", COLS, LINES);
+            ncurses_console_log("[resize] COLS=%d LINES=%d\n", COLS, LINES);
 
             /* Backend-specific cleanup: resize ncurses layers and invalidate.
              * Dimension state (NCurses_WindowState) is NOT updated here --
