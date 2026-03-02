@@ -38,6 +38,22 @@
 #include <ncurses.h>
 #include <cels/cels.h>
 
+/* ============================================================================
+ * NCursesInput Composition -- standalone input entity
+ * ============================================================================
+ *
+ * Internal composition that creates the input entity with NCurses_InputState.
+ * cel_has() handles component registration automatically.
+ */
+typedef struct NCursesInput_props {
+    cels_lifecycle_def_t* lifecycle;
+    const char* id;
+} NCursesInput_props;
+
+CEL_Compose(NCursesInput) {
+    cel_has(NCurses_InputState, .mouse_x = -1, .mouse_y = -1);
+}
+
 /* Custom key codes for Ctrl+Arrow (above KEY_MAX, below INT_MAX) */
 #define CELS_KEY_CTRL_UP    600
 #define CELS_KEY_CTRL_DOWN  601
@@ -203,16 +219,14 @@ CEL_System(NCurses_InputSystem, .phase = OnLoad) {
  */
 
 void ncurses_register_input_system(void) {
-    /* Create standalone input entity */
-    cels_begin_entity("NCursesInput");
-    g_input_entity = cels_get_current_entity();
-    NCurses_InputState initial = {0};
-    initial.mouse_x = -1;
-    initial.mouse_y = -1;
-    cels_entity_set_component(g_input_entity, NCurses_InputState_id,
-                               &initial, sizeof(NCurses_InputState));
-    cels_end_entity();
+    /* Create standalone input entity via composition (registers component + sets defaults) */
+    cel_init(NCursesInput) {
+        g_input_entity = cels_get_current_entity();
+    }
+}
 
+/* Called from ncurses_terminal_init() after initscr() -- ncurses must be active */
+void ncurses_input_configure_terminal(void) {
     /* Register xterm-compatible Ctrl+Arrow escape sequences */
     define_key("\033[1;5A", CELS_KEY_CTRL_UP);
     define_key("\033[1;5B", CELS_KEY_CTRL_DOWN);
@@ -230,7 +244,4 @@ void ncurses_register_input_system(void) {
                     | REPORT_MOUSE_POSITION;
     mousemask(desired, NULL);
     mouseinterval(0);
-
-    /* Register ECS system at OnLoad phase */
-    NCurses_InputSystem_register();
 }

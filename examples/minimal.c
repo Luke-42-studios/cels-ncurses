@@ -29,7 +29,6 @@
 
 #include <cels/cels.h>
 #include <cels-ncurses/ncurses.h>
-#include <ncurses.h>
 
 /* Composition: just creates the window entity */
 CEL_Composition(World) {
@@ -48,24 +47,19 @@ CEL_System(GameInput, .phase = OnUpdate) {
                 return;
             }
 
-            mvprintw(0, 0, "Keys this frame: %d  ", NCurses_InputState->key_count);
-
             if (key >= 32 && key < 127)
-                mvprintw(1, 0, "Key: '%c' (%d)       ", (char)key, key);
+                ncurses_console_log("Key: '%c' (%d)\n", (char)key, key);
             else
-                mvprintw(1, 0, "Key: (%d)            ", key);
+                ncurses_console_log("Key: (%d)\n", key);
         }
 
-        mvprintw(2, 0, "Mouse: %d,%d  btn=%d  %s%s     ",
-                 NCurses_InputState->mouse_x, NCurses_InputState->mouse_y,
-                 NCurses_InputState->mouse_button,
-                 NCurses_InputState->mouse_pressed ? "PRESS " : "",
-                 NCurses_InputState->mouse_released ? "RELEASE " : "");
-
-        mvprintw(3, 0, "Held: L=%d M=%d R=%d",
-                 NCurses_InputState->mouse_left_held,
-                 NCurses_InputState->mouse_middle_held,
-                 NCurses_InputState->mouse_right_held);
+        if (NCurses_InputState->mouse_pressed || NCurses_InputState->mouse_released) {
+            ncurses_console_log("Mouse: %d,%d btn=%d %s%s\n",
+                     NCurses_InputState->mouse_x, NCurses_InputState->mouse_y,
+                     NCurses_InputState->mouse_button,
+                     NCurses_InputState->mouse_pressed ? "PRESS" : "",
+                     NCurses_InputState->mouse_released ? "RELEASE" : "");
+        }
     }
 }
 

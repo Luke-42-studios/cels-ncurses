@@ -25,7 +25,7 @@ project(cels-ncurses VERSION 0.2.0 LANGUAGES C)
 #
 #   FetchContent_Declare(cels
 #       GIT_REPOSITORY https://github.com/42-Galaxies/cels.git
-#       GIT_TAG        v0.5.1)
+#       GIT_TAG        v0.5.2)
 #   FetchContent_Declare(cels-ncurses
 #       GIT_REPOSITORY https://github.com/42-Galaxies/cels-ncurses.git
 #       GIT_TAG        v0.2.0)
@@ -34,9 +34,19 @@ project(cels-ncurses VERSION 0.2.0 LANGUAGES C)
 #   target_link_libraries(your_app PRIVATE cels cels-ncurses)
 #
 if(NOT TARGET cels)
-    message(FATAL_ERROR
-        "cels-ncurses requires the 'cels' target. "
-        "Add cels via FetchContent or add_subdirectory before cels-ncurses.")
+    if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+        # Top-level build (development) -- use sibling cels directory
+        # Point FetchContent at cels's already-downloaded deps to avoid network clones
+        set(FETCHCONTENT_SOURCE_DIR_FLECS
+            "${CMAKE_CURRENT_SOURCE_DIR}/../cels/cmake-build-debug/_deps/flecs-src" CACHE PATH "")
+        set(FETCHCONTENT_SOURCE_DIR_YYJSON
+            "${CMAKE_CURRENT_SOURCE_DIR}/../cels/cmake-build-debug/_deps/yyjson-src" CACHE PATH "")
+        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../cels cels)
+    else()
+        message(FATAL_ERROR
+            "cels-ncurses requires the 'cels' target. "
+            "Add cels via FetchContent or add_subdirectory before cels-ncurses.")
+    endif()
 endif()
 
 # ============================================================================
@@ -55,6 +65,7 @@ add_library(cels-ncurses INTERFACE)
 target_sources(cels-ncurses INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ncurses_module.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/window/tui_window.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/window/tui_spawn.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/input/tui_input.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_color.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_draw.c
@@ -83,41 +94,23 @@ target_link_libraries(cels-ncurses INTERFACE
 )
 
 # ============================================================================
-# Drawing primitives visual test (standalone, no CELS framework)
+# Examples (only when building this repo directly)
 # ============================================================================
-add_executable(draw_test
-    ${CMAKE_CURRENT_SOURCE_DIR}/examples/draw_test.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_color.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_draw.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_scissor.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_subcell.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/layer/tui_layer.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/frame/tui_frame.c
-)
-target_include_directories(draw_test PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CURSES_INCLUDE_DIRS}
-)
-target_compile_definitions(draw_test PRIVATE _XOPEN_SOURCE=700 _DEFAULT_SOURCE)
-target_link_libraries(draw_test PRIVATE ${CURSES_LIBRARIES} ${PANEL_LIBRARY} m)
-set_target_properties(draw_test PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED ON)
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    # Minimal example (uses CELS framework via cels-ncurses)
+    add_executable(minimal examples/minimal.c)
+    target_link_libraries(minimal PRIVATE cels-ncurses)
+    set_target_properties(minimal PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED ON)
 
-# ============================================================================
-# Minimal example (uses CELS framework via cels-ncurses INTERFACE library)
-# ============================================================================
-add_executable(minimal ${CMAKE_CURRENT_SOURCE_DIR}/examples/minimal.c)
-target_link_libraries(minimal PRIVATE cels-ncurses)
-set_target_properties(minimal PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED ON)
-
-# Run targets -- launch in kitty for proper ncurses rendering
-add_custom_target(run_minimal
-    COMMAND kitty --title "minimal" $<TARGET_FILE:minimal>
-    DEPENDS minimal
-    COMMENT "Launching minimal in kitty"
-)
-add_custom_target(run_draw_test
-    COMMAND kitty --title "draw_test" $<TARGET_FILE:draw_test>
-    DEPENDS draw_test
-    COMMENT "Launching draw_test in kitty"
-)
+    # Drawing primitives visual test (standalone, no CELS framework)
+    add_executable(draw_test
+        examples/draw_test.c
+        src/graphics/tui_color.c src/graphics/tui_draw.c
+        src/graphics/tui_scissor.c src/graphics/tui_subcell.c
+        src/layer/tui_layer.c src/frame/tui_frame.c)
+    target_include_directories(draw_test PRIVATE include ${CURSES_INCLUDE_DIRS})
+    target_compile_definitions(draw_test PRIVATE _XOPEN_SOURCE=700 _DEFAULT_SOURCE)
+    target_link_libraries(draw_test PRIVATE ${CURSES_LIBRARIES} ${PANEL_LIBRARY} m)
+    set_target_properties(draw_test PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED ON)
+endif()
 

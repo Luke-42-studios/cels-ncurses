@@ -96,14 +96,12 @@ CEL_Observe(NCursesWindowLC, on_destroy) {
  * ============================================================================ */
 
 CEL_Module(NCurses) {
-    /* Components auto-register via cel_has() in the composition */
+    cels_register(NCursesWindowLC, NCurses_InputSystem);
 
-    /* Register lifecycle (observers auto-register via constructor attribute) */
-    cels_register(NCursesWindowLC);
-
-    /* Register systems (frame pipeline) */
-    ncurses_register_input_system();
     ncurses_register_frame_systems();
+
+    /* Setup input entity, key sequences, mouse */
+    ncurses_register_input_system();
 }
 
 /* ============================================================================
@@ -143,19 +141,3 @@ CEL_Compose(NCursesWindow) {
     cels_lifecycle_bind_entity(NCursesWindowLC_id, cels_get_current_entity());
 }
 
-/* ============================================================================
- * Stubs -- replaced by real implementations when linked
- * ============================================================================
- *
- * These weak symbols allow the module to compile before the real
- * system implementations are wired in. When tui_input.c and tui_frame.c
- * provide strong definitions, the linker picks those instead.
- */
-
-/* Input system stub -- real implementation in tui_input.c */
-__attribute__((weak))
-void ncurses_register_input_system(void) {}
-
-/* Frame systems stub -- real implementation in tui_frame.c */
-__attribute__((weak))
-void ncurses_register_frame_systems(void) {}

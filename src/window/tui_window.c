@@ -30,6 +30,7 @@
 #define _POSIX_C_SOURCE 199309L
 #include <cels-ncurses/tui_window.h>
 #include <cels-ncurses/tui_ncurses.h>
+#include <cels-ncurses/tui_internal.h>
 #include <cels-ncurses/tui_color.h>
 #include <cels/cels.h>
 #include <ncurses.h>
@@ -145,6 +146,9 @@ void ncurses_terminal_init(NCurses_WindowConfig* config) {
     /* Cache initial dimensions for resize detection */
     g_last_cols = COLS;
     g_last_lines = LINES;
+
+    /* Input: register key sequences and enable mouse (requires active ncurses) */
+    ncurses_input_configure_terminal();
 
     g_running = 1;
 }
