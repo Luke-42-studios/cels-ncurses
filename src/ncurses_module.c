@@ -94,7 +94,7 @@ CEL_Observe(NCursesWindowLC, on_destroy) {
  * ============================================================================ */
 
 CEL_Module(NCurses) {
-    cels_register(NCursesWindowLC, NCurses_InputSystem);
+    cels_register(NCursesWindowLC, NCurses_InputSystem, NCurses_WindowUpdateSystem);
     ncurses_register_frame_systems();
 }
 

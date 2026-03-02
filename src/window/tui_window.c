@@ -165,22 +165,18 @@ void ncurses_terminal_shutdown(void) {
 }
 
 /* ============================================================================
- * Frame Update: ncurses_window_frame_update()
+ * ECS System -- per-frame window state update via cel_update
  * ============================================================================
  *
- * Called each frame by the frame pipeline (tui_frame_begin_callback) to:
- *   1. Update frame timing (delta_time)
- *   2. Detect terminal resize (COLS/LINES changed) and update WindowState
- *   3. Check g_running -- if false, set WindowState.running = false and quit
+ * Queries the NCursesWindow entity by its NCurses_WindowState component.
+ * Each frame: updates timing, detects resize, checks quit signal.
+ * cel_update triggers cel_watch reactivity in application compositions.
  *
- * On resize, cels_entity_set_component + cels_component_notify_change
- * triggers recomposition for anything watching NCurses_WindowState via cel_watch().
+ * Runs at PreRender so WindowState is current before rendering systems.
  */
 
-void ncurses_window_frame_update(void) {
-    if (g_window_entity == 0) return;
-
-    /* Timing */
+CEL_System(NCurses_WindowUpdateSystem, .phase = PreRender) {
+    /* Timing (static state, independent of entity) */
     g_prev_frame_start = g_frame_start;
     clock_gettime(CLOCK_MONOTONIC, &g_frame_start);
     if (g_prev_frame_start.tv_sec != 0) {
@@ -188,44 +184,40 @@ void ncurses_window_frame_update(void) {
                        (float)(g_frame_start.tv_nsec - g_prev_frame_start.tv_nsec) / 1e9f;
     }
 
-    /* Check if quit was requested (SIGINT or input 'q') */
-    if (!g_running) {
-        NCurses_WindowState state = {
-            .width = g_last_cols,
-            .height = g_last_lines,
-            .running = false,
-            .actual_fps = (g_delta_time > 0.0f) ? 1.0f / g_delta_time : 0.0f,
-            .delta_time = g_delta_time
-        };
-        cels_entity_set_component(g_window_entity, NCurses_WindowState_id,
-                                   &state, sizeof(NCurses_WindowState));
-        cels_component_notify_change(NCurses_WindowState_id);
-        cels_request_quit();
-        return;
-    }
-
     /* Detect resize */
     int new_w = COLS;
     int new_h = LINES;
     bool resized = (new_w != g_last_cols || new_h != g_last_lines);
-
     if (resized) {
         g_last_cols = new_w;
         g_last_lines = new_h;
     }
 
-    /* Update WindowState on entity (always for delta_time, trigger watch on resize) */
-    if (resized) {
-        NCurses_WindowState state = {
-            .width = new_w,
-            .height = new_h,
-            .running = true,
-            .actual_fps = (g_delta_time > 0.0f) ? 1.0f / g_delta_time : 0.0f,
-            .delta_time = g_delta_time
-        };
-        cels_entity_set_component(g_window_entity, NCurses_WindowState_id,
-                                   &state, sizeof(NCurses_WindowState));
-        cels_component_notify_change(NCurses_WindowState_id);
+    cel_query(NCurses_WindowState);
+    cel_each(NCurses_WindowState) {
+        /* Quit requested (SIGINT) */
+        if (!g_running) {
+            cel_update(NCurses_WindowState) {
+                NCurses_WindowState->width = g_last_cols;
+                NCurses_WindowState->height = g_last_lines;
+                NCurses_WindowState->running = false;
+                NCurses_WindowState->actual_fps = (g_delta_time > 0.0f) ? 1.0f / g_delta_time : 0.0f;
+                NCurses_WindowState->delta_time = g_delta_time;
+            }
+            cels_request_quit();
+            return;
+        }
+
+        /* Resize detected -- update state to trigger cel_watch */
+        if (resized) {
+            cel_update(NCurses_WindowState) {
+                NCurses_WindowState->width = new_w;
+                NCurses_WindowState->height = new_h;
+                NCurses_WindowState->running = true;
+                NCurses_WindowState->actual_fps = (g_delta_time > 0.0f) ? 1.0f / g_delta_time : 0.0f;
+                NCurses_WindowState->delta_time = g_delta_time;
+            }
+        }
     }
 }
 

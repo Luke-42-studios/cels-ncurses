@@ -42,10 +42,6 @@ typedef enum WindowState {
     WINDOW_STATE_CLOSED
 } WindowState;
 
-/* Per-frame window state update (resize detection, timing, quit check).
- * Called by the frame pipeline's frame_begin system. */
-extern void ncurses_window_frame_update(void);
-
 /* FPS throttle -- sleeps to maintain target frame rate.
  * Called by the frame pipeline's frame_end system. */
 extern void tui_hook_frame_end(void);

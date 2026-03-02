@@ -213,7 +213,6 @@ TUI_Layer* tui_frame_get_background(void) {
 
 CEL_System(TUI_FrameBeginSystem, .phase = PreRender) {
     cel_run {
-        ncurses_window_frame_update();
         tui_frame_begin();
     }
 }
