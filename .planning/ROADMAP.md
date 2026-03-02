@@ -39,7 +39,7 @@ Closed early. Phases 9-10 dropped for v2.0 architecture rethink.
 - [x] **Phase 1.1: CELS API Purge** - Replace all direct flecs/ecs API calls with CELS abstractions (INSERTED) ✓ 2026-02-28
 - [x] **Phase 1.2: Window Lifecycle Rewrite** - Replace bridge + flecs observers with CEL_Lifecycle + CEL_Observe pattern (INSERTED) ✓ 2026-03-01
 - [ ] **Phase 2: Window Entity** - (Absorbed into Phase 1)
-- [ ] **Phase 3: Input System** - Per-frame input reading as a CELS phase system with queryable state
+- [x] **Phase 3: Input System** - Per-frame input reading as a CELS phase system with queryable state
 - [ ] **Phase 4: Layer Entities** - Panel-backed layers created from TUI_Layer components with TUI_DrawContext attachment
 - [ ] **Phase 5: Frame Pipeline** - Begin/end frame as CELS pipeline phase systems orchestrating layers
 - [ ] **Phase 6: Demo** - Validate the full entity-driven API with a button + box example
@@ -130,8 +130,8 @@ Plans:
   3. Input state is fresh each frame -- previous frame state does not leak into the current frame
 **Plans:** 2 plans
 Plans:
-- [ ] 03-01-PLAN.md -- NCurses_InputState component + input system entity rewrite
-- [ ] 03-02-PLAN.md -- Remove running pointer bridge, update example, build verification
+- [x] 03-01-PLAN.md -- NCurses_InputState component + input system entity rewrite
+- [x] 03-02-PLAN.md -- Remove running pointer bridge, update example, build verification
 
 ### Phase 4: Layer Entities
 **Goal**: Developer can create drawable layers by adding TUI_Layer components to entities, with NCurses managing panels internally
@@ -178,7 +178,7 @@ Phases execute in numeric order: 0 (cels repo) -> 1 -> 1.1 -> 1.2 -> 3 -> 4 -> 5
 | 1.1 CELS API Purge | v0.2.0 | 2/2 | Complete | 2026-02-28 |
 | 1.2 Window Lifecycle Rewrite | v0.2.0 | 2/2 | Complete | 2026-03-01 |
 | 2. Window Entity | v0.2.0 | -- | Absorbed into P1 | - |
-| 3. Input System | v0.2.0 | 0/2 | Planned | - |
+| 3. Input System | v0.2.0 | 2/2 | Complete | 2026-03-02 |
 | 4. Layer Entities | v0.2.0 | 0/TBD | Not started | - |
 | 5. Frame Pipeline | v0.2.0 | 0/TBD | Not started | - |
 | 6. Demo | v0.2.0 | 0/TBD | Not started | - |

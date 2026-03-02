@@ -5,17 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-02-26)
 
 **Core value:** Provide a low-level drawing primitive API that a future cels-clay module can target to render Clay UI layouts in the terminal
-**Current focus:** v0.2.0 Phase 3 - Input System (in progress)
+**Current focus:** v0.2.0 Phase 3 - Input System (complete) -- next: Phase 4 Layer Entities
 
 ## Current Position
 
 Milestone: v0.2.0 ECS Module Architecture
 Phase: 3 of 6 (Input System)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-03-02 -- Completed 03-01-PLAN.md
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-03-02 -- Completed 03-02-PLAN.md
 
-Progress: [███████░░░] 73% (11/15 estimated plans)
+Progress: [████████░░] 80% (12/15 estimated plans)
 
 ## Performance Metrics
 
@@ -34,7 +34,7 @@ Progress: [███████░░░] 73% (11/15 estimated plans)
 - Phase 1: Plan 01 in 3 min, Plan 02 in 4 min, Plan 03 in 3 min (10 min total)
 - Phase 1.1: Plan 01 in 4 min, Plan 02 in 18 min (22 min total; Plan 02 included build config debugging)
 - Phase 1.2: Plan 01 in 2 min, Plan 02 in 7 min (9 min total)
-- Phase 3: Plan 01 in 3 min
+- Phase 3: Plan 01 in 3 min, Plan 02 in 2 min (5 min total)
 
 ## Accumulated Context
 
@@ -82,6 +82,8 @@ Progress: [███████░░░] 73% (11/15 estimated plans)
 - [P3-01]: Quit guard kept as internal function pointer (not componentized)
 - [P3-01]: ERR from getch still writes zeroed-but-persistent state to entity for consistency
 - [P3-01]: Mouse drain loop falls through to entity write (no early return after mouse processing)
+- [P3-02]: tui_window_get_running_ptr() fully removed -- g_running stays internal (SIGINT + frame update)
+- [P3-02]: minimal.c updated from resize-tracking demo to input state demo (dual cel_watch)
 
 ### Carried Forward from v1.1
 
@@ -104,10 +106,10 @@ Progress: [███████░░░] 73% (11/15 estimated plans)
 - Phase 1.2 build verified via wrapper project; runtime confirmation recommended
 - cmake-build-debug directory configured standalone (no cels dependency); wrapper build at /tmp/cels-ncurses-build used for verification
 - Phase 1.2 Plan 01 committed to CELS v0.5.2 branch -- must be available when cels-ncurses builds against cels
-- tui_window_get_running_ptr() still exists in tui_window.c/tui_window.h but is no longer called -- should be cleaned up in Phase 3 Plan 02 or later
+- tui_window_get_running_ptr() removed in Phase 3 Plan 02 (resolved)
 
 ## Session Continuity
 
-Last session: 2026-03-02T02:30:19Z
-Stopped at: Completed 03-01-PLAN.md (NCurses_InputState component + input system rewrite)
+Last session: 2026-03-02T02:35:18Z
+Stopped at: Completed 03-02-PLAN.md (running pointer bridge removed, minimal example updated, Phase 3 complete)
 Resume file: None
