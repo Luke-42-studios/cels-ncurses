@@ -25,13 +25,18 @@
  *   - void NCurses_init(void)      (idempotent init function)
  *   - NCurses_init_body(void)      (user-provided init body below)
  *
- * CEL_Lifecycle(NCursesWindowLC) defines the window lifecycle with an
- * active condition. CEL_Observe hooks handle terminal init/shutdown.
- * CEL_Compose(NCursesWindow) declares both components and binds lifecycle.
+ * CEL_Lifecycle(NCursesWindowLC) defines the window lifecycle.
+ * CEL_Observe hooks handle terminal init/shutdown.
+ * CEL_Compose(NCursesWindow) declares both components and binds lifecycle
+ * manually AFTER cel_has() so on_create can read config from the entity.
+ *
+ * NOTE: Lifecycle binding must be manual (not via .lifecycle prop) because
+ * auto-bind fires on_create during cels_begin_entity(), before the
+ * composition body adds components via cel_has().
  *
  * NOTE: Lifecycle, observers, and composition are in the SAME translation
- * unit because CEL_Lifecycle creates static variables (NCursesWindowLC_id)
- * that CEL_Compose references via cels_lifecycle_bind_entity().
+ * unit because CEL_Lifecycle creates static variables that the observers
+ * reference.
  *
  * NOTE: This file compiles in the CONSUMER's context (INTERFACE library).
  * The CEL_Module macro generates non-static globals, so this must be the
@@ -43,9 +48,14 @@
  * CEL_Module(NCurses) below generates its own. */
 #define _NCURSES_MODULE_IMPL
 #include "cels-ncurses/tui_ncurses.h"
+
+/* Extern global component IDs shared across all TUs (declared in tui_ncurses.h) */
+cels_entity_t _ncurses_WindowConfig_id = 0;
+cels_entity_t _ncurses_WindowState_id = 0;
+cels_entity_t _ncurses_InputState_id = 0;
+
 #include "cels-ncurses/tui_internal.h"
 #include <ncurses.h>
-#include <stdio.h>
 
 /* ============================================================================
  * Window Lifecycle -- Condition, Lifecycle, Observers
@@ -57,24 +67,17 @@
  * on_destroy observer: shuts down terminal.
  */
 
-CEL_Condition(NCursesActive) {
-    return ncurses_window_is_active();
-}
-
-CEL_Lifecycle(NCursesWindowLC, .active = &NCursesActive);
+CEL_Lifecycle(NCursesWindowLC);
 
 CEL_Observe(NCursesWindowLC, on_create) {
-    if (ncurses_window_get_entity() != 0) {
-        fprintf(stderr, "[NCurses] Warning: only one window entity allowed\n");
+    if (ncurses_window_get_entity() != 0)
         return;
-    }
     ncurses_window_set_entity(entity);
 
     /* Read config from entity using CELS public API */
     const NCurses_WindowConfig* config =
         (const NCurses_WindowConfig*)cels_entity_get_component(entity, NCurses_WindowConfig_id);
     if (!config) {
-        fprintf(stderr, "[NCurses] Error: on_create fired but no WindowConfig on entity\n");
         ncurses_window_set_entity(0);
         return;
     }
@@ -93,14 +96,10 @@ CEL_Observe(NCursesWindowLC, on_destroy) {
  * ============================================================================ */
 
 CEL_Module(NCurses) {
-    /* Register component types */
-    cels_ensure_component(&NCurses_WindowConfig_id, "NCurses_WindowConfig",
-                          sizeof(NCurses_WindowConfig), CELS_ALIGNOF(NCurses_WindowConfig));
-    cels_ensure_component(&NCurses_WindowState_id, "NCurses_WindowState",
-                          sizeof(NCurses_WindowState), CELS_ALIGNOF(NCurses_WindowState));
+    /* Components auto-register via cel_has() in the composition */
 
     /* Register lifecycle (observers auto-register via constructor attribute) */
-    NCursesWindowLC_register();
+    cels_register(NCursesWindowLC);
 
     /* Register systems (frame pipeline) */
     ncurses_register_input_system();
@@ -122,8 +121,8 @@ CEL_Module(NCurses) {
  * Declares BOTH NCurses_WindowConfig and NCurses_WindowState via cel_has,
  * then binds the entity to NCursesWindowLC lifecycle which fires on_create.
  *
- * ORDERING: cel_has(WindowConfig) and cel_has(WindowState) MUST come before
- * cels_lifecycle_bind_entity() because on_create reads config from entity.
+ * ORDERING: cel_has() MUST come before cels_lifecycle_bind_entity() because
+ * the on_create observer reads WindowConfig from the entity.
  */
 CEL_Compose(NCursesWindow) {
     cel_has(NCurses_WindowConfig,
@@ -140,9 +139,13 @@ CEL_Compose(NCursesWindow) {
         .actual_fps = 0,
         .delta_time = 0
     );
-    /* Bind entity to window lifecycle -- fires on_create observer.
-     * Uses cels_lifecycle_bind_entity() because cel_lifecycle() does not exist
-     * as a CELS composition verb. */
+    /* SC6: Declare initial placeholder InputState in composition.
+     * Real values arrive from input system on first frame at OnLoad. */
+    cel_has(NCurses_InputState,
+        .axis_x = 0, .axis_y = 0,
+        .mouse_x = -1, .mouse_y = -1
+    );
+    /* Bind lifecycle after components -- fires on_create which reads config. */
     cels_lifecycle_bind_entity(NCursesWindowLC_id, cels_get_current_entity());
 }
 

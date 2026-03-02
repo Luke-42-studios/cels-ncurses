@@ -60,7 +60,11 @@
 extern cels_entity_t NCurses;
 extern void NCurses_init(void);
 
+/* Per-TU register function so cels_register(NCurses) works in consumer TUs.
+ * Skipped in ncurses_module.c where CEL_Module(NCurses) provides its own. */
+#ifndef _NCURSES_MODULE_IMPL
 static inline void NCurses_register(void) { NCurses_init(); }
+#endif
 
 /* ============================================================================
  * Component Types
@@ -93,6 +97,77 @@ CEL_Component(NCurses_WindowState) {
     float delta_time;
 };
 
+/*
+ * Per-frame input state. NCurses input system fills this each frame at OnLoad.
+ * Developer reads via cel_watch(entity, NCurses_InputState) or
+ * cels_entity_get_component(entity, NCurses_InputState_id).
+ *
+ * Per-frame fields reset each frame. Persistent fields (mouse position,
+ * held buttons) carry across frames.
+ */
+CEL_Component(NCurses_InputState) {
+    /* Keyboard: directional input (-1.0/0.0/1.0 for x/y) */
+    float axis_x;
+    float axis_y;
+
+    /* Keyboard: action buttons (per-frame) */
+    bool accept;        /* Enter/Return */
+    bool cancel;        /* Escape */
+
+    /* Keyboard: navigation (per-frame) */
+    bool tab;
+    bool shift_tab;
+    bool home;
+    bool end;
+    bool page_up;
+    bool page_down;
+    bool backspace;
+    bool delete_key;
+
+    /* Keyboard: number keys (per-frame) */
+    int  number;
+    bool has_number;
+
+    /* Keyboard: function keys (per-frame) */
+    int  function_key;
+    bool has_function;
+
+    /* Keyboard: raw key passthrough (per-frame) */
+    int  raw_key;
+    bool has_raw_key;
+
+    /* Mouse: position (persistent across frames) */
+    int mouse_x;
+    int mouse_y;
+
+    /* Mouse: button event (per-frame) */
+    int  mouse_button;   /* 0=none, 1=left, 2=middle, 3=right */
+    bool mouse_pressed;
+    bool mouse_released;
+
+    /* Mouse: held state (persistent across frames) */
+    bool mouse_left_held;
+    bool mouse_middle_held;
+    bool mouse_right_held;
+};
+
+/*
+ * Override CEL_Component's per-TU static IDs with extern globals.
+ * The actual definitions live in ncurses_module.c. This ensures all
+ * translation units (including the consumer's) share the same IDs
+ * registered during NCurses_init().
+ *
+ * CEL_Component creates `static cels_entity_t Name_id = 0` per TU.
+ * We redirect the symbol via macro to an extern global so all TUs
+ * share the same registered ID.
+ */
+extern cels_entity_t _ncurses_WindowConfig_id;
+extern cels_entity_t _ncurses_WindowState_id;
+extern cels_entity_t _ncurses_InputState_id;
+#define NCurses_WindowConfig_id _ncurses_WindowConfig_id
+#define NCurses_WindowState_id  _ncurses_WindowState_id
+#define NCurses_InputState_id   _ncurses_InputState_id
+
 /* ============================================================================
  * Composition: NCursesWindow
  * ============================================================================
@@ -108,5 +183,17 @@ CEL_Define(NCursesWindow, const char* title; int fps; int color_mode;);
 
 /* Call macro for natural syntax */
 #define NCursesWindow(...) cel_init(NCursesWindow, __VA_ARGS__)
+
+/* ============================================================================
+ * Console Logging
+ * ============================================================================
+ *
+ * Sends printf-style messages from the ncurses child process back to the
+ * parent process (visible in IDE consoles like CLion). Messages are piped
+ * via a file descriptor created before fork.
+ *
+ * No-op when not running inside a spawned terminal.
+ */
+extern void ncurses_console_log(const char* fmt, ...);
 
 #endif /* CELS_NCURSES_TUI_NCURSES_H */
