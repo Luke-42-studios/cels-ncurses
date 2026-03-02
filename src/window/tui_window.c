@@ -39,7 +39,6 @@
 #include <stdbool.h>
 #include <locale.h>
 #include <time.h>
-#include <stdio.h>
 
 /* ============================================================================
  * Static State
@@ -106,6 +105,13 @@ bool ncurses_window_is_active(void) { return g_ncurses_active != 0; }
  */
 
 void ncurses_terminal_init(NCurses_WindowConfig* config) {
+    /* Auto-spawn a new terminal window if not already inside one.
+     * Similar to how SDL creates an OS window -- the user just runs the
+     * binary and a window appears. If spawning succeeds, the parent waits
+     * and exits; the child re-runs in the new terminal with ncurses. */
+    extern bool ncurses_try_spawn_terminal(const char* window_title);
+    ncurses_try_spawn_terminal(config->title);
+
     signal(SIGINT, tui_sigint_handler);
     atexit(cleanup_endwin);
 
@@ -241,15 +247,3 @@ void tui_hook_frame_end(void) {
     }
 }
 
-/* ============================================================================
- * Running Pointer Bridge
- * ============================================================================
- *
- * Kept for backward compatibility with tui_input.c which uses it to signal
- * quit on 'q' key press. Will be removed when input system fully transitions
- * to cels_request_quit().
- */
-
-volatile int* tui_window_get_running_ptr(void) {
-    return &g_running;
-}

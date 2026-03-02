@@ -21,7 +21,6 @@
  * (NCurses_WindowConfig, NCurses_WindowState) are in tui_ncurses.h.
  * This header provides:
  *   - WindowState enum (internal lifecycle states)
- *   - tui_window_get_running_ptr() bridge for input system
  *   - ncurses_window_frame_update() called by frame pipeline
  *   - tui_hook_frame_end() FPS throttle called by frame pipeline
  */
@@ -42,9 +41,6 @@ typedef enum WindowState {
     WINDOW_STATE_CLOSING,
     WINDOW_STATE_CLOSED
 } WindowState;
-
-/* Get pointer to g_running flag for quit signaling from input provider */
-extern volatile int* tui_window_get_running_ptr(void);
 
 /* Per-frame window state update (resize detection, timing, quit check).
  * Called by the frame pipeline's frame_begin system. */
