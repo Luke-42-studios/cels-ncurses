@@ -18,7 +18,8 @@
  * TUI Input System - Raw ncurses Input
  *
  * ECS system at OnLoad that drains the ncurses getch() queue each frame
- * and writes raw key codes + mouse state to a standalone input entity.
+ * and writes raw key codes + mouse state to the NCursesInput entity
+ * via cel_query / cel_each / cel_update.
  *
  * No semantic interpretation -- keys are raw ncurses codes (KEY_UP, '\n',
  * 'q', KEY_F(1), etc.). The developer's systems decide what each key means.
@@ -38,22 +39,6 @@
 #include <ncurses.h>
 #include <cels/cels.h>
 
-/* ============================================================================
- * NCursesInput Composition -- standalone input entity
- * ============================================================================
- *
- * Internal composition that creates the input entity with NCurses_InputState.
- * cel_has() handles component registration automatically.
- */
-typedef struct NCursesInput_props {
-    cels_lifecycle_def_t* lifecycle;
-    const char* id;
-} NCursesInput_props;
-
-CEL_Compose(NCursesInput) {
-    cel_has(NCurses_InputState, .mouse_x = -1, .mouse_y = -1);
-}
-
 /* Custom key codes for Ctrl+Arrow (above KEY_MAX, below INT_MAX) */
 #define CELS_KEY_CTRL_UP    600
 #define CELS_KEY_CTRL_DOWN  601
@@ -68,13 +53,6 @@ CEL_Compose(NCursesInput) {
 #define MAX_KEYS_PER_FRAME 16
 
 /* ============================================================================
- * Static State
- * ============================================================================ */
-
-/* The standalone input entity (created during system registration) */
-static cels_entity_t g_input_entity = 0;
-
-/* ============================================================================
  * Pause Mode -- F1 freezes the frame loop for text selection/copy
  * ============================================================================ */
 
@@ -85,147 +63,117 @@ static void tui_pause(void) {
 }
 
 /* ============================================================================
- * Input Reading
+ * ECS System -- drains getch() queue, writes via cel_update
  * ============================================================================
  *
- * Drains ALL queued keys from getch() into keys[] array (up to 16 per frame).
- * Mouse events are drained separately via the KEY_MOUSE drain loop.
- * KEY_RESIZE and F1 are handled internally and not passed to the developer.
- *
- * Persistent fields (mouse position, held buttons) are copied from the
- * previous frame. Per-frame fields (keys, mouse press/release) start zeroed.
+ * Queries the NCursesInput entity by its NCurses_InputState component.
+ * Each frame: saves persistent fields, zeros per-frame fields, drains
+ * the ncurses input queue, writes back via cel_update.
  */
-
-static void tui_read_input_ncurses(void) {
-    if (g_input_entity == 0) return;
-
-    /* Read previous state for persistent fields */
-    const NCurses_InputState* prev =
-        (const NCurses_InputState*)cels_entity_get_component(
-            g_input_entity, NCurses_InputState_id);
-
-    /* Build fresh state */
-    NCurses_InputState state = {0};
-
-    /* Copy persistent fields from previous frame */
-    if (prev) {
-        state.mouse_x = prev->mouse_x;
-        state.mouse_y = prev->mouse_y;
-        state.mouse_left_held = prev->mouse_left_held;
-        state.mouse_middle_held = prev->mouse_middle_held;
-        state.mouse_right_held = prev->mouse_right_held;
-    }
-
-    /* Drain all queued keys */
-    int ch;
-    while ((ch = wgetch(stdscr)) != ERR) {
-
-        /* Internal: terminal resize */
-        if (ch == KEY_RESIZE) {
-            /* Drain additional resize events */
-            int next;
-            while ((next = wgetch(stdscr)) == KEY_RESIZE) { /* consume */ }
-            if (next != ERR) ungetch(next);
-
-            if (COLS >= 4 && LINES >= 4) {
-                ncurses_console_log("[resize] COLS=%d LINES=%d\n", COLS, LINES);
-                tui_layer_resize_all(COLS, LINES);
-                tui_frame_invalidate_all();
-                clearok(curscr, TRUE);
-            }
-            continue;  /* Don't put resize in keys[] */
-        }
-
-        /* Internal: F1 pause mode */
-        if (ch == KEY_F(1)) {
-            tui_pause();
-            continue;  /* Don't put F1 in keys[] */
-        }
-
-        /* Mouse events -- drain all queued, keep final state */
-        if (ch == KEY_MOUSE) {
-            MEVENT event;
-            do {
-                if (getmouse(&event) != OK) break;
-
-                state.mouse_x = event.x;
-                state.mouse_y = event.y;
-
-                if (event.bstate & BUTTON1_PRESSED) {
-                    state.mouse_button = 1;
-                    state.mouse_pressed = true;
-                    state.mouse_released = false;
-                    state.mouse_left_held = true;
-                } else if (event.bstate & BUTTON1_RELEASED) {
-                    state.mouse_button = 1;
-                    state.mouse_pressed = false;
-                    state.mouse_released = true;
-                    state.mouse_left_held = false;
-                } else if (event.bstate & BUTTON2_PRESSED) {
-                    state.mouse_button = 2;
-                    state.mouse_pressed = true;
-                    state.mouse_released = false;
-                    state.mouse_middle_held = true;
-                } else if (event.bstate & BUTTON2_RELEASED) {
-                    state.mouse_button = 2;
-                    state.mouse_pressed = false;
-                    state.mouse_released = true;
-                    state.mouse_middle_held = false;
-                } else if (event.bstate & BUTTON3_PRESSED) {
-                    state.mouse_button = 3;
-                    state.mouse_pressed = true;
-                    state.mouse_released = false;
-                    state.mouse_right_held = true;
-                } else if (event.bstate & BUTTON3_RELEASED) {
-                    state.mouse_button = 3;
-                    state.mouse_pressed = false;
-                    state.mouse_released = true;
-                    state.mouse_right_held = false;
-                }
-            } while ((ch = wgetch(stdscr)) == KEY_MOUSE);
-
-            if (ch != ERR) ungetch(ch);
-            continue;  /* Mouse doesn't go in keys[] */
-        }
-
-        /* All other keys: add to keys[] array */
-        if (state.key_count < MAX_KEYS_PER_FRAME) {
-            state.keys[state.key_count++] = ch;
-        }
-    }
-
-    /* Write to the input entity */
-    cels_entity_set_component(g_input_entity, NCurses_InputState_id,
-                               &state, sizeof(NCurses_InputState));
-    cels_component_notify_change(NCurses_InputState_id);
-}
-
-/* ============================================================================
- * ECS System Definition
- * ============================================================================ */
 
 CEL_System(NCurses_InputSystem, .phase = OnLoad) {
-    cel_run {
-        tui_read_input_ncurses();
+    cel_query(NCurses_InputState);
+    cel_each(NCurses_InputState) {
+        /* Save persistent fields from previous frame */
+        int mx = NCurses_InputState->mouse_x;
+        int my = NCurses_InputState->mouse_y;
+        bool lh = NCurses_InputState->mouse_left_held;
+        bool mh = NCurses_InputState->mouse_middle_held;
+        bool rh = NCurses_InputState->mouse_right_held;
+
+        cel_update(NCurses_InputState) {
+            /* Reset per-frame fields, restore persistent */
+            *NCurses_InputState = (struct NCurses_InputState){0};
+            NCurses_InputState->mouse_x = mx;
+            NCurses_InputState->mouse_y = my;
+            NCurses_InputState->mouse_left_held = lh;
+            NCurses_InputState->mouse_middle_held = mh;
+            NCurses_InputState->mouse_right_held = rh;
+
+            /* Drain all queued keys */
+            int ch;
+            while ((ch = wgetch(stdscr)) != ERR) {
+
+                /* Internal: terminal resize */
+                if (ch == KEY_RESIZE) {
+                    int next;
+                    while ((next = wgetch(stdscr)) == KEY_RESIZE) { /* consume */ }
+                    if (next != ERR) ungetch(next);
+
+                    if (COLS >= 4 && LINES >= 4) {
+                        ncurses_console_log("[resize] COLS=%d LINES=%d\n", COLS, LINES);
+                        tui_layer_resize_all(COLS, LINES);
+                        tui_frame_invalidate_all();
+                        clearok(curscr, TRUE);
+                    }
+                    continue;
+                }
+
+                /* Internal: F1 pause mode */
+                if (ch == KEY_F(1)) {
+                    tui_pause();
+                    continue;
+                }
+
+                /* Mouse events -- drain all queued, keep final state */
+                if (ch == KEY_MOUSE) {
+                    MEVENT event;
+                    do {
+                        if (getmouse(&event) != OK) break;
+
+                        NCurses_InputState->mouse_x = event.x;
+                        NCurses_InputState->mouse_y = event.y;
+
+                        if (event.bstate & BUTTON1_PRESSED) {
+                            NCurses_InputState->mouse_button = 1;
+                            NCurses_InputState->mouse_pressed = true;
+                            NCurses_InputState->mouse_released = false;
+                            NCurses_InputState->mouse_left_held = true;
+                        } else if (event.bstate & BUTTON1_RELEASED) {
+                            NCurses_InputState->mouse_button = 1;
+                            NCurses_InputState->mouse_pressed = false;
+                            NCurses_InputState->mouse_released = true;
+                            NCurses_InputState->mouse_left_held = false;
+                        } else if (event.bstate & BUTTON2_PRESSED) {
+                            NCurses_InputState->mouse_button = 2;
+                            NCurses_InputState->mouse_pressed = true;
+                            NCurses_InputState->mouse_released = false;
+                            NCurses_InputState->mouse_middle_held = true;
+                        } else if (event.bstate & BUTTON2_RELEASED) {
+                            NCurses_InputState->mouse_button = 2;
+                            NCurses_InputState->mouse_pressed = false;
+                            NCurses_InputState->mouse_released = true;
+                            NCurses_InputState->mouse_middle_held = false;
+                        } else if (event.bstate & BUTTON3_PRESSED) {
+                            NCurses_InputState->mouse_button = 3;
+                            NCurses_InputState->mouse_pressed = true;
+                            NCurses_InputState->mouse_released = false;
+                            NCurses_InputState->mouse_right_held = true;
+                        } else if (event.bstate & BUTTON3_RELEASED) {
+                            NCurses_InputState->mouse_button = 3;
+                            NCurses_InputState->mouse_pressed = false;
+                            NCurses_InputState->mouse_released = true;
+                            NCurses_InputState->mouse_right_held = false;
+                        }
+                    } while ((ch = wgetch(stdscr)) == KEY_MOUSE);
+
+                    if (ch != ERR) ungetch(ch);
+                    continue;
+                }
+
+                /* All other keys: add to keys[] array */
+                if (NCurses_InputState->key_count < MAX_KEYS_PER_FRAME) {
+                    NCurses_InputState->keys[NCurses_InputState->key_count++] = ch;
+                }
+            }
+        }
     }
 }
 
 /* ============================================================================
- * ncurses_register_input_system -- Module entry point
- * ============================================================================
- *
- * Called by CEL_Module(NCurses) init body. Creates the standalone input entity,
- * registers custom key sequences, initializes mouse, registers the ECS system.
- */
+ * Terminal Configuration -- called after initscr()
+ * ============================================================================ */
 
-void ncurses_register_input_system(void) {
-    /* Create standalone input entity via composition (registers component + sets defaults) */
-    cel_init(NCursesInput) {
-        g_input_entity = cels_get_current_entity();
-    }
-}
-
-/* Called from ncurses_terminal_init() after initscr() -- ncurses must be active */
 void ncurses_input_configure_terminal(void) {
     /* Register xterm-compatible Ctrl+Arrow escape sequences */
     define_key("\033[1;5A", CELS_KEY_CTRL_UP);

@@ -42,9 +42,6 @@ extern bool ncurses_window_is_active(void);
 /* Input ECS system -- defined in tui_input.c, registered by module */
 CEL_Define(NCurses_InputSystem);
 
-/* Input system setup (entity creation) -- called during module init */
-extern void ncurses_register_input_system(void);
-
 /* Input terminal config (key sequences, mouse) -- called after initscr() */
 extern void ncurses_input_configure_terminal(void);
 
