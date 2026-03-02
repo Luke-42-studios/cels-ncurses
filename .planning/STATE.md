@@ -5,17 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-02-26)
 
 **Core value:** Provide a low-level drawing primitive API that a future cels-clay module can target to render Clay UI layouts in the terminal
-**Current focus:** v0.2.0 Phase 3 - Input System (next)
+**Current focus:** v0.2.0 Phase 3 - Input System (in progress)
 
 ## Current Position
 
 Milestone: v0.2.0 ECS Module Architecture
-Phase: 1.2 of 6 (Window Lifecycle Rewrite)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-03-01 -- Completed 01.2-02-PLAN.md
+Phase: 3 of 6 (Input System)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-03-02 -- Completed 03-01-PLAN.md
 
-Progress: [███████░░░] 70% (10/15 estimated plans)
+Progress: [███████░░░] 73% (11/15 estimated plans)
 
 ## Performance Metrics
 
@@ -34,6 +34,7 @@ Progress: [███████░░░] 70% (10/15 estimated plans)
 - Phase 1: Plan 01 in 3 min, Plan 02 in 4 min, Plan 03 in 3 min (10 min total)
 - Phase 1.1: Plan 01 in 4 min, Plan 02 in 18 min (22 min total; Plan 02 included build config debugging)
 - Phase 1.2: Plan 01 in 2 min, Plan 02 in 7 min (9 min total)
+- Phase 3: Plan 01 in 3 min
 
 ## Accumulated Context
 
@@ -76,6 +77,11 @@ Progress: [███████░░░] 70% (10/15 estimated plans)
 - [P1.2-02]: cels_lifecycle_bind_entity() used (cel_lifecycle() composition verb does not exist)
 - [P1.2-02]: cels_entity_set_component always paired with cels_component_notify_change for reactivity
 - [P1.2-02]: Bridge files deleted, flecs INTERFACE link removed -- zero flecs.h in cels-ncurses
+- [P3-01]: NCurses_InputState CEL_Component replaces global g_input_state on window entity
+- [P3-01]: Mouse button values as plain integers (0/1/2/3) -- TUI_MouseButton enum removed
+- [P3-01]: Quit guard kept as internal function pointer (not componentized)
+- [P3-01]: ERR from getch still writes zeroed-but-persistent state to entity for consistency
+- [P3-01]: Mouse drain loop falls through to entity write (no early return after mouse processing)
 
 ### Carried Forward from v1.1
 
@@ -98,9 +104,10 @@ Progress: [███████░░░] 70% (10/15 estimated plans)
 - Phase 1.2 build verified via wrapper project; runtime confirmation recommended
 - cmake-build-debug directory configured standalone (no cels dependency); wrapper build at /tmp/cels-ncurses-build used for verification
 - Phase 1.2 Plan 01 committed to CELS v0.5.2 branch -- must be available when cels-ncurses builds against cels
+- tui_window_get_running_ptr() still exists in tui_window.c/tui_window.h but is no longer called -- should be cleaned up in Phase 3 Plan 02 or later
 
 ## Session Continuity
 
-Last session: 2026-03-01T20:39:06Z
-Stopped at: Completed 01.2-02-PLAN.md (bridge deletion, lifecycle rewrite)
+Last session: 2026-03-02T02:30:19Z
+Stopped at: Completed 03-01-PLAN.md (NCurses_InputState component + input system rewrite)
 Resume file: None
