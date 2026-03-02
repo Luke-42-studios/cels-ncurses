@@ -37,6 +37,7 @@
 #include "cels-ncurses/tui_layer.h"
 #include "cels-ncurses/tui_frame.h"
 #include <ncurses.h>
+#include <string.h>
 #include <cels/cels.h>
 
 /* Custom key codes for Ctrl+Arrow (above KEY_MAX, below INT_MAX) */
@@ -67,28 +68,20 @@ static void tui_pause(void) {
  * ============================================================================
  *
  * Queries the NCursesInput entity by its NCurses_InputState component.
- * Each frame: saves persistent fields, zeros per-frame fields, drains
- * the ncurses input queue, writes back via cel_update.
+ * Each frame: resets per-frame fields (persistent fields carry over),
+ * drains the ncurses input queue, writes back via cel_update.
  */
 
 CEL_System(NCurses_InputSystem, .phase = OnLoad) {
     cel_query(NCurses_InputState);
     cel_each(NCurses_InputState) {
-        /* Save persistent fields from previous frame */
-        int mx = NCurses_InputState->mouse_x;
-        int my = NCurses_InputState->mouse_y;
-        bool lh = NCurses_InputState->mouse_left_held;
-        bool mh = NCurses_InputState->mouse_middle_held;
-        bool rh = NCurses_InputState->mouse_right_held;
-
         cel_update(NCurses_InputState) {
-            /* Reset per-frame fields, restore persistent */
-            *NCurses_InputState = (struct NCurses_InputState){0};
-            NCurses_InputState->mouse_x = mx;
-            NCurses_InputState->mouse_y = my;
-            NCurses_InputState->mouse_left_held = lh;
-            NCurses_InputState->mouse_middle_held = mh;
-            NCurses_InputState->mouse_right_held = rh;
+            /* Reset per-frame fields (persistent fields carry over) */
+            NCurses_InputState->key_count = 0;
+            memset(NCurses_InputState->keys, 0, sizeof(NCurses_InputState->keys));
+            NCurses_InputState->mouse_button = 0;
+            NCurses_InputState->mouse_pressed = false;
+            NCurses_InputState->mouse_released = false;
 
             /* Drain all queued keys */
             int ch;

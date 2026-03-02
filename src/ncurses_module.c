@@ -74,9 +74,7 @@ CEL_Observe(NCursesWindowLC, on_create) {
         return;
     ncurses_window_set_entity(entity);
 
-    /* Read config from entity using CELS public API */
-    const NCurses_WindowConfig* config =
-        (const NCurses_WindowConfig*)cels_entity_get_component(entity, NCurses_WindowConfig_id);
+    const NCurses_WindowConfig* config = cel_watch(entity, NCurses_WindowConfig);
     if (!config) {
         ncurses_window_set_entity(0);
         return;
