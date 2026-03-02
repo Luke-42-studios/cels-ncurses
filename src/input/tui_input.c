@@ -18,8 +18,8 @@
  * TUI Input System - Raw ncurses Input
  *
  * ECS system at OnLoad that drains the ncurses getch() queue each frame
- * and writes raw key codes + mouse state to the NCursesInput entity
- * via cel_query / cel_each / cel_update.
+ * and writes raw key codes + mouse state to the NCurses_InputState singleton
+ * via cel_mutate.
  *
  * No semantic interpretation -- keys are raw ncurses codes (KEY_UP, '\n',
  * 'q', KEY_F(1), etc.). The developer's systems decide what each key means.
@@ -64,24 +64,34 @@ static void tui_pause(void) {
 }
 
 /* ============================================================================
- * ECS System -- drains getch() queue, writes via cel_update
+ * State Singleton Accessor
  * ============================================================================
  *
- * Queries the NCursesInput entity by its NCurses_InputState component.
+ * Returns this TU's canonical NCurses_InputState (the CEL_State static).
+ * Consumer TUs call this instead of reading their own local static.
+ */
+
+const NCurses_InputState_t* ncurses_input(void) {
+    return &NCurses_InputState;
+}
+
+/* ============================================================================
+ * ECS System -- drains getch() queue, writes via cel_mutate
+ * ============================================================================
+ *
  * Each frame: resets per-frame fields (persistent fields carry over),
- * drains the ncurses input queue, writes back via cel_update.
+ * drains the ncurses input queue. cel_mutate auto-notifies at end.
  */
 
 CEL_System(NCurses_InputSystem, .phase = OnLoad) {
-    cel_query(NCurses_InputState);
-    cel_each(NCurses_InputState) {
-        cel_update(NCurses_InputState) {
+    cel_run {
+        cel_mutate(NCurses_InputState) {
             /* Reset per-frame fields (persistent fields carry over) */
-            NCurses_InputState->key_count = 0;
-            memset(NCurses_InputState->keys, 0, sizeof(NCurses_InputState->keys));
-            NCurses_InputState->mouse_button = 0;
-            NCurses_InputState->mouse_pressed = false;
-            NCurses_InputState->mouse_released = false;
+            NCurses_InputState.key_count = 0;
+            memset(NCurses_InputState.keys, 0, sizeof(NCurses_InputState.keys));
+            NCurses_InputState.mouse_button = 0;
+            NCurses_InputState.mouse_pressed = false;
+            NCurses_InputState.mouse_released = false;
 
             /* Drain all queued keys */
             int ch;
@@ -114,39 +124,39 @@ CEL_System(NCurses_InputSystem, .phase = OnLoad) {
                     do {
                         if (getmouse(&event) != OK) break;
 
-                        NCurses_InputState->mouse_x = event.x;
-                        NCurses_InputState->mouse_y = event.y;
+                        NCurses_InputState.mouse_x = event.x;
+                        NCurses_InputState.mouse_y = event.y;
 
                         if (event.bstate & BUTTON1_PRESSED) {
-                            NCurses_InputState->mouse_button = 1;
-                            NCurses_InputState->mouse_pressed = true;
-                            NCurses_InputState->mouse_released = false;
-                            NCurses_InputState->mouse_left_held = true;
+                            NCurses_InputState.mouse_button = 1;
+                            NCurses_InputState.mouse_pressed = true;
+                            NCurses_InputState.mouse_released = false;
+                            NCurses_InputState.mouse_left_held = true;
                         } else if (event.bstate & BUTTON1_RELEASED) {
-                            NCurses_InputState->mouse_button = 1;
-                            NCurses_InputState->mouse_pressed = false;
-                            NCurses_InputState->mouse_released = true;
-                            NCurses_InputState->mouse_left_held = false;
+                            NCurses_InputState.mouse_button = 1;
+                            NCurses_InputState.mouse_pressed = false;
+                            NCurses_InputState.mouse_released = true;
+                            NCurses_InputState.mouse_left_held = false;
                         } else if (event.bstate & BUTTON2_PRESSED) {
-                            NCurses_InputState->mouse_button = 2;
-                            NCurses_InputState->mouse_pressed = true;
-                            NCurses_InputState->mouse_released = false;
-                            NCurses_InputState->mouse_middle_held = true;
+                            NCurses_InputState.mouse_button = 2;
+                            NCurses_InputState.mouse_pressed = true;
+                            NCurses_InputState.mouse_released = false;
+                            NCurses_InputState.mouse_middle_held = true;
                         } else if (event.bstate & BUTTON2_RELEASED) {
-                            NCurses_InputState->mouse_button = 2;
-                            NCurses_InputState->mouse_pressed = false;
-                            NCurses_InputState->mouse_released = true;
-                            NCurses_InputState->mouse_middle_held = false;
+                            NCurses_InputState.mouse_button = 2;
+                            NCurses_InputState.mouse_pressed = false;
+                            NCurses_InputState.mouse_released = true;
+                            NCurses_InputState.mouse_middle_held = false;
                         } else if (event.bstate & BUTTON3_PRESSED) {
-                            NCurses_InputState->mouse_button = 3;
-                            NCurses_InputState->mouse_pressed = true;
-                            NCurses_InputState->mouse_released = false;
-                            NCurses_InputState->mouse_right_held = true;
+                            NCurses_InputState.mouse_button = 3;
+                            NCurses_InputState.mouse_pressed = true;
+                            NCurses_InputState.mouse_released = false;
+                            NCurses_InputState.mouse_right_held = true;
                         } else if (event.bstate & BUTTON3_RELEASED) {
-                            NCurses_InputState->mouse_button = 3;
-                            NCurses_InputState->mouse_pressed = false;
-                            NCurses_InputState->mouse_released = true;
-                            NCurses_InputState->mouse_right_held = false;
+                            NCurses_InputState.mouse_button = 3;
+                            NCurses_InputState.mouse_pressed = false;
+                            NCurses_InputState.mouse_released = true;
+                            NCurses_InputState.mouse_right_held = false;
                         }
                     } while ((ch = wgetch(stdscr)) == KEY_MOUSE);
 
@@ -155,8 +165,8 @@ CEL_System(NCurses_InputSystem, .phase = OnLoad) {
                 }
 
                 /* All other keys: add to keys[] array */
-                if (NCurses_InputState->key_count < MAX_KEYS_PER_FRAME) {
-                    NCurses_InputState->keys[NCurses_InputState->key_count++] = ch;
+                if (NCurses_InputState.key_count < MAX_KEYS_PER_FRAME) {
+                    NCurses_InputState.keys[NCurses_InputState.key_count++] = ch;
                 }
             }
         }
@@ -168,6 +178,11 @@ CEL_System(NCurses_InputSystem, .phase = OnLoad) {
  * ============================================================================ */
 
 void ncurses_input_configure_terminal(void) {
+    /* Ensure this TU's state ID is set (idempotent) */
+    NCurses_InputState_register();
+    NCurses_InputState.mouse_x = -1;
+    NCurses_InputState.mouse_y = -1;
+
     /* Register xterm-compatible Ctrl+Arrow escape sequences */
     define_key("\033[1;5A", CELS_KEY_CTRL_UP);
     define_key("\033[1;5B", CELS_KEY_CTRL_DOWN);

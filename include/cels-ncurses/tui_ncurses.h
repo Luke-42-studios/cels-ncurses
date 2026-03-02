@@ -15,12 +15,12 @@
  */
 
 /*
- * NCurses Module - Public Component Types and Module Declaration
+ * NCurses Module - Public API
  *
- * Defines the entity-component API surface for the NCurses module:
- *   - NCurses_WindowConfig: developer sets on entity to configure terminal
- *   - NCurses_WindowState: NCurses fills after terminal init (width, height, etc.)
- *   - CEL_Define(NCursesWindow): composition for natural entity creation
+ * Defines the API surface for the NCurses module:
+ *   - NCurses_WindowConfig: CEL_Component on window entity to configure terminal
+ *   - NCurses_WindowState: state singleton (read via ncurses_window())
+ *   - NCurses_InputState: state singleton (read via ncurses_input())
  *   - NCursesWindow() call macro: developer writes NCursesWindow(.title = "X") {}
  *
  * Usage:
@@ -29,6 +29,13 @@
  *
  *   CEL_Composition(World) {
  *       NCursesWindow(.title = "My App", .fps = 60) {}
+ *   }
+ *
+ *   CEL_System(GameInput, .phase = OnUpdate) {
+ *       cel_run {
+ *           const NCurses_InputState_t* input = ncurses_input();
+ *           for (int i = 0; i < input->key_count; i++) { ... }
+ *       }
  *   }
  *
  *   cels_main() {
@@ -84,12 +91,25 @@ CEL_Component(NCurses_WindowConfig) {
     int color_mode;
 };
 
-/*
- * NCurses system attaches this to the window entity after terminal init.
- * Developer reads via cel_watch(entity, NCurses_WindowState) for reactive
- * updates (e.g. terminal resize triggers recomposition).
+/* Extern global component ID shared across all TUs (defined in ncurses_module.c) */
+extern cels_entity_t _ncurses_WindowConfig_id;
+#define NCurses_WindowConfig_id _ncurses_WindowConfig_id
+
+/* ============================================================================
+ * State Singletons
+ * ============================================================================
+ *
+ * CEL_State creates per-TU static data + ID + register function.
+ * The writer TU (tui_window.c / tui_input.c) owns the canonical copy.
+ * Consumers read via ncurses_window() / ncurses_input() accessors which
+ * return the writer TU's data.
  */
-CEL_Component(NCurses_WindowState) {
+
+/*
+ * Window state singleton. Updated each frame by the NCurses window system.
+ * Read via ncurses_window() accessor in systems.
+ */
+CEL_State(NCurses_WindowState) {
     int width;
     int height;
     bool running;
@@ -98,24 +118,15 @@ CEL_Component(NCurses_WindowState) {
 };
 
 /*
- * Per-frame raw input state. Lives on a standalone input entity (not the window).
- * NCurses input system drains all queued keys and mouse events each frame at OnLoad.
- *
- * Developer reads via cel_query(NCurses_InputState) in a CEL_System:
- *
- *   CEL_System(MyInput, .phase = OnUpdate) {
- *       cel_query(NCurses_InputState);
- *       cel_each(NCurses_InputState) {
- *           for (int i = 0; i < input->key_count; i++) { ... }
- *       }
- *   }
+ * Per-frame raw input state singleton. Updated each frame at OnLoad.
+ * Read via ncurses_input() accessor in systems.
  *
  * Raw keys only -- no semantic interpretation. The developer decides what
  * each key means (quit, accept, navigate, etc.) in their own systems.
  *
  * Per-frame fields reset each frame. Mouse position and held state persist.
  */
-CEL_Component(NCurses_InputState) {
+CEL_State(NCurses_InputState) {
     /* Keyboard: all keys pressed this frame (per-frame, drained from getch queue) */
     int  keys[16];
     int  key_count;
@@ -135,22 +146,9 @@ CEL_Component(NCurses_InputState) {
     bool mouse_right_held;
 };
 
-/*
- * Override CEL_Component's per-TU static IDs with extern globals.
- * The actual definitions live in ncurses_module.c. This ensures all
- * translation units (including the consumer's) share the same IDs
- * registered during NCurses_init().
- *
- * CEL_Component creates `static cels_entity_t Name_id = 0` per TU.
- * We redirect the symbol via macro to an extern global so all TUs
- * share the same registered ID.
- */
-extern cels_entity_t _ncurses_WindowConfig_id;
-extern cels_entity_t _ncurses_WindowState_id;
-extern cels_entity_t _ncurses_InputState_id;
-#define NCurses_WindowConfig_id _ncurses_WindowConfig_id
-#define NCurses_WindowState_id  _ncurses_WindowState_id
-#define NCurses_InputState_id   _ncurses_InputState_id
+/* Non-reactive accessors -- return the writer TU's canonical data */
+extern const NCurses_WindowState_t* ncurses_window(void);
+extern const NCurses_InputState_t*  ncurses_input(void);
 
 /* ============================================================================
  * Composition: NCursesWindow

@@ -21,10 +21,9 @@
  * Lifecycle observers in ncurses_module.c call ncurses_terminal_init()
  * and ncurses_terminal_shutdown() via extern declarations in tui_internal.h.
  *
- * ncurses_window_frame_update() is called each frame by the frame pipeline
- * to update window dimensions on resize and propagate delta_time.
- * Component mutations use cels_entity_set_component() + cels_component_notify_change()
- * to trigger cel_watch reactivity in application compositions.
+ * Owns the canonical NCurses_WindowState (this TU's CEL_State static).
+ * The NCurses_WindowUpdateSystem mutates it via cel_mutate, and the
+ * ncurses_window() accessor exposes it to consumer TUs.
  */
 
 #define _POSIX_C_SOURCE 199309L
@@ -97,6 +96,18 @@ cels_entity_t ncurses_window_get_entity(void) { return g_window_entity; }
 bool ncurses_window_is_active(void) { return g_ncurses_active != 0; }
 
 /* ============================================================================
+ * State Singleton Accessor
+ * ============================================================================
+ *
+ * Returns this TU's canonical NCurses_WindowState (the CEL_State static).
+ * Consumer TUs call this instead of reading their own local static.
+ */
+
+const NCurses_WindowState_t* ncurses_window(void) {
+    return &NCurses_WindowState;
+}
+
+/* ============================================================================
  * Terminal Init (extracted from old tui_hook_startup)
  * ============================================================================
  *
@@ -106,6 +117,10 @@ bool ncurses_window_is_active(void) { return g_ncurses_active != 0; }
  */
 
 void ncurses_terminal_init(NCurses_WindowConfig* config) {
+    /* Ensure this TU's state ID is set (idempotent) */
+    NCurses_WindowState_register();
+    NCurses_WindowState.running = true;
+
     /* Auto-spawn a new terminal window if not already inside one.
      * Similar to how SDL creates an OS window -- the user just runs the
      * binary and a window appears. If spawning succeeds, the parent waits
@@ -165,57 +180,55 @@ void ncurses_terminal_shutdown(void) {
 }
 
 /* ============================================================================
- * ECS System -- per-frame window state update via cel_update
+ * ECS System -- per-frame window state update via cel_mutate
  * ============================================================================
  *
- * Queries the NCursesWindow entity by its NCurses_WindowState component.
  * Each frame: updates timing, detects resize, checks quit signal.
- * cel_update triggers cel_watch reactivity in application compositions.
+ * cel_mutate auto-notifies the reactivity system after the block.
  *
  * Runs at PreRender so WindowState is current before rendering systems.
  */
 
 CEL_System(NCurses_WindowUpdateSystem, .phase = PreRender) {
-    /* Timing (static state, independent of entity) */
-    g_prev_frame_start = g_frame_start;
-    clock_gettime(CLOCK_MONOTONIC, &g_frame_start);
-    if (g_prev_frame_start.tv_sec != 0) {
-        g_delta_time = (float)(g_frame_start.tv_sec - g_prev_frame_start.tv_sec) +
-                       (float)(g_frame_start.tv_nsec - g_prev_frame_start.tv_nsec) / 1e9f;
-    }
+    cel_run {
+        /* Timing */
+        g_prev_frame_start = g_frame_start;
+        clock_gettime(CLOCK_MONOTONIC, &g_frame_start);
+        if (g_prev_frame_start.tv_sec != 0) {
+            g_delta_time = (float)(g_frame_start.tv_sec - g_prev_frame_start.tv_sec) +
+                           (float)(g_frame_start.tv_nsec - g_prev_frame_start.tv_nsec) / 1e9f;
+        }
 
-    /* Detect resize */
-    int new_w = COLS;
-    int new_h = LINES;
-    bool resized = (new_w != g_last_cols || new_h != g_last_lines);
-    if (resized) {
-        g_last_cols = new_w;
-        g_last_lines = new_h;
-    }
+        /* Detect resize */
+        int new_w = COLS;
+        int new_h = LINES;
+        bool resized = (new_w != g_last_cols || new_h != g_last_lines);
+        if (resized) {
+            g_last_cols = new_w;
+            g_last_lines = new_h;
+        }
 
-    cel_query(NCurses_WindowState);
-    cel_each(NCurses_WindowState) {
         /* Quit requested (SIGINT) */
         if (!g_running) {
-            cel_update(NCurses_WindowState) {
-                NCurses_WindowState->width = g_last_cols;
-                NCurses_WindowState->height = g_last_lines;
-                NCurses_WindowState->running = false;
-                NCurses_WindowState->actual_fps = (g_delta_time > 0.0f) ? 1.0f / g_delta_time : 0.0f;
-                NCurses_WindowState->delta_time = g_delta_time;
+            cel_mutate(NCurses_WindowState) {
+                NCurses_WindowState.width = g_last_cols;
+                NCurses_WindowState.height = g_last_lines;
+                NCurses_WindowState.running = false;
+                NCurses_WindowState.actual_fps = (g_delta_time > 0.0f) ? 1.0f / g_delta_time : 0.0f;
+                NCurses_WindowState.delta_time = g_delta_time;
             }
             cels_request_quit();
             return;
         }
 
-        /* Resize detected -- update state to trigger cel_watch */
+        /* Resize detected -- update state to trigger reactivity */
         if (resized) {
-            cel_update(NCurses_WindowState) {
-                NCurses_WindowState->width = new_w;
-                NCurses_WindowState->height = new_h;
-                NCurses_WindowState->running = true;
-                NCurses_WindowState->actual_fps = (g_delta_time > 0.0f) ? 1.0f / g_delta_time : 0.0f;
-                NCurses_WindowState->delta_time = g_delta_time;
+            cel_mutate(NCurses_WindowState) {
+                NCurses_WindowState.width = new_w;
+                NCurses_WindowState.height = new_h;
+                NCurses_WindowState.running = true;
+                NCurses_WindowState.actual_fps = (g_delta_time > 0.0f) ? 1.0f / g_delta_time : 0.0f;
+                NCurses_WindowState.delta_time = g_delta_time;
             }
         }
     }

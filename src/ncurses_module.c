@@ -18,7 +18,7 @@
  * NCurses Module - CEL_Module(NCurses) Definition
  *
  * Single module entry point replacing the old Engine + CelsNcurses facade.
- * Registers all NCurses component types, lifecycle, and systems.
+ * Registers all NCurses component types, state singletons, lifecycle, and systems.
  *
  * CEL_Module(NCurses) expands to define:
  *   - cels_entity_t NCurses = 0;   (module entity, file scope)
@@ -49,10 +49,8 @@
 #define _NCURSES_MODULE_IMPL
 #include "cels-ncurses/tui_ncurses.h"
 
-/* Extern global component IDs shared across all TUs (declared in tui_ncurses.h) */
+/* Extern global component ID shared across all TUs (declared in tui_ncurses.h) */
 cels_entity_t _ncurses_WindowConfig_id = 0;
-cels_entity_t _ncurses_WindowState_id = 0;
-cels_entity_t _ncurses_InputState_id = 0;
 
 #include "cels-ncurses/tui_internal.h"
 #include <ncurses.h>
@@ -94,22 +92,9 @@ CEL_Observe(NCursesWindowLC, on_destroy) {
  * ============================================================================ */
 
 CEL_Module(NCurses) {
+    cels_register(NCurses_WindowState, NCurses_InputState);
     cels_register(NCursesWindowLC, NCurses_InputSystem, NCurses_WindowUpdateSystem);
     ncurses_register_frame_systems();
-}
-
-/* ============================================================================
- * NCursesInput Composition -- standalone input entity
- * ============================================================================
- *
- * Internal composition created by NCursesWindow. The input entity holds
- * NCurses_InputState which the input system updates each frame via cel_update.
- * cel_has() handles component registration automatically.
- *
- * CEL_Composition (not CEL_Compose) because this is file-local, not exported.
- */
-CEL_Composition(NCursesInput) {
-    cel_has(NCurses_InputState, .mouse_x = -1, .mouse_y = -1);
 }
 
 /* ============================================================================
@@ -124,9 +109,8 @@ CEL_Composition(NCursesInput) {
  * The composition body receives `cel` of type NCursesWindow_props with
  * fields: .title, .fps, .color_mode.
  *
- * Declares BOTH NCurses_WindowConfig and NCurses_WindowState via cel_has,
- * then binds the entity to NCursesWindowLC lifecycle which fires on_create.
- * Also creates the standalone NCursesInput entity for raw input handling.
+ * Declares NCurses_WindowConfig via cel_has, then binds the entity to
+ * NCursesWindowLC lifecycle which fires on_create.
  *
  * ORDERING: cel_has() MUST come before cels_lifecycle_bind_entity() because
  * the on_create observer reads WindowConfig from the entity.
@@ -137,17 +121,7 @@ CEL_Compose(NCursesWindow) {
         .fps = cel.fps,
         .color_mode = cel.color_mode
     );
-    cel_has(NCurses_WindowState,
-        .width = 0,
-        .height = 0,
-        .running = true,
-        .actual_fps = 0,
-        .delta_time = 0
-    );
-    /* Bind lifecycle after components -- fires on_create which reads config. */
+    /* Bind lifecycle after component -- fires on_create which reads config. */
     cels_lifecycle_bind_entity(NCursesWindowLC_id, cels_get_current_entity());
-
-    /* Create the standalone input entity */
-    cel_init(NCursesInput) {}
 }
 

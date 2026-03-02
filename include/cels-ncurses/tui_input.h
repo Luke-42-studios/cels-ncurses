@@ -2,7 +2,7 @@
  *
  * Internal-only declarations for the input subsystem.
  * Public input type (NCurses_InputState) is in tui_ncurses.h.
- * Consumers query input via cel_query(NCurses_InputState) in a CEL_System.
+ * Consumers read input via ncurses_input() accessor in a CEL_System.
  *
  * No public API here -- the input system is fully raw. Developers interpret
  * key codes in their own systems. Quit, navigation, actions are all

@@ -17,10 +17,10 @@
 /*
  * Minimal CELS NCurses Example
  *
- * Demonstrates the entity-component API:
+ * Demonstrates the API:
  *   - cels_register(NCurses) to load the NCurses module
  *   - NCursesWindow() call macro to create a window entity
- *   - CEL_System with cel_query(NCurses_InputState) for raw input
+ *   - CEL_System with ncurses_input() accessor for raw input
  *   - cels_session / cels_running / cels_step for the main loop
  *
  * Opens a terminal window at 30fps showing raw input events.
@@ -37,10 +37,10 @@ CEL_Composition(World) {
 
 /* System: reads raw input each frame */
 CEL_System(GameInput, .phase = OnUpdate) {
-    cel_query(NCurses_InputState);
-    cel_each(NCurses_InputState) {
-        for (int i = 0; i < NCurses_InputState->key_count; i++) {
-            int key = NCurses_InputState->keys[i];
+    cel_run {
+        const NCurses_InputState_t* input = ncurses_input();
+        for (int i = 0; i < input->key_count; i++) {
+            int key = input->keys[i];
 
             if (key == 'q' || key == 'Q') {
                 cels_request_quit();
@@ -53,12 +53,12 @@ CEL_System(GameInput, .phase = OnUpdate) {
                 ncurses_console_log("Key: (%d)\n", key);
         }
 
-        if (NCurses_InputState->mouse_pressed || NCurses_InputState->mouse_released) {
+        if (input->mouse_pressed || input->mouse_released) {
             ncurses_console_log("Mouse: %d,%d btn=%d %s%s\n",
-                     NCurses_InputState->mouse_x, NCurses_InputState->mouse_y,
-                     NCurses_InputState->mouse_button,
-                     NCurses_InputState->mouse_pressed ? "PRESS" : "",
-                     NCurses_InputState->mouse_released ? "RELEASE" : "");
+                     input->mouse_x, input->mouse_y,
+                     input->mouse_button,
+                     input->mouse_pressed ? "PRESS" : "",
+                     input->mouse_released ? "RELEASE" : "");
         }
     }
 }
