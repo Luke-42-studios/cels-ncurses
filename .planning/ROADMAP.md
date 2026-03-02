@@ -37,7 +37,7 @@ Closed early. Phases 9-10 dropped for v2.0 architecture rethink.
 - [x] **Phase 0: CELS Module Registration** - Fix CEL_Module macro, remove CELS_REGISTER phase, update docs, set up dual-remote, release v0.5.1 (work in cels repo) ✓ 2026-02-27
 - [x] **Phase 1: Module Boundary** - Replace Engine + CelsNcurses with a single CEL_Module(NCurses) + working window lifecycle (absorbs Phase 2) ✓ 2026-02-28
 - [x] **Phase 1.1: CELS API Purge** - Replace all direct flecs/ecs API calls with CELS abstractions (INSERTED) ✓ 2026-02-28
-- [ ] **Phase 1.2: Window Lifecycle Rewrite** - Replace bridge + flecs observers with CEL_Lifecycle + CEL_Observe pattern (INSERTED)
+- [x] **Phase 1.2: Window Lifecycle Rewrite** - Replace bridge + flecs observers with CEL_Lifecycle + CEL_Observe pattern (INSERTED) ✓ 2026-03-01
 - [ ] **Phase 2: Window Entity** - (Absorbed into Phase 1)
 - [ ] **Phase 3: Input System** - Per-frame input reading as a CELS phase system with queryable state
 - [ ] **Phase 4: Layer Entities** - Panel-backed layers created from TUI_Layer components with TUI_DrawContext attachment
@@ -128,7 +128,10 @@ Plans:
   1. An NCurses input system runs in a CELS input phase, reading getch/mouse events without developer intervention
   2. Developer can read input state (key presses, mouse position, button events) from a component after the input phase completes
   3. Input state is fresh each frame -- previous frame state does not leak into the current frame
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 03-01-PLAN.md -- NCurses_InputState component + input system entity rewrite
+- [ ] 03-02-PLAN.md -- Remove running pointer bridge, update example, build verification
 
 ### Phase 4: Layer Entities
 **Goal**: Developer can create drawable layers by adding TUI_Layer components to entities, with NCurses managing panels internally
@@ -175,7 +178,7 @@ Phases execute in numeric order: 0 (cels repo) -> 1 -> 1.1 -> 1.2 -> 3 -> 4 -> 5
 | 1.1 CELS API Purge | v0.2.0 | 2/2 | Complete | 2026-02-28 |
 | 1.2 Window Lifecycle Rewrite | v0.2.0 | 2/2 | Complete | 2026-03-01 |
 | 2. Window Entity | v0.2.0 | -- | Absorbed into P1 | - |
-| 3. Input System | v0.2.0 | 0/TBD | Not started | - |
+| 3. Input System | v0.2.0 | 0/2 | Planned | - |
 | 4. Layer Entities | v0.2.0 | 0/TBD | Not started | - |
 | 5. Frame Pipeline | v0.2.0 | 0/TBD | Not started | - |
 | 6. Demo | v0.2.0 | 0/TBD | Not started | - |
