@@ -46,13 +46,16 @@
 
 /* Prevent tui_ncurses.h from defining NCurses_register() --
  * CEL_Module(NCurses) below generates its own. */
-#define _NCURSES_MODULE_IMPL
-#include "cels-ncurses/tui_ncurses.h"
+#include <cels_ncurses.h>
 
-/* Extern global component ID shared across all TUs (declared in tui_ncurses.h) */
+/* Extern global component ID shared across all TUs (declared in cels_ncurses.h) */
 cels_entity_t _ncurses_WindowConfig_id = 0;
 
-#include "cels-ncurses/tui_internal.h"
+/* State extern definitions (declared via CEL_Define_State in cels_ncurses.h) */
+CEL_State(NCurses_WindowState);
+CEL_State(NCurses_InputState);
+
+#include "tui_internal.h"
 #include <ncurses.h>
 
 /* ============================================================================
@@ -91,9 +94,9 @@ CEL_Observe(NCursesWindowLC, on_destroy) {
  * CEL_Module(NCurses) -- Module Init Body
  * ============================================================================ */
 
-CEL_Module(NCurses) {
-    cels_register(NCurses_WindowState, NCurses_InputState);
-    cels_register(NCursesWindowLC, NCurses_InputSystem, NCurses_WindowUpdateSystem);
+CEL_Module(NCurses, init) {
+    cels_register(NCurses_WindowState, NCurses_InputState,
+                  NCursesWindowLC, NCurses_InputSystem, NCurses_WindowUpdateSystem);
     ncurses_register_frame_systems();
 }
 
