@@ -5,17 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-02-26)
 
 **Core value:** Provide a low-level drawing primitive API that a future cels-clay module can target to render Clay UI layouts in the terminal
-**Current focus:** v0.2.0 Phase 3 - Input System (complete) -- next: Phase 4 Layer Entities
+**Current focus:** v0.2.0 Phase 4 - Layer Entities (in progress)
 
 ## Current Position
 
 Milestone: v0.2.0 ECS Module Architecture
-Phase: 3 of 6 (Input System)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-03-02 -- Completed 03-02-PLAN.md
+Phase: 4 of 6 (Layer Entities)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-03-14 -- Completed 04-01-PLAN.md
 
-Progress: [████████░░] 80% (12/15 estimated plans)
+Progress: [█████████░] 87% (13/15 estimated plans)
 
 ## Performance Metrics
 
@@ -35,6 +35,7 @@ Progress: [████████░░] 80% (12/15 estimated plans)
 - Phase 1.1: Plan 01 in 4 min, Plan 02 in 18 min (22 min total; Plan 02 included build config debugging)
 - Phase 1.2: Plan 01 in 2 min, Plan 02 in 7 min (9 min total)
 - Phase 3: Plan 01 in 3 min, Plan 02 in 2 min (5 min total)
+- Phase 4: Plan 01 in 6 min
 
 ## Accumulated Context
 
@@ -84,6 +85,11 @@ Progress: [████████░░] 80% (12/15 estimated plans)
 - [P3-01]: Mouse drain loop falls through to entity write (no early return after mouse processing)
 - [P3-02]: tui_window_get_running_ptr() fully removed -- g_running stays internal (SIGINT + frame update)
 - [P3-02]: minimal.c updated from resize-tracking demo to input state demo (dual cel_watch)
+- [P4-01]: TUI_DrawContext_Component uses struct completion pattern: forward-declared in cels_ncurses.h, full struct in cels_ncurses_draw.h
+- [P4-01]: TUI_LayerConfig (not TUI_Layer) avoids name collision with existing v1.0 typedef struct TUI_Layer
+- [P4-01]: ctx.subcell_buf = NULL in on_create to avoid dangling pointer after set_component copy (Pitfall 4)
+- [P4-01]: .visible defaults to false (C99 zero-init) -- developer must pass .visible = true explicitly
+- [P4-01]: Internal LayerEntry registry with insertion sort + top_panel() rebuild for z-order (ncurses has no insert-at-position)
 
 ### Carried Forward from v1.1
 
@@ -110,6 +116,6 @@ Progress: [████████░░] 80% (12/15 estimated plans)
 
 ## Session Continuity
 
-Last session: 2026-03-02T02:35:18Z
-Stopped at: Completed 03-02-PLAN.md (running pointer bridge removed, minimal example updated, Phase 3 complete)
+Last session: 2026-03-14T17:23:05Z
+Stopped at: Completed 04-01-PLAN.md (layer component types, lifecycle, z-order sync, TUILayer composition)
 Resume file: None
