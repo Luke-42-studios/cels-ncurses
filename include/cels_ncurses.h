@@ -155,7 +155,7 @@ CEL_Define_State(NCurses_InputState) {
  *
  *   NCursesWindow(.title = "My App", .fps = 60) {}
  *
- * Implementation in ncurses_module.c via CEL_Composition(NCursesWindow).
+ * Implementation in ncurses_module.c via CEL_Compose(NCursesWindow).
  */
 CEL_Define_Composition(NCursesWindow, const char* title; int fps; int color_mode;);
 
@@ -178,7 +178,7 @@ CEL_Define_Composition(NCursesWindow, const char* title; int fps; int color_mode
  * NOTE: .visible defaults to false (C99 zero-init). Pass .visible = true
  * explicitly to create a visible layer.
  *
- * Implementation in src/layer/tui_layer_entity.c via CEL_Composition(TUILayer).
+ * Implementation in src/layer/tui_layer_entity.c via CEL_Compose(TUILayer).
  */
 CEL_Define_Composition(TUILayer, int z_order; bool visible; int x; int y; int width; int height;);
 
