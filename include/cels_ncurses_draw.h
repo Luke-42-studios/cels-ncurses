@@ -320,6 +320,26 @@ static inline TUI_DrawContext tui_draw_context_create(WINDOW* win,
 }
 
 /* ============================================================================
+ * Layer Entity Component -- Attached by NCurses, read by developer
+ * ============================================================================
+ *
+ * NCurses attaches this to each entity that has TUI_Renderable + TUI_LayerConfig.
+ * Developer reads it via cel_watch(TUI_DrawContext_Component) to get a
+ * drawable surface. The developer uses the inner .ctx field with tui_draw_*
+ * functions. Internal fields (panel, win, subcell_buf) are opaque.
+ *
+ * CEL_Component(TUI_DrawContext_Component) is forward-declared in
+ * cels_ncurses.h. This struct definition completes the type.
+ */
+struct TUI_DrawContext_Component {
+    TUI_DrawContext ctx;           /* The drawable surface for tui_draw_* functions */
+    bool dirty;                    /* Auto-set on draw call, cleared at frame_begin */
+    PANEL* panel;                  /* Internal: ncurses panel (do not access directly) */
+    WINDOW* win;                   /* Internal: ncurses window (do not access directly) */
+    TUI_SubCellBuffer* subcell_buf; /* Internal: lazy-allocated sub-cell buffer */
+};
+
+/* ============================================================================
  * Drawing Primitives - Types
  * ============================================================================ */
 

@@ -35,7 +35,6 @@
 
 #ifndef CELS_NCURSES_H
 #define CELS_NCURSES_H
-
 #include <cels/cels.h>
 #include <stdbool.h>
 
@@ -58,6 +57,44 @@ CEL_Component(NCurses_WindowConfig) {
     int fps;
     int color_mode;
 };
+
+/* ============================================================================
+ * Layer Component Types
+ * ============================================================================ */
+
+/*
+ * Tag component -- marks an entity as something NCurses should manage.
+ * Combined with TUI_LayerConfig, triggers panel/WINDOW creation via
+ * lifecycle observer.
+ */
+CEL_Component(TUI_Renderable) {
+    int _unused;  /* C99 requires at least one struct member */
+};
+
+/*
+ * Layer configuration -- developer sets this on an entity.
+ * NCurses reacts to TUI_Renderable + TUI_LayerConfig combination.
+ *
+ * Named TUI_LayerConfig (not TUI_Layer) to avoid collision with the
+ * existing typedef struct TUI_Layer in cels_ncurses_draw.h which is
+ * part of the v1.0 imperative layer API used by draw_test.
+ */
+CEL_Component(TUI_LayerConfig) {
+    int z_order;        /* Higher = on top. Gaps allowed (0, 10, 100). */
+    bool visible;       /* true = show_panel, false = hide_panel */
+    int x, y;           /* Position (screen coordinates) */
+    int width, height;  /* Dimensions (0,0 = fullscreen) */
+};
+
+/*
+ * Attached by NCurses after panel creation -- developer reads this.
+ * Full definition in cels_ncurses_draw.h (depends on PANEL*, WINDOW*,
+ * TUI_DrawContext, TUI_SubCellBuffer types).
+ *
+ * Include cels_ncurses_draw.h to use cel_watch(TUI_DrawContext_Component).
+ * Access the inner .ctx field for drawing with tui_draw_* functions.
+ */
+CEL_Component(TUI_DrawContext_Component);
 
 /* ============================================================================
  * State Singletons
@@ -124,6 +161,29 @@ CEL_Define(NCursesWindow, const char* title; int fps; int color_mode;);
 
 /* Call macro for natural syntax */
 #define NCursesWindow(...) cel_init(NCursesWindow, __VA_ARGS__)
+
+/* ============================================================================
+ * Composition: TUILayer
+ * ============================================================================
+ *
+ * Public composition for creating layer entities:
+ *
+ *   TUILayer(.z_order = 0, .visible = true, .width = 80, .height = 24) {
+ *       const TUI_DrawContext_Component* dc = cel_watch(TUI_DrawContext_Component);
+ *       if (!dc) return;
+ *       TUI_DrawContext ctx = dc->ctx;
+ *       tui_draw_text(&ctx, 0, 0, "Hello", style);
+ *   }
+ *
+ * NOTE: .visible defaults to false (C99 zero-init). Pass .visible = true
+ * explicitly to create a visible layer.
+ *
+ * Implementation in src/layer/tui_layer_entity.c via CEL_Compose(TUILayer).
+ */
+CEL_Define(TUILayer, int z_order; bool visible; int x; int y; int width; int height;);
+
+/* Call macro for natural syntax */
+#define TUILayer(...) cel_init(TUILayer, __VA_ARGS__)
 
 /* ============================================================================
  * Console Logging
