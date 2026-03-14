@@ -5,17 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-02-26)
 
 **Core value:** Provide a low-level drawing primitive API that a future cels-clay module can target to render Clay UI layouts in the terminal
-**Current focus:** v0.2.0 Phase 4 - Layer Entities (in progress)
+**Current focus:** v0.2.0 Phase 5 - Frame Pipeline (next)
 
 ## Current Position
 
 Milestone: v0.2.0 ECS Module Architecture
 Phase: 4 of 6 (Layer Entities)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-03-14 -- Completed 04-01-PLAN.md
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-03-14 -- Completed 04-02-PLAN.md
 
-Progress: [█████████░] 87% (13/15 estimated plans)
+Progress: [██████████░] 93% (14/15 estimated plans)
 
 ## Performance Metrics
 
@@ -35,7 +35,7 @@ Progress: [█████████░] 87% (13/15 estimated plans)
 - Phase 1.1: Plan 01 in 4 min, Plan 02 in 18 min (22 min total; Plan 02 included build config debugging)
 - Phase 1.2: Plan 01 in 2 min, Plan 02 in 7 min (9 min total)
 - Phase 3: Plan 01 in 3 min, Plan 02 in 2 min (5 min total)
-- Phase 4: Plan 01 in 6 min
+- Phase 4: Plan 01 in 6 min, Plan 02 in 10 min (16 min total; Plan 02 included cels v0.5.3 macro migration)
 
 ## Accumulated Context
 
@@ -46,11 +46,11 @@ Progress: [█████████░] 87% (13/15 estimated plans)
 - [v0.2.0]: Developer configures by setting component data; NCurses systems react via ECS queries
 - [v0.2.0]: 6 phases derived from requirement categories: Module Boundary, Window Entity, Input System, Layer Entities, Frame Pipeline, Demo
 - [v0.2.0]: cels_register(NCurses) is the developer API -- fixed in Phase 0 (Name_register alias)
-- [v0.2.0]: Module provides CEL_Define(NCursesWindow, ...) + call macro -- developer writes NCursesWindow(.title = "X") {}
+- [v0.2.0]: Module provides CEL_Define_Composition(NCursesWindow, ...) + call macro -- developer writes NCursesWindow(.title = "X") {}
 - [v0.2.0]: cel_watch(entity, NCurses_WindowState) for reactive state reading -- recomposes on resize
 - [v0.2.0]: CELS_REGISTER phase removed in Phase 0 (7-phase pipeline)
 - [v0.2.0]: Dual-remote: Luke-42-studios/cels (origin/dev), 42-Galaxies/cels (public)
-- [v0.2.0]: cels repo working branch is v0.6.0 (branched from main after v0.5.1 merge)
+- [v0.2.0]: cels repo working branch is v0.5.3 (updated from v0.5.2/v0.6.0)
 - [v0.2.0]: build-docs.sh auto-injects version from CMakeLists.txt into docs
 - [P1-01]: Per-TU NCurses_register() static inline delegates to extern NCurses_init() for INTERFACE library pattern
 - [P1-01]: Weak stubs for observer/system registration allow incremental module assembly
@@ -90,6 +90,9 @@ Progress: [█████████░] 87% (13/15 estimated plans)
 - [P4-01]: ctx.subcell_buf = NULL in on_create to avoid dangling pointer after set_component copy (Pitfall 4)
 - [P4-01]: .visible defaults to false (C99 zero-init) -- developer must pass .visible = true explicitly
 - [P4-01]: Internal LayerEntry registry with insertion sort + top_panel() rebuild for z-order (ncurses has no insert-at-position)
+- [P4-02]: Encapsulated entity layer clearing in ncurses_layer_entity_clear_dirty() function (approach B, not extern data)
+- [P4-02]: cels dependency targets v0.5.3 branch (CEL_Define_State, renamed composition macros)
+- [P4-02]: Migrated to v0.5.3 macro API: CEL_Define -> CEL_Define_Composition, CEL_Compose <-> CEL_Composition swap, CEL_Define -> CEL_Define_System
 
 ### Carried Forward from v1.1
 
@@ -111,11 +114,11 @@ Progress: [█████████░] 87% (13/15 estimated plans)
 - Phase 1.1 verified structurally; runtime build/run confirmation recommended
 - Phase 1.2 build verified via wrapper project; runtime confirmation recommended
 - cmake-build-debug directory configured standalone (no cels dependency); wrapper build at /tmp/cels-ncurses-build used for verification
-- Phase 1.2 Plan 01 committed to CELS v0.5.2 branch -- must be available when cels-ncurses builds against cels
-- tui_window_get_running_ptr() removed in Phase 3 Plan 02 (resolved)
+- cels dependency must remain on v0.5.3 branch for builds (updated from v0.5.2)
+- Phase 4 build verified: both minimal and draw_test targets compile cleanly
 
 ## Session Continuity
 
-Last session: 2026-03-14T17:23:05Z
-Stopped at: Completed 04-01-PLAN.md (layer component types, lifecycle, z-order sync, TUILayer composition)
+Last session: 2026-03-14T17:35:03Z
+Stopped at: Completed 04-02-PLAN.md (module registration, frame integration, layer demo, cels v0.5.3 migration)
 Resume file: None
