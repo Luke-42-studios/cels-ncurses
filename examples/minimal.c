@@ -15,15 +15,20 @@
  */
 
 /*
- * Minimal CELS NCurses Example
+ * Layer Entity Demo
  *
- * Demonstrates the API:
- *   - cels_register(NCurses) to load the NCurses module
- *   - NCursesWindow() call macro to create a window entity
- *   - CEL_System with cel_read(NCurses_InputState) for raw input
- *   - cels_session / cels_running / cels_step for the main loop
+ * Demonstrates the entity-driven layer API:
+ *   - NCursesWindow() to create the terminal window entity
+ *   - TUILayer() to create layer entities at different z-orders
+ *   - cel_watch(TUI_DrawContext_Component) to get a drawable surface
+ *   - tui_draw_* functions for text, fills, and borders
+ *   - CEL_System with cel_read(NCurses_InputState) for input handling
  *
- * Opens a terminal window at 30fps showing raw input events.
+ * Proves all three LAYR requirements:
+ *   LAYR-01: Creates entities with TUI_LayerConfig (via TUILayer composition)
+ *   LAYR-02: NCurses attaches TUI_DrawContext_Component (accessed via cel_watch)
+ *   LAYR-03: Developer draws using tui_draw_text, tui_draw_fill_rect, tui_draw_border_rect
+ *
  * Press 'q' to exit.
  */
 
@@ -31,19 +36,56 @@
 #include <cels_ncurses.h>
 #include <cels_ncurses_draw.h>
 
-int oldWidth, oldHeight;
+CEL_Compose(World) {
+    NCursesWindow(.title = "Layer Demo", .fps = 30) {
+        const struct NCurses_WindowState* ws = cel_watch(NCurses_WindowState);
+        if (!ws) return;
 
-/* Composition: just creates the window entity */
-CEL_Composition(World) {
-    NCursesWindow(.title = "Input Test", .fps = 30) {
-        const struct NCurses_WindowState *window_state = cel_watch(NCurses_WindowState);
-        if (!window_state) return;
-        if (window_state->width != oldWidth || window_state->height != oldHeight) {
-            ncurses_console_log("Height and Width Changed");
+        /* Background layer - fullscreen, z=0 */
+        TUILayer(.z_order = 0, .visible = true) {
+            const struct TUI_DrawContext_Component* dc = cel_watch(TUI_DrawContext_Component);
+            if (!dc) return;
+            TUI_DrawContext ctx = dc->ctx;
+
+            TUI_Style bg_style = {
+                .fg = tui_color_rgb(100, 100, 100),
+                .bg = tui_color_rgb(20, 20, 40),
+                .attrs = TUI_ATTR_NORMAL
+            };
+            tui_draw_fill_rect(&ctx,
+                (TUI_CellRect){0, 0, ctx.width, ctx.height},
+                '.', bg_style);
+            tui_draw_text(&ctx, 2, 1, "Background Layer (z=0)", bg_style);
         }
 
-        oldWidth = window_state->width;
-        oldHeight = window_state->height;
+        /* Overlay layer - fixed position/size, z=10 */
+        TUILayer(.z_order = 10, .visible = true,
+                 .x = 5, .y = 3, .width = 40, .height = 12) {
+            const struct TUI_DrawContext_Component* dc = cel_watch(TUI_DrawContext_Component);
+            if (!dc) return;
+            TUI_DrawContext ctx = dc->ctx;
+
+            TUI_Style box_style = {
+                .fg = tui_color_rgb(200, 200, 255),
+                .bg = tui_color_rgb(30, 30, 60),
+                .attrs = TUI_ATTR_BOLD
+            };
+            tui_draw_fill_rect(&ctx,
+                (TUI_CellRect){0, 0, ctx.width, ctx.height},
+                ' ', box_style);
+            tui_draw_border_rect(&ctx,
+                (TUI_CellRect){0, 0, ctx.width, ctx.height},
+                TUI_BORDER_SINGLE, box_style);
+
+            TUI_Style text_style = {
+                .fg = tui_color_rgb(255, 255, 100),
+                .bg = tui_color_rgb(30, 30, 60),
+                .attrs = TUI_ATTR_NORMAL
+            };
+            tui_draw_text(&ctx, 2, 1, "Overlay Layer (z=10)", text_style);
+            tui_draw_text(&ctx, 2, 3, "This layer is on top!", text_style);
+            tui_draw_text(&ctx, 2, 5, "Press 'q' to quit", text_style);
+        }
     }
 }
 
@@ -53,25 +95,10 @@ CEL_System(GameInput, .phase = OnUpdate) {
         const struct NCurses_InputState* input = cel_read(NCurses_InputState);
         if (!input) return;
         for (int i = 0; i < input->key_count; i++) {
-            int key = input->keys[i];
-
-            if (key == 'q' || key == 'Q') {
+            if (input->keys[i] == 'q' || input->keys[i] == 'Q') {
                 cels_request_quit();
                 return;
             }
-
-            if (key >= 32 && key < 127)
-                ncurses_console_log("Key: '%c' (%d)\n", (char)key, key);
-            else
-                ncurses_console_log("Key: (%d)\n", key);
-        }
-
-        if (input->mouse_pressed || input->mouse_released) {
-            ncurses_console_log("Mouse: %d,%d btn=%d %s%s\n",
-                     input->mouse_x, input->mouse_y,
-                     input->mouse_button,
-                     input->mouse_pressed ? "PRESS" : "",
-                     input->mouse_released ? "RELEASE" : "");
         }
     }
 }

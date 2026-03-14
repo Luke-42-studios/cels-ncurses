@@ -24,7 +24,7 @@
  *   - CEL_Lifecycle(TUI_LayerLC) with on_create/on_destroy observers
  *   - Internal registry of layer entities with cached z_order
  *   - Per-frame TUI_LayerSyncSystem detects z_order/visibility changes
- *   - CEL_Compose(TUILayer) wires components and lifecycle
+ *   - CEL_Composition(TUILayer) wires components and lifecycle
  *
  * The old tui_layer.c API (tui_layer_create etc.) is NOT touched -- it
  * remains for draw_test backward compatibility. Entity layers use a
@@ -326,7 +326,7 @@ void ncurses_layer_entity_clear_dirty(void) {
  * for the layer to be visible.
  */
 
-CEL_Compose(TUILayer) {
+CEL_Composition(TUILayer) {
     cel_has(TUI_Renderable, ._unused = 0);
     cel_has(TUI_LayerConfig,
         .z_order = cel.z_order,

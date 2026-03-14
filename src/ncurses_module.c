@@ -27,7 +27,7 @@
  *
  * CEL_Lifecycle(NCursesWindowLC) defines the window lifecycle.
  * CEL_Observe hooks handle terminal init/shutdown.
- * CEL_Compose(NCursesWindow) declares both components and binds lifecycle
+ * CEL_Composition(NCursesWindow) declares both components and binds lifecycle
  * manually AFTER cel_has() so on_create can read config from the entity.
  *
  * NOTE: Lifecycle binding must be manual (not via .lifecycle prop) because
@@ -120,7 +120,7 @@ CEL_Module(NCurses, init) {
  * ORDERING: cel_has() MUST come before cels_lifecycle_bind_entity() because
  * the on_create observer reads WindowConfig from the entity.
  */
-CEL_Compose(NCursesWindow) {
+CEL_Composition(NCursesWindow) {
     cel_has(NCurses_WindowConfig,
         .title = cel.title,
         .fps = cel.fps,

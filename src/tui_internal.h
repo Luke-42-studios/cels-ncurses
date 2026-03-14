@@ -42,8 +42,8 @@ extern cels_entity_t ncurses_window_get_entity(void);
 extern bool ncurses_window_is_active(void);
 
 /* ECS systems -- defined in source files, registered by module */
-CEL_Define(NCurses_InputSystem);
-CEL_Define(NCurses_WindowUpdateSystem);
+CEL_Define_System(NCurses_InputSystem);
+CEL_Define_System(NCurses_WindowUpdateSystem);
 
 /* Input terminal config (key sequences, mouse) -- called after initscr/newterm */
 extern void ncurses_input_configure_terminal(void);
