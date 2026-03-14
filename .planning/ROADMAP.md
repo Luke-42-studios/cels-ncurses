@@ -142,7 +142,10 @@ Plans:
   2. NCurses attaches a TUI_DrawContext component to each layer entity so the developer can retrieve it
   3. Developer can get TUI_DrawContext from a layer entity and draw into it using existing draw primitives (tui_draw_rect, tui_draw_text, etc.)
   4. Multiple layer entities stack correctly according to z_order
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 04-01-PLAN.md -- Layer component types + entity lifecycle + z-order management
+- [ ] 04-02-PLAN.md -- Module registration, frame integration, example, build verification
 
 ### Phase 5: Frame Pipeline
 **Goal**: NCurses owns the frame lifecycle through CELS pipeline phases, with developer systems running naturally between begin and end frame
@@ -179,6 +182,6 @@ Phases execute in numeric order: 0 (cels repo) -> 1 -> 1.1 -> 1.2 -> 3 -> 4 -> 5
 | 1.2 Window Lifecycle Rewrite | v0.2.0 | 2/2 | Complete | 2026-03-01 |
 | 2. Window Entity | v0.2.0 | -- | Absorbed into P1 | - |
 | 3. Input System | v0.2.0 | 2/2 | Complete | 2026-03-02 |
-| 4. Layer Entities | v0.2.0 | 0/TBD | Not started | - |
+| 4. Layer Entities | v0.2.0 | 0/2 | Not started | - |
 | 5. Frame Pipeline | v0.2.0 | 0/TBD | Not started | - |
 | 6. Demo | v0.2.0 | 0/TBD | Not started | - |
