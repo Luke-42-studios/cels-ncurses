@@ -29,7 +29,7 @@
  * Static variables are per-consumer translation unit.
  */
 
-#include "cels-ncurses/tui_scissor.h"
+#include <cels_ncurses_draw.h>
 
 /* ============================================================================
  * Static State

@@ -31,8 +31,7 @@
  * Static variables are per-consumer translation unit.
  */
 
-#include "cels-ncurses/tui_draw.h"
-#include "cels-ncurses/tui_subcell.h"
+#include <cels_ncurses_draw.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>

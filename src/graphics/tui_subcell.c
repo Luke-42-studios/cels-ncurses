@@ -24,7 +24,7 @@
  * entire cell -- so the shadow buffer is the source of truth.
  */
 
-#include "cels-ncurses/tui_subcell.h"
+#include <cels_ncurses_draw.h>
 #include <stdlib.h>
 #include <string.h>
 

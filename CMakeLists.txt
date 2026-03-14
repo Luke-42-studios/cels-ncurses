@@ -91,6 +91,7 @@ target_link_libraries(cels-ncurses INTERFACE
     ${PANEL_LIBRARY}
     cels
     m
+    $<$<PLATFORM_ID:Linux>:util>
 )
 
 # ============================================================================

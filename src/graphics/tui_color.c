@@ -34,7 +34,7 @@
  * Static variables are per-consumer translation unit.
  */
 
-#include "cels-ncurses/tui_color.h"
+#include <cels_ncurses_draw.h>
 #include <ncurses.h>
 #include <stdint.h>
 #include <string.h>  /* strcmp */

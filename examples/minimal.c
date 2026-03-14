@@ -20,7 +20,7 @@
  * Demonstrates the API:
  *   - cels_register(NCurses) to load the NCurses module
  *   - NCursesWindow() call macro to create a window entity
- *   - CEL_System with ncurses_input() accessor for raw input
+ *   - CEL_System with cel_read(NCurses_InputState) for raw input
  *   - cels_session / cels_running / cels_step for the main loop
  *
  * Opens a terminal window at 30fps showing raw input events.
@@ -28,17 +28,30 @@
  */
 
 #include <cels/cels.h>
-#include <cels-ncurses/ncurses.h>
+#include <cels_ncurses.h>
+#include <cels_ncurses_draw.h>
+
+int oldWidth, oldHeight;
 
 /* Composition: just creates the window entity */
 CEL_Composition(World) {
-    NCursesWindow(.title = "Input Test", .fps = 30) {}
+    NCursesWindow(.title = "Input Test", .fps = 30) {
+        const struct NCurses_WindowState *window_state = cel_watch(NCurses_WindowState);
+        if (!window_state) return;
+        if (window_state->width != oldWidth || window_state->height != oldHeight) {
+            ncurses_console_log("Height and Width Changed");
+        }
+
+        oldWidth = window_state->width;
+        oldHeight = window_state->height;
+    }
 }
 
 /* System: reads raw input each frame */
 CEL_System(GameInput, .phase = OnUpdate) {
     cel_run {
-        const NCurses_InputState_t* input = ncurses_input();
+        const struct NCurses_InputState* input = cel_read(NCurses_InputState);
+        if (!input) return;
         for (int i = 0; i < input->key_count; i++) {
             int key = input->keys[i];
 

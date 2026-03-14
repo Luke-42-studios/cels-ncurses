@@ -29,8 +29,10 @@
 #ifndef CELS_NCURSES_TUI_INTERNAL_H
 #define CELS_NCURSES_TUI_INTERNAL_H
 
-#include <cels-ncurses/tui_ncurses.h>
+#include <cels_ncurses.h>
 #include <stdbool.h>
+
+/* Cross-TU ID overrides are in cels_ncurses.h (after CEL_State expansions) */
 
 /* Window lifecycle accessors -- called by observers in ncurses_module.c */
 extern void ncurses_terminal_init(NCurses_WindowConfig* config);
@@ -43,10 +45,13 @@ extern bool ncurses_window_is_active(void);
 CEL_Define(NCurses_InputSystem);
 CEL_Define(NCurses_WindowUpdateSystem);
 
-/* Input terminal config (key sequences, mouse) -- called after initscr() */
+/* Input terminal config (key sequences, mouse) -- called after initscr/newterm */
 extern void ncurses_input_configure_terminal(void);
 
 /* Frame pipeline systems registration */
 extern void ncurses_register_frame_systems(void);
+
+/* Terminal spawn: kill child terminal emulator on shutdown */
+extern void ncurses_kill_terminal(void);
 
 #endif /* CELS_NCURSES_TUI_INTERNAL_H */

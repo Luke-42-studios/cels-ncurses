@@ -208,43 +208,30 @@ static void ncurses_register_input_system(void) {
 
 ### Pattern 5: Consumer Application Usage (Target API)
 
+> **UPDATED 2026-02-27**: Revised to match CONTEXT.md API decisions (cels_register, CEL_Define call macro, cel_watch, no (void)props, no cel_entity).
+
 **What:** The developer's application after Phase 1 is complete.
 **Example:**
 ```c
 #include <cels/cels.h>
 #include <cels-ncurses/ncurses.h>
 
-// Root composition
 CEL_Composition(World) {
-    (void)props;
-
-    // Create window entity with config component
-    cel_entity(.name = "Window") {
-        cel_has(NCurses_WindowConfig,
-            .title = "My App",
-            .fps = 60,
-            .color_mode = 0  // auto
-        );
-    }
+    NCursesWindow(.title = "My App", .fps = 60) {}
 }
 
 cels_main() {
-    cels_scope {
-        cels_world->title = "My App";
-    }
-
-    // Load NCurses module (registers components, systems, observers)
-    NCurses_init();
-
-    cels_register(World);
-
+    cels_register(NCurses);
     cels_session(World) {
-        while (cels_running()) {
-            cels_step(0);
-        }
+        while (cels_running()) cels_step(0);
     }
 }
 ```
+
+**Key patterns:**
+- `cels_register(NCurses)` loads the module (Phase 0 adds `Name_register()` to `CEL_Module`)
+- `NCursesWindow(...)` is a call macro provided by the module header via `CEL_Define` + `#define NCursesWindow(...) cel_init(NCursesWindow, __VA_ARGS__)`
+- Developer reads window state reactively: `NCurses_WindowState* state = cel_watch(entity, NCurses_WindowState);`
 
 ### Anti-Patterns to Avoid
 
@@ -347,6 +334,8 @@ cels_main() {
 
 ### Example 2: Public Component Types (tui_ncurses.h)
 
+> **NOTE**: This shows the FULL FUTURE STATE. Phase 1 implements only NCurses_WindowConfig, NCurses_WindowState, and CEL_Define(NCursesWindow). NCurses_InputState is Phase 3, NCurses_Layer is Phase 4.
+
 ```c
 // include/cels-ncurses/tui_ncurses.h
 
@@ -402,6 +391,8 @@ CEL_Component(NCurses_Layer);
 
 ### Example 3: Module Implementation Skeleton (ncurses_module.c)
 
+> **NOTE**: This shows the FULL FUTURE STATE. Phase 1 registers only WindowConfig and WindowState. InputState registration is Phase 3.
+
 ```c
 // src/ncurses_module.c
 
@@ -439,24 +430,23 @@ CEL_Module(NCurses) {
 ```
 OLD (Engine_use pattern)                    NEW (entity-component pattern)
 ---------------------------------------    ----------------------------------------
-Engine_use((Engine_Config){                 cel_entity(.name = "Window") {
-    .title = "App",                             cel_has(NCurses_WindowConfig,
-    .fps = 60,                                      .title = "App",
-    .color_mode = 0,                                .fps = 60,
-    .root = AppUI                                   .color_mode = 0
-});                                             );
-                                            }
+Engine_use((Engine_Config){                 NCursesWindow(.title = "App", .fps = 60) {}
+    .title = "App",                             // CEL_Define call macro handles entity creation
+    .fps = 60,
+    .color_mode = 0,
+    .root = AppUI
+});
 
-Engine_WindowState.width                    // Query NCurses_WindowState from window entity
-                                            const NCurses_WindowState* state =
+Engine_WindowState.width                    // Query NCurses_WindowState via cel_watch (reactive)
+                                            NCurses_WindowState* state =
                                                 cel_watch(window_entity, NCurses_WindowState);
                                             state->width
 
-g_input_state                               // Query NCurses_InputState from input entity
+g_input_state                               // Query NCurses_InputState from input entity (Phase 3)
                                             const NCurses_InputState* input = ...;
 
-TUI_Engine_use(config)                      NCurses_init();  // load module
-                                            // then create entity with NCurses_WindowConfig
+TUI_Engine_use(config)                      cels_register(NCurses);  // load module
+                                            // then use NCursesWindow() in a composition
 ```
 
 ## State of the Art

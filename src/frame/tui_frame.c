@@ -32,10 +32,8 @@
  * - TUI_FrameEndSystem at PostRender (after renderer)
  */
 
-#include <cels-ncurses/tui_frame.h>
-#include <cels-ncurses/tui_layer.h>
-#include <cels-ncurses/tui_subcell.h>
-#include <cels-ncurses/tui_window.h>
+#include <cels_ncurses_draw.h>
+#include "../tui_window.h"
 #include <ncurses.h>
 #include <panel.h>
 #include <time.h>

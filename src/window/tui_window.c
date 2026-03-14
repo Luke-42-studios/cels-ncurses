@@ -22,15 +22,15 @@
  * and ncurses_terminal_shutdown() via extern declarations in tui_internal.h.
  *
  * Owns the canonical NCurses_WindowState (this TU's CEL_State static).
- * The NCurses_WindowUpdateSystem mutates it via cel_mutate, and the
- * ncurses_window() accessor exposes it to consumer TUs.
+ * The NCurses_WindowUpdateSystem mutates it via cel_mutate.
+ * Consumer TUs read via cel_read(NCurses_WindowState) (cross-TU pointer registry).
  */
 
 #define _POSIX_C_SOURCE 199309L
-#include <cels-ncurses/tui_window.h>
-#include <cels-ncurses/tui_ncurses.h>
-#include <cels-ncurses/tui_internal.h>
-#include <cels-ncurses/tui_color.h>
+#include "../tui_window.h"
+#include <cels_ncurses.h>
+#include "../tui_internal.h"
+#include <cels_ncurses_draw.h>
 #include <cels/cels.h>
 #include <ncurses.h>
 #include <unistd.h>
@@ -39,16 +39,27 @@
 #include <stdbool.h>
 #include <locale.h>
 #include <time.h>
+#include <stdio.h>
+#include <sys/ioctl.h>
 
 /* ============================================================================
  * Static State
  * ============================================================================ */
+
+/* CEL_State(NCurses_WindowState) — owned by this TU */
+static struct NCurses_WindowState NCurses_WindowState = { .running = true };
 
 /* The single window entity (0 = no window) */
 static cels_entity_t g_window_entity = 0;
 
 static volatile int g_running = 1;
 static int g_ncurses_active = 0;
+
+/* newterm() screen (NULL when using initscr fallback) */
+static SCREEN* g_screen = NULL;
+
+/* PTY master fd for polling resize (-1 when using initscr) */
+static int g_pty_master_fd = -1;
 
 /* Stored FPS from config for frame_end throttle */
 static int g_target_fps = 60;
@@ -63,12 +74,22 @@ static int g_last_cols = 0;
 static int g_last_lines = 0;
 
 /* ============================================================================
- * Signal Handler
+ * Signal Handlers
  * ============================================================================ */
 
 static void tui_sigint_handler(int sig) {
     (void)sig;
     g_running = 0;
+}
+
+/* SIGWINCH: terminal was resized. Flag it for the update system to handle.
+ * When using PTY spawn, the relay propagates resize via ioctl(TIOCSWINSZ)
+ * which triggers SIGWINCH on the master side. */
+static volatile sig_atomic_t g_sigwinch_pending = 0;
+
+static void tui_sigwinch_handler(int sig) {
+    (void)sig;
+    g_sigwinch_pending = 1;
 }
 
 /* ============================================================================
@@ -80,6 +101,13 @@ static void cleanup_endwin(void) {
         endwin();
         g_ncurses_active = 0;
     }
+    if (g_screen) {
+        delscreen(g_screen);
+        g_screen = NULL;
+    }
+    /* Kill the terminal emulator child process */
+    extern void ncurses_kill_terminal(void);
+    ncurses_kill_terminal();
 }
 
 /* ============================================================================
@@ -96,18 +124,6 @@ cels_entity_t ncurses_window_get_entity(void) { return g_window_entity; }
 bool ncurses_window_is_active(void) { return g_ncurses_active != 0; }
 
 /* ============================================================================
- * State Singleton Accessor
- * ============================================================================
- *
- * Returns this TU's canonical NCurses_WindowState (the CEL_State static).
- * Consumer TUs call this instead of reading their own local static.
- */
-
-const NCurses_WindowState_t* ncurses_window(void) {
-    return &NCurses_WindowState;
-}
-
-/* ============================================================================
  * Terminal Init (extracted from old tui_hook_startup)
  * ============================================================================
  *
@@ -120,20 +136,56 @@ void ncurses_terminal_init(NCurses_WindowConfig* config) {
     /* Ensure this TU's state ID is set (idempotent) */
     NCurses_WindowState_register();
     NCurses_WindowState.running = true;
-
-    /* Auto-spawn a new terminal window if not already inside one.
-     * Similar to how SDL creates an OS window -- the user just runs the
-     * binary and a window appears. If spawning succeeds, the parent waits
-     * and exits; the child re-runs in the new terminal with ncurses. */
-    extern bool ncurses_try_spawn_terminal(const char* window_title);
-    ncurses_try_spawn_terminal(config->title);
+    cels_state_bind(NCurses_WindowState);
 
     signal(SIGINT, tui_sigint_handler);
+    signal(SIGWINCH, tui_sigwinch_handler);
     atexit(cleanup_endwin);
 
     setlocale(LC_ALL, "");
 
-    initscr();
+    /* Try to spawn a terminal window connected via PTY.
+     * On success we get a master fd and use newterm() so the original
+     * process stays alive (debugger attached, stderr → IDE console).
+     * On failure (-1) we fall back to initscr() on the current terminal. */
+    extern int ncurses_spawn_terminal_pty(const char* window_title);
+    int pty_master = ncurses_spawn_terminal_pty(config->title);
+
+    if (pty_master >= 0) {
+        /* PTY path: ncurses renders to the terminal emulator via PTY.
+         * newterm() needs SEPARATE FILE* for output and input — using
+         * the same FILE* causes stdio buffer corruption between reads
+         * and writes. dup() the fd so each FILE* has its own buffer. */
+        g_pty_master_fd = pty_master;
+        int pty_in_fd = dup(pty_master);
+        FILE* pty_out = fdopen(pty_master, "w");
+        FILE* pty_in  = fdopen(pty_in_fd, "r");
+        if (!pty_out || !pty_in) {
+            fprintf(stderr, "[NCurses] fdopen(pty) failed, falling back to initscr\n");
+            if (pty_out) fclose(pty_out); else close(pty_master);
+            if (pty_in) fclose(pty_in); else close(pty_in_fd);
+            initscr();
+        } else {
+            /* Disable stdio buffering — ncurses escape sequences must
+             * reach the terminal immediately */
+            setvbuf(pty_out, NULL, _IONBF, 0);
+            setvbuf(pty_in, NULL, _IONBF, 0);
+
+            g_screen = newterm("xterm-256color", pty_out, pty_in);
+            if (!g_screen) {
+                fprintf(stderr, "[NCurses] newterm() failed, falling back to initscr\n");
+                fclose(pty_out);
+                fclose(pty_in);
+                initscr();
+            } else {
+                set_term(g_screen);
+            }
+        }
+    } else {
+        /* No PTY: use current terminal directly */
+        initscr();
+    }
+
     g_ncurses_active = 1;
     cbreak();
     noecho();
@@ -199,11 +251,36 @@ CEL_System(NCurses_WindowUpdateSystem, .phase = PreRender) {
                            (float)(g_frame_start.tv_nsec - g_prev_frame_start.tv_nsec) / 1e9f;
         }
 
+        /* Handle resize: two paths depending on terminal mode.
+         *
+         * PTY mode: the relay sets TIOCSWINSZ on the slave, but no SIGWINCH
+         * reaches us (no controlling terminal). Poll the PTY size directly
+         * and call resizeterm() to update ncurses COLS/LINES.
+         *
+         * Direct mode (initscr): SIGWINCH + KEY_RESIZE handled by getch().
+         */
+        if (g_pty_master_fd >= 0) {
+            struct winsize ws;
+            if (ioctl(g_pty_master_fd, TIOCGWINSZ, &ws) == 0
+                && ws.ws_row > 0 && ws.ws_col > 0) {
+                if (ws.ws_col != COLS || ws.ws_row != LINES) {
+                    resizeterm(ws.ws_row, ws.ws_col);
+                    clearok(curscr, TRUE);
+                }
+            }
+        } else if (g_sigwinch_pending) {
+            g_sigwinch_pending = 0;
+            endwin();
+            refresh();
+        }
+
         /* Detect resize */
         int new_w = COLS;
         int new_h = LINES;
-        bool resized = (new_w != g_last_cols || new_h != g_last_lines);
+        static bool first_frame = true;
+        bool resized = first_frame || (new_w != g_last_cols || new_h != g_last_lines);
         if (resized) {
+            first_frame = false;
             g_last_cols = new_w;
             g_last_lines = new_h;
         }
@@ -221,7 +298,7 @@ CEL_System(NCurses_WindowUpdateSystem, .phase = PreRender) {
             return;
         }
 
-        /* Resize detected -- update state to trigger reactivity */
+        /* First frame or resize -- update state to trigger reactivity */
         if (resized) {
             cel_mutate(NCurses_WindowState) {
                 NCurses_WindowState.width = new_w;

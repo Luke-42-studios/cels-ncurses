@@ -26,14 +26,7 @@
  *   Scene: Escape/q return to menu, scene-specific keys shown in HUD
  */
 
-#include <cels-ncurses/tui_types.h>
-#include <cels-ncurses/tui_color.h>
-#include <cels-ncurses/tui_draw_context.h>
-#include <cels-ncurses/tui_draw.h>
-#include <cels-ncurses/tui_scissor.h>
-#include <cels-ncurses/tui_layer.h>
-#include <cels-ncurses/tui_frame.h>
-#include <cels-ncurses/tui_subcell.h>
+#include <cels_ncurses_draw.h>
 #include <ncurses.h>
 #include <panel.h>
 #include <locale.h>

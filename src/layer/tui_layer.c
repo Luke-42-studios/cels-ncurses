@@ -25,8 +25,7 @@
  * to ensure a single instance across the INTERFACE library pattern.
  */
 
-#include <cels-ncurses/tui_layer.h>
-#include <cels-ncurses/tui_subcell.h>
+#include <cels_ncurses_draw.h>
 #include <string.h>
 
 /* ============================================================================

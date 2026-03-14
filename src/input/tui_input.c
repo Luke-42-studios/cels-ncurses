@@ -32,10 +32,9 @@
  * All other keys go into the keys[] array for the developer to read.
  */
 
-#include "cels-ncurses/tui_ncurses.h"
-#include "cels-ncurses/tui_internal.h"
-#include "cels-ncurses/tui_layer.h"
-#include "cels-ncurses/tui_frame.h"
+#include <cels_ncurses.h>
+#include "../tui_internal.h"
+#include <cels_ncurses_draw.h>
 #include <ncurses.h>
 #include <string.h>
 #include <cels/cels.h>
@@ -53,6 +52,9 @@
 /* Max keys per frame (matches NCurses_InputState.keys[16]) */
 #define MAX_KEYS_PER_FRAME 16
 
+/* CEL_State(NCurses_InputState) — owned by this TU */
+static struct NCurses_InputState NCurses_InputState = { .mouse_x = -1, .mouse_y = -1 };
+
 /* ============================================================================
  * Pause Mode -- F1 freezes the frame loop for text selection/copy
  * ============================================================================ */
@@ -61,18 +63,6 @@ static void tui_pause(void) {
     nodelay(stdscr, FALSE);
     wgetch(stdscr);  /* Block until any key */
     nodelay(stdscr, TRUE);
-}
-
-/* ============================================================================
- * State Singleton Accessor
- * ============================================================================
- *
- * Returns this TU's canonical NCurses_InputState (the CEL_State static).
- * Consumer TUs call this instead of reading their own local static.
- */
-
-const NCurses_InputState_t* ncurses_input(void) {
-    return &NCurses_InputState;
 }
 
 /* ============================================================================
@@ -180,6 +170,7 @@ CEL_System(NCurses_InputSystem, .phase = OnLoad) {
 void ncurses_input_configure_terminal(void) {
     /* Ensure this TU's state ID is set (idempotent) */
     NCurses_InputState_register();
+    cels_state_bind(NCurses_InputState);
     NCurses_InputState.mouse_x = -1;
     NCurses_InputState.mouse_y = -1;
 
