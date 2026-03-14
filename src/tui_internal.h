@@ -51,6 +51,11 @@ extern void ncurses_input_configure_terminal(void);
 /* Frame pipeline systems registration */
 extern void ncurses_register_frame_systems(void);
 
+/* Layer entity lifecycle and systems -- defined in layer/tui_layer_entity.c */
+CEL_Define_Lifecycle(TUI_LayerLC);
+CEL_Define_System(TUI_LayerSyncSystem);
+extern void ncurses_register_layer_systems(void);
+
 /* Terminal spawn: kill child terminal emulator on shutdown */
 extern void ncurses_kill_terminal(void);
 
