@@ -285,6 +285,33 @@ CEL_System(TUI_LayerSyncSystem, .phase = PreRender) {
 }
 
 /* ============================================================================
+ * Entity Layer Dirty Clearing -- Called from tui_frame_begin
+ * ============================================================================
+ *
+ * Clears dirty+visible entity-managed layers at frame_begin, paralleling
+ * the existing g_layers[] clearing loop in tui_frame.c. Uses werase +
+ * wattr_set + subcell buffer clear (same pattern as v1.0 layers).
+ */
+
+void ncurses_layer_entity_clear_dirty(void) {
+    for (int i = 0; i < g_layer_entry_count; i++) {
+        const TUI_DrawContext_Component* dc = cels_entity_get_component(
+            g_layer_entries[i].entity, TUI_DrawContext_Component_id);
+        if (!dc || !dc->win) continue;
+
+        const TUI_LayerConfig* layer = cels_entity_get_component(
+            g_layer_entries[i].entity, TUI_LayerConfig_id);
+        if (!layer || !layer->visible) continue;
+
+        werase(dc->win);
+        wattr_set(dc->win, A_NORMAL, 0, NULL);
+        if (dc->subcell_buf) {
+            tui_subcell_buffer_clear(dc->subcell_buf);
+        }
+    }
+}
+
+/* ============================================================================
  * TUILayer Composition
  * ============================================================================
  *

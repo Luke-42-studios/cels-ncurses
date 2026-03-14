@@ -55,6 +55,7 @@ extern void ncurses_register_frame_systems(void);
 CEL_Define_Lifecycle(TUI_LayerLC);
 CEL_Define_System(TUI_LayerSyncSystem);
 extern void ncurses_register_layer_systems(void);
+extern void ncurses_layer_entity_clear_dirty(void);
 
 /* Terminal spawn: kill child terminal emulator on shutdown */
 extern void ncurses_kill_terminal(void);

@@ -96,8 +96,10 @@ CEL_Observe(NCursesWindowLC, on_destroy) {
 
 CEL_Module(NCurses, init) {
     cels_register(NCurses_WindowState, NCurses_InputState,
-                  NCursesWindowLC, NCurses_InputSystem, NCurses_WindowUpdateSystem);
+                  NCursesWindowLC, NCurses_InputSystem, NCurses_WindowUpdateSystem,
+                  TUI_LayerLC, TUI_LayerSyncSystem);
     ncurses_register_frame_systems();
+    ncurses_register_layer_systems();
 }
 
 /* ============================================================================

@@ -41,6 +41,7 @@
 #include <signal.h>
 #ifdef CELS_HAS_ECS
 #include <cels/cels.h>
+#include "../tui_internal.h"
 #endif
 
 /* ============================================================================
@@ -141,6 +142,11 @@ void tui_frame_begin(void) {
             g_layers[i].dirty = false;
         }
     }
+
+    /* Clear dirty+visible entity-managed layers (ECS builds only) */
+#ifdef CELS_HAS_ECS
+    ncurses_layer_entity_clear_dirty();
+#endif
 
     /* Block SIGWINCH during rendering to prevent ncurses corruption.
      * SIGWINCH arriving mid-doupdate/update_panels corrupts internal state.
