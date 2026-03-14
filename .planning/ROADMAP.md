@@ -40,7 +40,7 @@ Closed early. Phases 9-10 dropped for v2.0 architecture rethink.
 - [x] **Phase 1.2: Window Lifecycle Rewrite** - Replace bridge + flecs observers with CEL_Lifecycle + CEL_Observe pattern (INSERTED) ✓ 2026-03-01
 - [ ] **Phase 2: Window Entity** - (Absorbed into Phase 1)
 - [x] **Phase 3: Input System** - Per-frame input reading as a CELS phase system with queryable state
-- [ ] **Phase 4: Layer Entities** - Panel-backed layers created from TUI_Layer components with TUI_DrawContext attachment
+- [x] **Phase 4: Layer Entities** - Panel-backed layers created from TUI_LayerConfig components with TUI_DrawContext attachment ✓ 2026-03-14
 - [ ] **Phase 5: Frame Pipeline** - Begin/end frame as CELS pipeline phase systems orchestrating layers
 - [ ] **Phase 6: Demo** - Validate the full entity-driven API with a button + box example
 
@@ -144,8 +144,8 @@ Plans:
   4. Multiple layer entities stack correctly according to z_order
 **Plans:** 2 plans
 Plans:
-- [ ] 04-01-PLAN.md -- Layer component types + entity lifecycle + z-order management
-- [ ] 04-02-PLAN.md -- Module registration, frame integration, example, build verification
+- [x] 04-01-PLAN.md -- Layer component types + entity lifecycle + z-order management
+- [x] 04-02-PLAN.md -- Module registration, frame integration, example, build verification
 
 ### Phase 5: Frame Pipeline
 **Goal**: NCurses owns the frame lifecycle through CELS pipeline phases, with developer systems running naturally between begin and end frame
@@ -182,6 +182,6 @@ Phases execute in numeric order: 0 (cels repo) -> 1 -> 1.1 -> 1.2 -> 3 -> 4 -> 5
 | 1.2 Window Lifecycle Rewrite | v0.2.0 | 2/2 | Complete | 2026-03-01 |
 | 2. Window Entity | v0.2.0 | -- | Absorbed into P1 | - |
 | 3. Input System | v0.2.0 | 2/2 | Complete | 2026-03-02 |
-| 4. Layer Entities | v0.2.0 | 0/2 | Not started | - |
+| 4. Layer Entities | v0.2.0 | 2/2 | Complete | 2026-03-14 |
 | 5. Frame Pipeline | v0.2.0 | 0/TBD | Not started | - |
 | 6. Demo | v0.2.0 | 0/TBD | Not started | - |

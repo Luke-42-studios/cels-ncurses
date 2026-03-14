@@ -18,9 +18,9 @@
 
 ### Layer Entities
 
-- [ ] **LAYR-01**: Developer can create an entity with TUI_Layer component (z_order, visible, dimensions) to define a layer
-- [ ] **LAYR-02**: NCurses system creates panel/WINDOW internally for each TUI_Layer entity and attaches TUI_DrawContext component
-- [ ] **LAYR-03**: Developer can get TUI_DrawContext from a layer entity and draw into it using existing draw primitives
+- [x] **LAYR-01**: Developer can create an entity with TUI_LayerConfig component (z_order, visible, dimensions) to define a layer
+- [x] **LAYR-02**: NCurses system creates panel/WINDOW internally for each TUI_LayerConfig entity and attaches TUI_DrawContext_Component
+- [x] **LAYR-03**: Developer can get TUI_DrawContext from a layer entity and draw into it using existing draw primitives
 
 ### Frame Pipeline
 
@@ -80,9 +80,9 @@
 | WIN-03 | Phase 2: Window Entity | Complete |
 | INP-01 | Phase 3: Input System | Complete |
 | INP-02 | Phase 3: Input System | Complete |
-| LAYR-01 | Phase 4: Layer Entities | Pending |
-| LAYR-02 | Phase 4: Layer Entities | Pending |
-| LAYR-03 | Phase 4: Layer Entities | Pending |
+| LAYR-01 | Phase 4: Layer Entities | Complete |
+| LAYR-02 | Phase 4: Layer Entities | Complete |
+| LAYR-03 | Phase 4: Layer Entities | Complete |
 | FRAM-01 | Phase 5: Frame Pipeline | Pending |
 | FRAM-02 | Phase 5: Frame Pipeline | Pending |
 | FRAM-03 | Phase 5: Frame Pipeline | Pending |
@@ -95,4 +95,4 @@
 
 ---
 *Requirements defined: 2026-02-26*
-*Last updated: 2026-03-02 after Phase 3 completion*
+*Last updated: 2026-03-14 after Phase 4 completion*
