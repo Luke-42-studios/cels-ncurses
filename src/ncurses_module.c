@@ -28,6 +28,9 @@
 
 #include <cels_ncurses.h>
 #include <cels_ncurses_draw.h>
+#include <signal.h>
+#include <panel.h>
+#include "tui_window.h"
 
 CEL_State(NCurses_WindowState);
 CEL_State(NCurses_InputState);
@@ -118,6 +121,13 @@ CEL_System(TUI_LayerSystem, .phase = PreRender) {
         ncurses_layer_sync_visibility(
             TUI_LayerConfig->visible, TUI_DrawContext_Component->panel);
 
+        /* Auto-clear visible layers (developer gets blank canvas at OnRender) */
+        if (TUI_LayerConfig->visible) {
+            ncurses_layer_clear_window(
+                TUI_DrawContext_Component->win,
+                TUI_DrawContext_Component->subcell_buf);
+        }
+
         if (count < TUI_LAYER_MAX && TUI_DrawContext_Component->panel) {
             panels[count] = TUI_DrawContext_Component->panel;
             z_orders[count] = TUI_LayerConfig->z_order;
@@ -129,15 +139,46 @@ CEL_System(TUI_LayerSystem, .phase = PreRender) {
 }
 
 /* ============================================================================
+ * Frame Begin System -- blocks SIGWINCH during rendering
+ * ============================================================================ */
+
+CEL_System(TUI_FrameBeginSystem, .phase = PreRender) {
+    cel_run {
+        sigset_t winch_set;
+        sigemptyset(&winch_set);
+        sigaddset(&winch_set, SIGWINCH);
+        sigprocmask(SIG_BLOCK, &winch_set, NULL);
+    }
+}
+
+/* ============================================================================
+ * Frame End System -- composites panels, flushes to terminal, unblocks SIGWINCH
+ * ============================================================================ */
+
+CEL_System(TUI_FrameEndSystem, .phase = PostRender) {
+    cel_run {
+        update_panels();
+        doupdate();
+
+        sigset_t winch_set;
+        sigemptyset(&winch_set);
+        sigaddset(&winch_set, SIGWINCH);
+        sigprocmask(SIG_UNBLOCK, &winch_set, NULL);
+
+        tui_hook_frame_end();
+    }
+}
+
+/* ============================================================================
  * Module Init
  * ============================================================================ */
 
 CEL_Module(NCurses, init) {
     cels_register(NCurses_WindowState, NCurses_InputState,
                   NCursesWindowLC, NCurses_WindowUpdateSystem,
-                  TUI_Renderable, TUI_LayerConfig, TUI_DrawContext_Component);
-    cels_register(TUI_LayerLC, TUI_LayerSystem);
-    ncurses_register_frame_systems();
+                  TUI_Renderable, TUI_LayerConfig, TUI_DrawContext_Component,
+                  TUI_LayerLC, TUI_LayerSystem,
+                  TUI_FrameBeginSystem, TUI_FrameEndSystem);
 }
 
 /* ============================================================================
