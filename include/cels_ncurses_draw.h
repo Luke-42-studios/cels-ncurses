@@ -28,8 +28,6 @@
  *   - Draw context
  *   - Drawing primitives (rects, text, borders, lines)
  *   - Scissor/clipping regions
- *   - Layer management
- *   - Frame pipeline
  */
 
 #ifndef CELS_NCURSES_DRAW_H
@@ -536,74 +534,5 @@ extern TUI_BorderChars tui_border_chars_get(TUI_BorderStyle border_style);
 extern void tui_scissor_reset(TUI_DrawContext* ctx);
 extern void tui_push_scissor(TUI_DrawContext* ctx, TUI_CellRect rect);
 extern void tui_pop_scissor(TUI_DrawContext* ctx);
-
-/* ============================================================================
- * Layer System
- * ============================================================================ */
-
-#define TUI_LAYER_MAX 32
-
-/*
- * Panel-backed layer. Each layer owns a WINDOW* and PANEL* pair.
- */
-typedef struct TUI_Layer {
-    char name[64];        /* Human-readable identifier */
-    PANEL* panel;         /* Owned -- del_panel on destroy */
-    WINDOW* win;          /* Owned -- delwin on destroy */
-    int x, y;             /* Position (screen coordinates) */
-    int width, height;    /* Dimensions */
-    bool visible;         /* Visibility state */
-    bool dirty;           /* Auto-set by tui_layer_get_draw_context; cleared by tui_frame_begin */
-    TUI_SubCellBuffer* subcell_buf; /* NULL until first sub-cell draw (lazy alloc) */
-} TUI_Layer;
-
-/* Global layer state (extern -- defined in tui_layer.c) */
-extern TUI_Layer g_layers[TUI_LAYER_MAX];
-extern int g_layer_count;
-
-/* Lifecycle */
-extern TUI_Layer* tui_layer_create(const char* name, int x, int y, int w, int h);
-extern void tui_layer_destroy(TUI_Layer* layer);
-
-/* Visibility */
-extern void tui_layer_show(TUI_Layer* layer);
-extern void tui_layer_hide(TUI_Layer* layer);
-
-/* Z-Order */
-extern void tui_layer_raise(TUI_Layer* layer);
-extern void tui_layer_lower(TUI_Layer* layer);
-
-/* Position */
-extern void tui_layer_move(TUI_Layer* layer, int x, int y);
-
-/* Resize */
-extern void tui_layer_resize(TUI_Layer* layer, int w, int h);
-extern void tui_layer_resize_all(int new_cols, int new_lines);
-
-/* DrawContext Bridge */
-extern TUI_DrawContext tui_layer_get_draw_context(TUI_Layer* layer);
-
-/* ============================================================================
- * Frame Pipeline
- * ============================================================================ */
-
-typedef struct TUI_FrameState {
-    uint64_t frame_count;    /* Total frames rendered */
-    float delta_time;        /* Seconds since last frame */
-    float fps;               /* Current FPS (1.0 / delta_time) */
-    bool in_frame;           /* True between frame_begin and frame_end */
-} TUI_FrameState;
-
-extern TUI_FrameState g_frame_state;
-
-extern void tui_frame_init(void);
-extern void tui_frame_begin(void);
-extern void tui_frame_end(void);
-extern void tui_frame_invalidate_all(void);
-extern TUI_Layer* tui_frame_get_background(void);
-
-#ifdef CELS_HAS_ECS
-extern void tui_frame_register_systems(void);
-#endif
 
 #endif /* CELS_NCURSES_DRAW_H */

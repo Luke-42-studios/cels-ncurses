@@ -48,9 +48,6 @@ CEL_Define_System(NCurses_WindowUpdateSystem);
 /* Input terminal config (key sequences, mouse) -- called after initscr/newterm */
 extern void ncurses_input_configure_terminal(void);
 
-/* Frame pipeline systems registration */
-extern void ncurses_register_frame_systems(void);
-
 /* Layer panel operations -- defined in layer/tui_layer_panel.c */
 extern TUI_DrawContext_Component ncurses_layer_panel_create(
     const TUI_LayerConfig* config, cels_entity_t entity);
