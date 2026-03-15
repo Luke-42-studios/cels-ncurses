@@ -2,7 +2,7 @@
   <h1 align="center">cels-ncurses</h1>
   <p align="center"><strong>Terminal rendering module for CELS.</strong></p>
   <p align="center">
-    <img src="https://img.shields.io/badge/version-v0.2.0-blue" alt="version">
+    <img src="https://img.shields.io/badge/version-v0.6.0-blue" alt="version">
     <img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="license">
     <img src="https://img.shields.io/badge/C99-orange?logo=c" alt="C99">
   </p>
@@ -83,7 +83,7 @@ FetchContent_Declare(cels
 )
 FetchContent_Declare(cels-ncurses
     GIT_REPOSITORY https://github.com/42-Galaxies/cels-ncurses.git
-    GIT_TAG        v0.2.0
+    GIT_TAG        v0.6.0
 )
 FetchContent_MakeAvailable(cels cels-ncurses)
 

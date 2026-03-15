@@ -15,7 +15,7 @@
 # cels-ncurses - ncurses-based providers for CELS framework
 # INTERFACE library: sources compile in the consumer's context
 cmake_minimum_required(VERSION 3.21)
-project(cels-ncurses VERSION 0.2.0 LANGUAGES C)
+project(cels-ncurses VERSION 0.6.0 LANGUAGES C)
 
 # ============================================================================
 # Dependencies
