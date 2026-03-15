@@ -38,9 +38,14 @@
 
 CEL_Compose(World) {
     NCursesWindow(.title = "Layer Demo", .fps = 30) {}
+
+    /* Watch window state — recomposes on terminal resize */
+    const struct NCurses_WindowState* ws = cel_watch(NCurses_WindowState);
+    if (!ws) return;
+
     TUILayer(.z_order = 0, .visible = true) {}
     TUILayer(.z_order = 10, .visible = true,
-             .x = 5, .y = 3, .width = 76, .height = 32) {}
+             .x = 5, .y = 3, .width = 40, .height = 12) {}
 }
 
 /* ========================================================================== *
