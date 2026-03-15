@@ -5,17 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-02-26)
 
 **Core value:** Provide a low-level drawing primitive API that a future cels-clay module can target to render Clay UI layouts in the terminal
-**Current focus:** v0.2.0 Phase 5 - Frame Pipeline (next)
+**Current focus:** v0.2.0 Phase 5 - Frame Pipeline (in progress)
 
 ## Current Position
 
 Milestone: v0.2.0 ECS Module Architecture
-Phase: 4 of 6 (Layer Entities)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-03-14 -- Completed 04-02-PLAN.md
+Phase: 5 of 6 (Frame Pipeline)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-03-14 -- Completed 05-01-PLAN.md
 
-Progress: [██████████░] 93% (14/15 estimated plans)
+Progress: [██████████░] 94% (15/16 estimated plans)
 
 ## Performance Metrics
 
@@ -36,6 +36,7 @@ Progress: [██████████░] 93% (14/15 estimated plans)
 - Phase 1.2: Plan 01 in 2 min, Plan 02 in 7 min (9 min total)
 - Phase 3: Plan 01 in 3 min, Plan 02 in 2 min (5 min total)
 - Phase 4: Plan 01 in 6 min, Plan 02 in 10 min (16 min total; Plan 02 included cels v0.5.3 macro migration)
+- Phase 5: Plan 01 in 2 min
 
 ## Accumulated Context
 
@@ -93,6 +94,10 @@ Progress: [██████████░] 93% (14/15 estimated plans)
 - [P4-02]: Encapsulated entity layer clearing in ncurses_layer_entity_clear_dirty() function (approach B, not extern data)
 - [P4-02]: cels dependency targets v0.5.3 branch (CEL_Define_State, renamed composition macros)
 - [P4-02]: Migrated to v0.5.3 macro API: CEL_Define -> CEL_Define_Composition, CEL_Compose <-> CEL_Composition swap, CEL_Define -> CEL_Define_System
+- [P5-01]: TUI_FrameBeginSystem defined AFTER TUI_LayerSystem for correct intra-phase ordering
+- [P5-01]: tui_hook_frame_end() kept as function call in TUI_FrameEndSystem (accesses tui_window.c statics)
+- [P5-01]: Single cels_register call in module init (merged two calls + added frame systems)
+- [P5-01]: cels_ncurses_draw.h removed from tui_input.c (no remaining references after cleanup)
 
 ### Carried Forward from v1.1
 
@@ -119,6 +124,6 @@ Progress: [██████████░] 93% (14/15 estimated plans)
 
 ## Session Continuity
 
-Last session: 2026-03-14T17:35:03Z
-Stopped at: Completed 04-02-PLAN.md (module registration, frame integration, layer demo, cels v0.5.3 migration)
+Last session: 2026-03-15T05:52:29Z
+Stopped at: Completed 05-01-PLAN.md (frame systems inline in ncurses_module.c, input system cleaned)
 Resume file: None
