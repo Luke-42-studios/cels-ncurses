@@ -91,7 +91,8 @@ CEL_Component(TUI_LayerConfig) {
  * Full definition in cels_ncurses_draw.h (depends on PANEL*, WINDOW*,
  * TUI_DrawContext, TUI_SubCellBuffer types).
  *
- * Include cels_ncurses_draw.h to use cel_watch(TUI_DrawContext_Component).
+ * Include cels_ncurses_draw.h to use cel_watch(entity, TUI_DrawContext_Component).
+ * Use cels_get_current_entity() in composition bodies to get the entity.
  * Access the inner .ctx field for drawing with tui_draw_* functions.
  */
 CEL_Component(TUI_DrawContext_Component);
@@ -166,19 +167,25 @@ CEL_Define_Composition(NCursesWindow, const char* title; int fps; int color_mode
  * Composition: TUILayer
  * ============================================================================
  *
- * Public composition for creating layer entities:
+ * Creates a layer entity with a panel-backed drawing surface.
+ * Declare layers in compositions, draw in systems:
  *
- *   TUILayer(.z_order = 0, .visible = true, .width = 80, .height = 24) {
- *       const TUI_DrawContext_Component* dc = cel_watch(TUI_DrawContext_Component);
- *       if (!dc) return;
- *       TUI_DrawContext ctx = dc->ctx;
- *       tui_draw_text(&ctx, 0, 0, "Hello", style);
+ *   // Structure (composition):
+ *   TUILayer(.z_order = 0, .visible = true) {}
+ *
+ *   // Behavior (system):
+ *   CEL_System(Renderer, .phase = OnRender) {
+ *       cel_query(TUI_LayerConfig, TUI_DrawContext_Component);
+ *       cel_each(TUI_LayerConfig, TUI_DrawContext_Component) {
+ *           TUI_DrawContext ctx = TUI_DrawContext_Component->ctx;
+ *           tui_draw_text(&ctx, 0, 0, "Hello", style);
+ *       }
  *   }
  *
  * NOTE: .visible defaults to false (C99 zero-init). Pass .visible = true
  * explicitly to create a visible layer.
  *
- * Implementation in src/layer/tui_layer_entity.c via CEL_Compose(TUILayer).
+ * Implementation in src/ncurses_module.c via CEL_Compose(TUILayer).
  */
 CEL_Define_Composition(TUILayer, int z_order; bool visible; int x; int y; int width; int height;);
 

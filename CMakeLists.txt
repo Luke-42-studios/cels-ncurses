@@ -72,7 +72,7 @@ target_sources(cels-ncurses INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_scissor.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_subcell.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/layer/tui_layer.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/layer/tui_layer_entity.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/layer/tui_layer_panel.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/frame/tui_frame.c
 )
 
