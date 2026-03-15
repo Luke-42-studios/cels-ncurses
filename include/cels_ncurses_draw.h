@@ -318,10 +318,10 @@ static inline TUI_DrawContext tui_draw_context_create(WINDOW* win,
 }
 
 /* ============================================================================
- * Layer Entity Component -- Attached by NCurses, read by developer
+ * Surface Entity Component -- Attached by NCurses, read by developer
  * ============================================================================
  *
- * NCurses attaches this to each entity that has TUI_Renderable + TUI_LayerConfig.
+ * NCurses attaches this to each entity that has TUI_Renderable + TUI_SurfaceConfig.
  * Developer reads it via cel_watch(TUI_DrawContext_Component) to get a
  * drawable surface. The developer uses the inner .ctx field with tui_draw_*
  * functions. Internal fields (panel, win, subcell_buf) are opaque.

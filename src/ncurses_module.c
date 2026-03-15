@@ -64,16 +64,16 @@ CEL_Observe(NCursesWindowLC, on_destroy) {
 }
 
 /* ============================================================================
- * Layer Lifecycle
+ * Surface Lifecycle
  * ============================================================================ */
 
-CEL_Lifecycle(TUI_LayerLC);
+CEL_Lifecycle(TUI_SurfaceLC);
 
-CEL_Observe(TUI_LayerLC, on_create) {
-    const TUI_LayerConfig* config = cel_watch(entity, TUI_LayerConfig);
+CEL_Observe(TUI_SurfaceLC, on_create) {
+    const TUI_SurfaceConfig* config = cel_watch(entity, TUI_SurfaceConfig);
     if (!config) return;
 
-    TUI_DrawContext_Component dc = ncurses_layer_panel_create(config, entity);
+    TUI_DrawContext_Component dc = ncurses_surface_panel_create(config, entity);
     if (!dc.win) return;
 
     cels_entity_set_component(entity, TUI_DrawContext_Component_id,
@@ -81,19 +81,19 @@ CEL_Observe(TUI_LayerLC, on_create) {
     cels_component_notify_change(TUI_DrawContext_Component_id);
 }
 
-CEL_Observe(TUI_LayerLC, on_destroy) {
+CEL_Observe(TUI_SurfaceLC, on_destroy) {
     const TUI_DrawContext_Component* dc = cel_watch(entity, TUI_DrawContext_Component);
     if (!dc) return;
-    ncurses_layer_panel_destroy(dc);
+    ncurses_surface_panel_destroy(dc);
 }
 
 /* ============================================================================
- * Layer System -- clears, syncs visibility, rebuilds z-order stack
+ * Surface System -- clears, syncs visibility, rebuilds z-order stack
  * ============================================================================ */
 
-#define TUI_LAYER_MAX 32
+#define TUI_SURFACE_MAX 32
 
-CEL_System(TUI_LayerSystem, .phase = PreRender) {
+CEL_System(TUI_SurfaceSystem, .phase = PreRender) {
     static int prev_cols = 0;
     static int prev_lines = 0;
 
@@ -102,40 +102,40 @@ CEL_System(TUI_LayerSystem, .phase = PreRender) {
     prev_cols = COLS;
     prev_lines = LINES;
 
-    PANEL* panels[TUI_LAYER_MAX];
-    int z_orders[TUI_LAYER_MAX];
+    PANEL* panels[TUI_SURFACE_MAX];
+    int z_orders[TUI_SURFACE_MAX];
     int count = 0;
 
-    cel_query(TUI_LayerConfig, TUI_DrawContext_Component);
-    cel_each(TUI_LayerConfig, TUI_DrawContext_Component) {
+    cel_query(TUI_SurfaceConfig, TUI_DrawContext_Component);
+    cel_each(TUI_SurfaceConfig, TUI_DrawContext_Component) {
         /* Resize fullscreen entity layers when terminal dimensions changed */
         if (resized &&
-            (TUI_LayerConfig->width == 0 || TUI_LayerConfig->height == 0)) {
-            int new_w = TUI_LayerConfig->width == 0 ? COLS : TUI_LayerConfig->width;
-            int new_h = TUI_LayerConfig->height == 0 ? LINES : TUI_LayerConfig->height;
+            (TUI_SurfaceConfig->width == 0 || TUI_SurfaceConfig->height == 0)) {
+            int new_w = TUI_SurfaceConfig->width == 0 ? COLS : TUI_SurfaceConfig->width;
+            int new_h = TUI_SurfaceConfig->height == 0 ? LINES : TUI_SurfaceConfig->height;
             cel_update(TUI_DrawContext_Component) {
-                ncurses_layer_panel_resize(TUI_DrawContext_Component, new_w, new_h);
+                ncurses_surface_panel_resize(TUI_DrawContext_Component, new_w, new_h);
             }
         }
 
-        ncurses_layer_sync_visibility(
-            TUI_LayerConfig->visible, TUI_DrawContext_Component->panel);
+        ncurses_surface_sync_visibility(
+            TUI_SurfaceConfig->visible, TUI_DrawContext_Component->panel);
 
         /* Auto-clear visible layers (developer gets blank canvas at OnRender) */
-        if (TUI_LayerConfig->visible) {
-            ncurses_layer_clear_window(
+        if (TUI_SurfaceConfig->visible) {
+            ncurses_surface_clear_window(
                 TUI_DrawContext_Component->win,
                 TUI_DrawContext_Component->subcell_buf);
         }
 
-        if (count < TUI_LAYER_MAX && TUI_DrawContext_Component->panel) {
+        if (count < TUI_SURFACE_MAX && TUI_DrawContext_Component->panel) {
             panels[count] = TUI_DrawContext_Component->panel;
-            z_orders[count] = TUI_LayerConfig->z_order;
+            z_orders[count] = TUI_SurfaceConfig->z_order;
             count++;
         }
     }
 
-    ncurses_layer_sort_and_stack(panels, z_orders, count);
+    ncurses_surface_sort_and_stack(panels, z_orders, count);
 }
 
 /* ============================================================================
@@ -176,9 +176,9 @@ CEL_System(TUI_FrameEndSystem, .phase = PostRender) {
 CEL_Module(NCurses, init) {
     cels_register(NCurses_WindowState, NCurses_InputState,
                   NCursesWindowLC, NCurses_WindowUpdateSystem,
-                  TUI_Renderable, TUI_LayerConfig, TUI_DrawContext_Component,
-                  TUI_LayerLC);
-    cels_register(TUI_LayerSystem,
+                  TUI_Renderable, TUI_SurfaceConfig, TUI_DrawContext_Component,
+                  TUI_SurfaceLC);
+    cels_register(TUI_SurfaceSystem, NCurses_InputSystem,
                   TUI_FrameBeginSystem, TUI_FrameEndSystem);
 }
 
@@ -195,9 +195,9 @@ CEL_Composition(NCursesWindow) {
     cels_lifecycle_bind_entity(NCursesWindowLC_id, cels_get_current_entity());
 }
 
-CEL_Composition(TUILayer) {
+CEL_Composition(TUISurface) {
     cel_has(TUI_Renderable, ._unused = 0);
-    cel_has(TUI_LayerConfig,
+    cel_has(TUI_SurfaceConfig,
         .z_order = cel.z_order,
         .visible = cel.visible,
         .x = cel.x,
@@ -205,5 +205,5 @@ CEL_Composition(TUILayer) {
         .width = cel.width,
         .height = cel.height
     );
-    cels_lifecycle_bind_entity(TUI_LayerLC_id, cels_get_current_entity());
+    cels_lifecycle_bind_entity(TUI_SurfaceLC_id, cels_get_current_entity());
 }

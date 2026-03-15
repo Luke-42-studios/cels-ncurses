@@ -15,11 +15,11 @@
  */
 
 /*
- * Layer Panel Operations - Pure ncurses panel management
+ * Surface Panel Operations - Pure ncurses panel management
  *
  * Helper functions for creating, destroying, clearing, and stacking
- * ncurses PANEL/WINDOW resources. Called by lifecycle observers and
- * systems in ncurses_module.c.
+ * ncurses PANEL/WINDOW resources for surface entities. Called by
+ * lifecycle observers and systems in ncurses_module.c.
  *
  * No CELS component _id usage here -- all data is passed in by the
  * caller. Safe for any translation unit.
@@ -33,8 +33,8 @@
 #include <panel.h>
 #include <stdint.h>
 
-TUI_DrawContext_Component ncurses_layer_panel_create(
-    const TUI_LayerConfig* config, cels_entity_t entity)
+TUI_DrawContext_Component ncurses_surface_panel_create(
+    const TUI_SurfaceConfig* config, cels_entity_t entity)
 {
     TUI_DrawContext_Component dc = {0};
 
@@ -65,7 +65,7 @@ TUI_DrawContext_Component ncurses_layer_panel_create(
     return dc;
 }
 
-void ncurses_layer_panel_destroy(const TUI_DrawContext_Component* dc) {
+void ncurses_surface_panel_destroy(const TUI_DrawContext_Component* dc) {
     if (dc->subcell_buf) {
         tui_subcell_buffer_destroy(dc->subcell_buf);
     }
@@ -73,7 +73,7 @@ void ncurses_layer_panel_destroy(const TUI_DrawContext_Component* dc) {
     if (dc->win) delwin(dc->win);
 }
 
-void ncurses_layer_panel_resize(TUI_DrawContext_Component* dc, int new_w, int new_h) {
+void ncurses_surface_panel_resize(TUI_DrawContext_Component* dc, int new_w, int new_h) {
     if (!dc || !dc->win || !dc->panel) return;
 
     wresize(dc->win, new_h, new_w);
@@ -88,7 +88,7 @@ void ncurses_layer_panel_resize(TUI_DrawContext_Component* dc, int new_w, int ne
     }
 }
 
-void ncurses_layer_sync_visibility(bool visible, PANEL* panel) {
+void ncurses_surface_sync_visibility(bool visible, PANEL* panel) {
     if (!panel) return;
     if (visible && panel_hidden(panel)) {
         show_panel(panel);
@@ -97,7 +97,7 @@ void ncurses_layer_sync_visibility(bool visible, PANEL* panel) {
     }
 }
 
-void ncurses_layer_clear_window(WINDOW* win, TUI_SubCellBuffer* subcell_buf) {
+void ncurses_surface_clear_window(WINDOW* win, TUI_SubCellBuffer* subcell_buf) {
     if (!win) return;
     werase(win);
     wattr_set(win, A_NORMAL, 0, NULL);
@@ -106,7 +106,7 @@ void ncurses_layer_clear_window(WINDOW* win, TUI_SubCellBuffer* subcell_buf) {
     }
 }
 
-void ncurses_layer_sort_and_stack(PANEL** panels, int* z_orders, int count) {
+void ncurses_surface_sort_and_stack(PANEL** panels, int* z_orders, int count) {
     if (count <= 1) {
         if (count == 1 && panels[0]) top_panel(panels[0]);
         return;

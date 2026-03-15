@@ -27,7 +27,7 @@
  * Mouse: drain loop captures all queued events per frame. Final position
  * and last button event are kept. Held state persists across frames.
  *
- * KEY_RESIZE: consumed and dropped (resize handled by NCurses_WindowUpdateSystem + TUI_LayerSystem).
+ * KEY_RESIZE: consumed and dropped (resize handled by NCurses_WindowUpdateSystem + TUI_SurfaceSystem).
  * F1: handled internally (pause mode for text selection/copy).
  * All other keys go into the keys[] array for the developer to read.
  */
@@ -87,7 +87,7 @@ CEL_System(NCurses_InputSystem, .phase = OnLoad) {
             while ((ch = wgetch(stdscr)) != ERR) {
 
                 /* Internal: terminal resize -- consume and drop.
-                 * Resize handled by NCurses_WindowUpdateSystem + TUI_LayerSystem. */
+                 * Resize handled by NCurses_WindowUpdateSystem + TUI_SurfaceSystem. */
                 if (ch == KEY_RESIZE) {
                     int next;
                     while ((next = wgetch(stdscr)) == KEY_RESIZE) { /* consume */ }

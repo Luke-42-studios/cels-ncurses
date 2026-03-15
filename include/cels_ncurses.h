@@ -59,12 +59,12 @@ CEL_Component(NCurses_WindowConfig) {
 };
 
 /* ============================================================================
- * Layer Component Types
+ * Surface Component Types
  * ============================================================================ */
 
 /*
  * Tag component -- marks an entity as something NCurses should manage.
- * Combined with TUI_LayerConfig, triggers panel/WINDOW creation via
+ * Combined with TUI_SurfaceConfig, triggers panel/WINDOW creation via
  * lifecycle observer.
  */
 CEL_Component(TUI_Renderable) {
@@ -72,14 +72,11 @@ CEL_Component(TUI_Renderable) {
 };
 
 /*
- * Layer configuration -- developer sets this on an entity.
- * NCurses reacts to TUI_Renderable + TUI_LayerConfig combination.
- *
- * Named TUI_LayerConfig (not TUI_Layer) to avoid collision with the
- * existing typedef struct TUI_Layer in cels_ncurses_draw.h which is
- * part of the v1.0 imperative layer API used by draw_test.
+ * Surface configuration -- developer sets this on an entity.
+ * NCurses reacts to TUI_Renderable + TUI_SurfaceConfig combination.
+ * A "surface" is a drawable rectangular area backed by an ncurses panel.
  */
-CEL_Component(TUI_LayerConfig) {
+CEL_Component(TUI_SurfaceConfig) {
     int z_order;        /* Higher = on top. Gaps allowed (0, 10, 100). */
     bool visible;       /* true = show_panel, false = hide_panel */
     int x, y;           /* Position (screen coordinates) */
@@ -164,33 +161,33 @@ CEL_Define_Composition(NCursesWindow, const char* title; int fps; int color_mode
 #define NCursesWindow(...) cel_init(NCursesWindow, __VA_ARGS__)
 
 /* ============================================================================
- * Composition: TUILayer
+ * Composition: TUISurface
  * ============================================================================
  *
- * Creates a layer entity with a panel-backed drawing surface.
- * Declare layers in compositions, draw in systems:
+ * Creates a drawable surface entity backed by an ncurses panel.
+ * Declare surfaces in compositions, draw in systems:
  *
  *   // Structure (composition):
- *   TUILayer(.z_order = 0, .visible = true) {}
+ *   TUISurface(.z_order = 0, .visible = true) {}
  *
  *   // Behavior (system):
  *   CEL_System(Renderer, .phase = OnRender) {
- *       cel_query(TUI_LayerConfig, TUI_DrawContext_Component);
- *       cel_each(TUI_LayerConfig, TUI_DrawContext_Component) {
+ *       cel_query(TUI_SurfaceConfig, TUI_DrawContext_Component);
+ *       cel_each(TUI_SurfaceConfig, TUI_DrawContext_Component) {
  *           TUI_DrawContext ctx = TUI_DrawContext_Component->ctx;
  *           tui_draw_text(&ctx, 0, 0, "Hello", style);
  *       }
  *   }
  *
  * NOTE: .visible defaults to false (C99 zero-init). Pass .visible = true
- * explicitly to create a visible layer.
+ * explicitly to create a visible surface.
  *
- * Implementation in src/ncurses_module.c via CEL_Compose(TUILayer).
+ * Implementation in src/ncurses_module.c via CEL_Compose(TUISurface).
  */
-CEL_Define_Composition(TUILayer, int z_order; bool visible; int x; int y; int width; int height;);
+CEL_Define_Composition(TUISurface, int z_order; bool visible; int x; int y; int width; int height;);
 
 /* Call macro for natural syntax */
-#define TUILayer(...) cel_init(TUILayer, __VA_ARGS__)
+#define TUISurface(...) cel_init(TUISurface, __VA_ARGS__)
 
 /* ============================================================================
  * Console Logging

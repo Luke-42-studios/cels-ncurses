@@ -15,10 +15,10 @@
  */
 
 /*
- * Layer Entity Demo
+ * Surface Entity Demo
  *
- * Demonstrates the entity-driven layer API:
- *   - Compositions declare structure (window + layers)
+ * Demonstrates the entity-driven surface API:
+ *   - Compositions declare structure (window + surfaces)
  *   - Systems handle behavior (drawing + input)
  *
  * Pattern:
@@ -37,29 +37,29 @@
  * ========================================================================== */
 
 CEL_Compose(World) {
-    NCursesWindow(.title = "Layer Demo", .fps = 30) {}
+    NCursesWindow(.title = "Layer Demo", .fps = 30) {
+        /* Watch window state — recomposes on terminal resize */
+        const struct NCurses_WindowState* ws = cel_watch(NCurses_WindowState);
+        if (!ws) return;
 
-    /* Watch window state — recomposes on terminal resize */
-    const struct NCurses_WindowState* ws = cel_watch(NCurses_WindowState);
-    if (!ws) return;
-
-    TUILayer(.z_order = 0, .visible = true) {}
-    TUILayer(.z_order = 10, .visible = true,
-             .x = 5, .y = 3, .width = 40, .height = 12) {}
+        TUISurface(.z_order = 0, .visible = true) {}
+        TUISurface(.z_order = 10, .visible = true,
+                 .x = 5, .y = 3, .width = 40, .height = 12) {}
+    }
 }
 
 /* ========================================================================== *
  * Behavior: systems run each frame                                           *
  * ========================================================================== */
 
-/* Render all layers based on z_order */
+/* Render all surfaces based on z_order */
 CEL_System(Renderer, .phase = OnRender) {
-    cel_query(TUI_LayerConfig, TUI_DrawContext_Component);
-    cel_each(TUI_LayerConfig, TUI_DrawContext_Component) {
+    cel_query(TUI_SurfaceConfig, TUI_DrawContext_Component);
+    cel_each(TUI_SurfaceConfig, TUI_DrawContext_Component) {
         TUI_DrawContext ctx = TUI_DrawContext_Component->ctx;
 
-        if (TUI_LayerConfig->z_order == 0) {
-            /* Background layer */
+        if (TUI_SurfaceConfig->z_order == 0) {
+            /* Background surface */
             TUI_Style bg_style = {
                 .fg = tui_color_rgb(100, 100, 100),
                 .bg = tui_color_rgb(20, 20, 40),
@@ -68,9 +68,9 @@ CEL_System(Renderer, .phase = OnRender) {
             tui_draw_fill_rect(&ctx,
                 (TUI_CellRect){0, 0, ctx.width, ctx.height},
                 '.', bg_style);
-            tui_draw_text(&ctx, 2, 1, "Background Layer (z=0)", bg_style);
+            tui_draw_text(&ctx, 2, 1, "Background Surface (z=0)", bg_style);
         } else {
-            /* Overlay layer */
+            /* Overlay surface */
             TUI_Style box_style = {
                 .fg = tui_color_rgb(200, 200, 255),
                 .bg = tui_color_rgb(30, 30, 60),
@@ -88,8 +88,8 @@ CEL_System(Renderer, .phase = OnRender) {
                 .bg = tui_color_rgb(30, 30, 60),
                 .attrs = TUI_ATTR_NORMAL
             };
-            tui_draw_text(&ctx, 2, 1, "Overlay Layer (z=10)", text_style);
-            tui_draw_text(&ctx, 2, 3, "This layer is on top!", text_style);
+            tui_draw_text(&ctx, 2, 1, "Overlay Surface (z=10)", text_style);
+            tui_draw_text(&ctx, 2, 3, "This surface is on top!", text_style);
             tui_draw_text(&ctx, 2, 5, "Press 'q' to quit", text_style);
         }
     }

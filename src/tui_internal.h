@@ -48,14 +48,14 @@ CEL_Define_System(NCurses_WindowUpdateSystem);
 /* Input terminal config (key sequences, mouse) -- called after initscr/newterm */
 extern void ncurses_input_configure_terminal(void);
 
-/* Layer panel operations -- defined in layer/tui_layer_panel.c */
-extern TUI_DrawContext_Component ncurses_layer_panel_create(
-    const TUI_LayerConfig* config, cels_entity_t entity);
-extern void ncurses_layer_panel_destroy(const TUI_DrawContext_Component* dc);
-extern void ncurses_layer_panel_resize(TUI_DrawContext_Component* dc, int new_w, int new_h);
-extern void ncurses_layer_sync_visibility(bool visible, PANEL* panel);
-extern void ncurses_layer_clear_window(WINDOW* win, TUI_SubCellBuffer* subcell_buf);
-extern void ncurses_layer_sort_and_stack(PANEL** panels, int* z_orders, int count);
+/* Surface panel operations -- defined in layer/tui_surface_panel.c */
+extern TUI_DrawContext_Component ncurses_surface_panel_create(
+    const TUI_SurfaceConfig* config, cels_entity_t entity);
+extern void ncurses_surface_panel_destroy(const TUI_DrawContext_Component* dc);
+extern void ncurses_surface_panel_resize(TUI_DrawContext_Component* dc, int new_w, int new_h);
+extern void ncurses_surface_sync_visibility(bool visible, PANEL* panel);
+extern void ncurses_surface_clear_window(WINDOW* win, TUI_SubCellBuffer* subcell_buf);
+extern void ncurses_surface_sort_and_stack(PANEL** panels, int* z_orders, int count);
 
 /* Terminal spawn: kill child terminal emulator on shutdown */
 extern void ncurses_kill_terminal(void);
