@@ -143,10 +143,7 @@ void tui_frame_begin(void) {
         }
     }
 
-    /* Clear dirty+visible entity-managed layers (ECS builds only) */
-#ifdef CELS_HAS_ECS
-    ncurses_layer_entity_clear_dirty();
-#endif
+    /* Entity-managed layer clearing is handled by TUI_LayerSystem at PreRender */
 
     /* Block SIGWINCH during rendering to prevent ncurses corruption.
      * SIGWINCH arriving mid-doupdate/update_panels corrupts internal state.

@@ -17,56 +17,26 @@
 /*
  * NCurses Module - CEL_Module(NCurses) Definition
  *
- * Single module entry point replacing the old Engine + CelsNcurses facade.
- * Registers all NCurses component types, state singletons, lifecycle, and systems.
+ * All CELS declarations for the NCurses module: lifecycles, observers,
+ * systems, and compositions. Implementation details (ncurses panel ops,
+ * terminal init) are delegated to helper functions in other source files.
  *
- * CEL_Module(NCurses) expands to define:
- *   - cels_entity_t NCurses = 0;   (module entity, file scope)
- *   - void NCurses_init(void)      (idempotent init function)
- *   - NCurses_init_body(void)      (user-provided init body below)
- *
- * CEL_Lifecycle(NCursesWindowLC) defines the window lifecycle.
- * CEL_Observe hooks handle terminal init/shutdown.
- * CEL_Compose(NCursesWindow) defines both components and binds lifecycle
- * manually AFTER cel_has() so on_create can read config from the entity.
- *
- * NOTE: Lifecycle binding must be manual (not via .lifecycle prop) because
- * auto-bind fires on_create during cels_begin_entity(), before the
- * composition body adds components via cel_has().
- *
- * NOTE: Lifecycle, observers, and composition are in the SAME translation
- * unit because CEL_Lifecycle creates static variables that the observers
- * reference.
- *
- * NOTE: This file compiles in the CONSUMER's context (INTERFACE library).
- * The CEL_Module macro generates non-static globals, so this must be the
- * ONLY file that expands CEL_Module(NCurses). The public header uses
- * extern declarations only.
+ * IMPORTANT: All code that uses component _id variables MUST live in
+ * this file. CEL_Component generates static per-TU _id vars, and
+ * cels_register only initializes THIS TU's copies. See docs/modules.md.
  */
 
-/* Prevent tui_ncurses.h from defining NCurses_register() --
- * CEL_Module(NCurses) below generates its own. */
 #include <cels_ncurses.h>
+#include <cels_ncurses_draw.h>
 
-/* Extern global component ID shared across all TUs (declared in cels_ncurses.h) */
-cels_entity_t _ncurses_WindowConfig_id = 0;
-
-/* State extern definitions (declared via CEL_Define_State in cels_ncurses.h) */
 CEL_State(NCurses_WindowState);
 CEL_State(NCurses_InputState);
 
 #include "tui_internal.h"
-#include <ncurses.h>
 
 /* ============================================================================
- * Window Lifecycle -- Condition, Lifecycle, Observers
- * ============================================================================
- *
- * NCursesActive condition: returns true when ncurses terminal is active.
- * NCursesWindowLC lifecycle: driven by NCursesActive condition.
- * on_create observer: initializes terminal (does NOT set components).
- * on_destroy observer: shuts down terminal.
- */
+ * Window Lifecycle
+ * ============================================================================ */
 
 CEL_Lifecycle(NCursesWindowLC);
 
@@ -91,42 +61,107 @@ CEL_Observe(NCursesWindowLC, on_destroy) {
 }
 
 /* ============================================================================
- * CEL_Module(NCurses) -- Module Init Body
+ * Layer Lifecycle
+ * ============================================================================ */
+
+CEL_Lifecycle(TUI_LayerLC);
+
+CEL_Observe(TUI_LayerLC, on_create) {
+    const TUI_LayerConfig* config = cel_watch(entity, TUI_LayerConfig);
+    if (!config) return;
+
+    TUI_DrawContext_Component dc = ncurses_layer_panel_create(config, entity);
+    if (!dc.win) return;
+
+    cels_entity_set_component(entity, TUI_DrawContext_Component_id,
+                               &dc, sizeof(dc));
+    cels_component_notify_change(TUI_DrawContext_Component_id);
+}
+
+CEL_Observe(TUI_LayerLC, on_destroy) {
+    const TUI_DrawContext_Component* dc = cel_watch(entity, TUI_DrawContext_Component);
+    if (!dc) return;
+    ncurses_layer_panel_destroy(dc);
+}
+
+/* ============================================================================
+ * Layer System -- clears, syncs visibility, rebuilds z-order stack
+ * ============================================================================ */
+
+#define TUI_LAYER_MAX 32
+
+CEL_System(TUI_LayerSystem, .phase = PreRender) {
+    static int prev_cols = 0;
+    static int prev_lines = 0;
+
+    bool resized = (COLS != prev_cols || LINES != prev_lines) &&
+                   (prev_cols > 0 || prev_lines > 0);
+    prev_cols = COLS;
+    prev_lines = LINES;
+
+    PANEL* panels[TUI_LAYER_MAX];
+    int z_orders[TUI_LAYER_MAX];
+    int count = 0;
+
+    cel_query(TUI_LayerConfig, TUI_DrawContext_Component);
+    cel_each(TUI_LayerConfig, TUI_DrawContext_Component) {
+        /* Resize fullscreen entity layers when terminal dimensions changed */
+        if (resized &&
+            (TUI_LayerConfig->width == 0 || TUI_LayerConfig->height == 0)) {
+            int new_w = TUI_LayerConfig->width == 0 ? COLS : TUI_LayerConfig->width;
+            int new_h = TUI_LayerConfig->height == 0 ? LINES : TUI_LayerConfig->height;
+            cel_update(TUI_DrawContext_Component) {
+                ncurses_layer_panel_resize(TUI_DrawContext_Component, new_w, new_h);
+            }
+        }
+
+        ncurses_layer_sync_visibility(
+            TUI_LayerConfig->visible, TUI_DrawContext_Component->panel);
+
+        if (count < TUI_LAYER_MAX && TUI_DrawContext_Component->panel) {
+            panels[count] = TUI_DrawContext_Component->panel;
+            z_orders[count] = TUI_LayerConfig->z_order;
+            count++;
+        }
+    }
+
+    ncurses_layer_sort_and_stack(panels, z_orders, count);
+}
+
+/* ============================================================================
+ * Module Init
  * ============================================================================ */
 
 CEL_Module(NCurses, init) {
     cels_register(NCurses_WindowState, NCurses_InputState,
-                  NCursesWindowLC, NCurses_InputSystem, NCurses_WindowUpdateSystem,
-                  TUI_LayerLC, TUI_LayerSyncSystem);
+                  NCursesWindowLC,
+                  TUI_Renderable, TUI_LayerConfig, TUI_DrawContext_Component,
+                  TUI_LayerLC, TUI_LayerSystem);
     ncurses_register_frame_systems();
-    ncurses_register_layer_systems();
 }
 
 /* ============================================================================
- * NCursesWindow Composition
- * ============================================================================
- *
- * NCursesWindow(.title = "My App", .fps = 60) {}
- *
- * The call macro in tui_ncurses.h expands to cel_init(NCursesWindow, ...),
- * which calls NCursesWindow_factory -> NCursesWindow_impl.
- *
- * The composition body receives `cel` of type NCursesWindow_props with
- * fields: .title, .fps, .color_mode.
- *
- * Declares NCurses_WindowConfig via cel_has, then binds the entity to
- * NCursesWindowLC lifecycle which fires on_create.
- *
- * ORDERING: cel_has() MUST come before cels_lifecycle_bind_entity() because
- * the on_create observer reads WindowConfig from the entity.
- */
-CEL_Compose(NCursesWindow) {
+ * Compositions
+ * ============================================================================ */
+
+CEL_Composition(NCursesWindow) {
     cel_has(NCurses_WindowConfig,
         .title = cel.title,
         .fps = cel.fps,
         .color_mode = cel.color_mode
     );
-    /* Bind lifecycle after component -- fires on_create which reads config. */
     cels_lifecycle_bind_entity(NCursesWindowLC_id, cels_get_current_entity());
 }
 
+CEL_Composition(TUILayer) {
+    cel_has(TUI_Renderable, ._unused = 0);
+    cel_has(TUI_LayerConfig,
+        .z_order = cel.z_order,
+        .visible = cel.visible,
+        .x = cel.x,
+        .y = cel.y,
+        .width = cel.width,
+        .height = cel.height
+    );
+    cels_lifecycle_bind_entity(TUI_LayerLC_id, cels_get_current_entity());
+}

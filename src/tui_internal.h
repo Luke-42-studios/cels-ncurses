@@ -17,22 +17,22 @@
 /*
  * NCurses Module - Internal Function Declarations
  *
- * Forward declarations for lifecycle accessors and system registration
- * functions called by ncurses_module.c. Implementations live in:
- *   - tui_window.c  (terminal init/shutdown, window accessors)
- *   - tui_input.c   (input system registration)
- *   - tui_frame.c   (frame pipeline systems registration)
+ * Forward declarations for lifecycle accessors, system registration,
+ * and layer panel helpers called by ncurses_module.c.
  *
- * This header is NOT included by consumers -- only by ncurses_module.c.
+ * This header is NOT included by consumers -- only by ncurses_module.c
+ * and internal source files.
  */
 
 #ifndef CELS_NCURSES_TUI_INTERNAL_H
 #define CELS_NCURSES_TUI_INTERNAL_H
 
 #include <cels_ncurses.h>
+#include <cels_ncurses_draw.h>
 #include <stdbool.h>
 
-/* Cross-TU ID overrides are in cels_ncurses.h (after CEL_State expansions) */
+/* Forward declarations for ncurses types used in layer helpers */
+typedef struct panel PANEL;
 
 /* Window lifecycle accessors -- called by observers in ncurses_module.c */
 extern void ncurses_terminal_init(NCurses_WindowConfig* config);
@@ -51,11 +51,14 @@ extern void ncurses_input_configure_terminal(void);
 /* Frame pipeline systems registration */
 extern void ncurses_register_frame_systems(void);
 
-/* Layer entity lifecycle and systems -- defined in layer/tui_layer_entity.c */
-CEL_Define_Lifecycle(TUI_LayerLC);
-CEL_Define_System(TUI_LayerSyncSystem);
-extern void ncurses_register_layer_systems(void);
-extern void ncurses_layer_entity_clear_dirty(void);
+/* Layer panel operations -- defined in layer/tui_layer_panel.c */
+extern TUI_DrawContext_Component ncurses_layer_panel_create(
+    const TUI_LayerConfig* config, cels_entity_t entity);
+extern void ncurses_layer_panel_destroy(const TUI_DrawContext_Component* dc);
+extern void ncurses_layer_panel_resize(TUI_DrawContext_Component* dc, int new_w, int new_h);
+extern void ncurses_layer_sync_visibility(bool visible, PANEL* panel);
+extern void ncurses_layer_clear_window(WINDOW* win, TUI_SubCellBuffer* subcell_buf);
+extern void ncurses_layer_sort_and_stack(PANEL** panels, int* z_orders, int count);
 
 /* Terminal spawn: kill child terminal emulator on shutdown */
 extern void ncurses_kill_terminal(void);

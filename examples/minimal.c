@@ -38,9 +38,9 @@
 
 CEL_Compose(World) {
     NCursesWindow(.title = "Layer Demo", .fps = 30) {}
-    TUILayer(.z_order = 0, .visible = false) {}
+    TUILayer(.z_order = 0, .visible = true) {}
     TUILayer(.z_order = 10, .visible = true,
-             .x = 5, .y = 3, .width = 20, .height = 12) {}
+             .x = 5, .y = 3, .width = 76, .height = 32) {}
 }
 
 /* ========================================================================== *
