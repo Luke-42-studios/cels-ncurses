@@ -134,9 +134,9 @@ CEL_System(TUI_LayerSystem, .phase = PreRender) {
 
 CEL_Module(NCurses, init) {
     cels_register(NCurses_WindowState, NCurses_InputState,
-                  NCursesWindowLC,
-                  TUI_Renderable, TUI_LayerConfig, TUI_DrawContext_Component,
-                  TUI_LayerLC, TUI_LayerSystem);
+                  NCursesWindowLC, NCurses_WindowUpdateSystem,
+                  TUI_Renderable, TUI_LayerConfig, TUI_DrawContext_Component);
+    cels_register(TUI_LayerLC, TUI_LayerSystem);
     ncurses_register_frame_systems();
 }
 
