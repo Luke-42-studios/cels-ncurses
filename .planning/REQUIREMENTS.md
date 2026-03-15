@@ -24,9 +24,9 @@
 
 ### Frame Pipeline
 
-- [ ] **FRAM-01**: NCurses registers begin-frame and end-frame systems in CELS pipeline phases
-- [ ] **FRAM-02**: Begin-frame system clears layers; end-frame system composites panels and calls doupdate()
-- [ ] **FRAM-03**: Developer systems run between begin-frame and end-frame phases (natural CELS phase ordering)
+- [x] **FRAM-01**: NCurses registers begin-frame and end-frame systems in CELS pipeline phases
+- [x] **FRAM-02**: Begin-frame system clears layers; end-frame system composites panels and calls doupdate()
+- [x] **FRAM-03**: Developer systems run between begin-frame and end-frame phases (natural CELS phase ordering)
 
 ### Module Boundary
 
@@ -83,9 +83,9 @@
 | LAYR-01 | Phase 4: Layer Entities | Complete |
 | LAYR-02 | Phase 4: Layer Entities | Complete |
 | LAYR-03 | Phase 4: Layer Entities | Complete |
-| FRAM-01 | Phase 5: Frame Pipeline | Pending |
-| FRAM-02 | Phase 5: Frame Pipeline | Pending |
-| FRAM-03 | Phase 5: Frame Pipeline | Pending |
+| FRAM-01 | Phase 5: Frame Pipeline | Complete |
+| FRAM-02 | Phase 5: Frame Pipeline | Complete |
+| FRAM-03 | Phase 5: Frame Pipeline | Complete |
 | DEMO-01 | Phase 6: Demo | Pending |
 
 **Coverage:**
@@ -95,4 +95,4 @@
 
 ---
 *Requirements defined: 2026-02-26*
-*Last updated: 2026-03-14 after Phase 4 completion*
+*Last updated: 2026-03-14 after Phase 5 completion*

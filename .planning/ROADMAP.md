@@ -41,7 +41,7 @@ Closed early. Phases 9-10 dropped for v2.0 architecture rethink.
 - [ ] **Phase 2: Window Entity** - (Absorbed into Phase 1)
 - [x] **Phase 3: Input System** - Per-frame input reading as a CELS phase system with queryable state
 - [x] **Phase 4: Layer Entities** - Panel-backed layers created from TUI_LayerConfig components with TUI_DrawContext attachment ✓ 2026-03-14
-- [ ] **Phase 5: Frame Pipeline** - Begin/end frame as CELS pipeline phase systems orchestrating layers
+- [x] **Phase 5: Frame Pipeline** - Begin/end frame as CELS pipeline phase systems orchestrating layers ✓ 2026-03-14
 - [ ] **Phase 6: Demo** - Validate the full entity-driven API with a button + box example
 
 ## Phase Details
@@ -157,8 +157,8 @@ Plans:
   3. Developer-defined systems that draw into layers run between begin-frame and end-frame without explicit ordering code
 **Plans:** 2 plans
 Plans:
-- [ ] 05-01-PLAN.md -- Inline frame systems + layer clearing in ncurses_module.c, strip input legacy refs
-- [ ] 05-02-PLAN.md -- Delete legacy files, clean headers/CMake, build verification
+- [x] 05-01-PLAN.md -- Inline frame systems + layer clearing in ncurses_module.c, strip input legacy refs
+- [x] 05-02-PLAN.md -- Delete legacy files, clean headers/CMake, build verification
 
 ### Phase 6: Demo
 **Goal**: A working example proves the full entity-driven API by rendering interactive content across multiple layers
@@ -186,5 +186,5 @@ Phases execute in numeric order: 0 (cels repo) -> 1 -> 1.1 -> 1.2 -> 3 -> 4 -> 5
 | 2. Window Entity | v0.2.0 | -- | Absorbed into P1 | - |
 | 3. Input System | v0.2.0 | 2/2 | Complete | 2026-03-02 |
 | 4. Layer Entities | v0.2.0 | 2/2 | Complete | 2026-03-14 |
-| 5. Frame Pipeline | v0.2.0 | 0/2 | Not started | - |
+| 5. Frame Pipeline | v0.2.0 | 2/2 | Complete | 2026-03-14 |
 | 6. Demo | v0.2.0 | 0/TBD | Not started | - |
