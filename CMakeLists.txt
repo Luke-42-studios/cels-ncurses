@@ -71,9 +71,7 @@ target_sources(cels-ncurses INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_draw.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_scissor.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/tui_subcell.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/layer/tui_layer.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/layer/tui_layer_panel.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/frame/tui_frame.c
 )
 
 target_include_directories(cels-ncurses INTERFACE
@@ -103,16 +101,5 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     add_executable(minimal examples/minimal.c)
     target_link_libraries(minimal PRIVATE cels-ncurses)
     set_target_properties(minimal PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED ON)
-
-    # Drawing primitives visual test (standalone, no CELS framework)
-    add_executable(draw_test
-        examples/draw_test.c
-        src/graphics/tui_color.c src/graphics/tui_draw.c
-        src/graphics/tui_scissor.c src/graphics/tui_subcell.c
-        src/layer/tui_layer.c src/frame/tui_frame.c)
-    target_include_directories(draw_test PRIVATE include ${CURSES_INCLUDE_DIRS})
-    target_compile_definitions(draw_test PRIVATE _XOPEN_SOURCE=700 _DEFAULT_SOURCE)
-    target_link_libraries(draw_test PRIVATE ${CURSES_LIBRARIES} ${PANEL_LIBRARY} m)
-    set_target_properties(draw_test PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED ON)
 endif()
 

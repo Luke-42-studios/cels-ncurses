@@ -177,7 +177,8 @@ CEL_Module(NCurses, init) {
     cels_register(NCurses_WindowState, NCurses_InputState,
                   NCursesWindowLC, NCurses_WindowUpdateSystem,
                   TUI_Renderable, TUI_LayerConfig, TUI_DrawContext_Component,
-                  TUI_LayerLC, TUI_LayerSystem,
+                  TUI_LayerLC);
+    cels_register(TUI_LayerSystem,
                   TUI_FrameBeginSystem, TUI_FrameEndSystem);
 }
 
