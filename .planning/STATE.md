@@ -5,17 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-02-26)
 
 **Core value:** Provide a low-level drawing primitive API that a future cels-clay module can target to render Clay UI layouts in the terminal
-**Current focus:** v0.2.0 Phase 5 - Frame Pipeline (in progress)
+**Current focus:** v0.2.0 Phase 5 - Frame Pipeline (complete)
 
 ## Current Position
 
 Milestone: v0.2.0 ECS Module Architecture
 Phase: 5 of 6 (Frame Pipeline)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-03-14 -- Completed 05-01-PLAN.md
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-03-14 -- Completed 05-02-PLAN.md
 
-Progress: [██████████░] 94% (15/16 estimated plans)
+Progress: [████████████████] 100% (16/16 estimated plans)
 
 ## Performance Metrics
 
@@ -36,7 +36,7 @@ Progress: [██████████░] 94% (15/16 estimated plans)
 - Phase 1.2: Plan 01 in 2 min, Plan 02 in 7 min (9 min total)
 - Phase 3: Plan 01 in 3 min, Plan 02 in 2 min (5 min total)
 - Phase 4: Plan 01 in 6 min, Plan 02 in 10 min (16 min total; Plan 02 included cels v0.5.3 macro migration)
-- Phase 5: Plan 01 in 2 min
+- Phase 5: Plan 01 in 2 min, Plan 02 in 4 min (6 min total; Plan 02 fixed cels_register macro overflow)
 
 ## Accumulated Context
 
@@ -98,6 +98,9 @@ Progress: [██████████░] 94% (15/16 estimated plans)
 - [P5-01]: tui_hook_frame_end() kept as function call in TUI_FrameEndSystem (accesses tui_window.c statics)
 - [P5-01]: Single cels_register call in module init (merged two calls + added frame systems)
 - [P5-01]: cels_ncurses_draw.h removed from tui_input.c (no remaining references after cleanup)
+- [P5-02]: cels_register split into two calls (8+3) to fit _CELS_REG_ macro 8-arg limit
+- [P5-02]: Legacy tui_frame.c, tui_layer.c, draw_test.c deleted (~1660 lines total)
+- [P5-02]: Layer System and Frame Pipeline sections stripped from cels_ncurses_draw.h public header
 
 ### Carried Forward from v1.1
 
@@ -121,9 +124,10 @@ Progress: [██████████░] 94% (15/16 estimated plans)
 - cmake-build-debug directory configured standalone (no cels dependency); wrapper build at /tmp/cels-ncurses-build used for verification
 - cels dependency must remain on v0.5.3 branch for builds (updated from v0.5.2)
 - Phase 4 build verified: both minimal and draw_test targets compile cleanly
+- Phase 5 build verified: minimal target compiles and links cleanly after legacy deletion
 
 ## Session Continuity
 
-Last session: 2026-03-15T05:52:29Z
-Stopped at: Completed 05-01-PLAN.md (frame systems inline in ncurses_module.c, input system cleaned)
+Last session: 2026-03-15T05:58:02Z
+Stopped at: Completed 05-02-PLAN.md (legacy frame/layer files deleted, headers cleaned, build verified)
 Resume file: None
