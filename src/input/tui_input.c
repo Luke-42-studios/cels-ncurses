@@ -27,14 +27,13 @@
  * Mouse: drain loop captures all queued events per frame. Final position
  * and last button event are kept. Held state persists across frames.
  *
- * KEY_RESIZE: handled internally (layer resize + frame invalidation).
+ * KEY_RESIZE: consumed and dropped (resize handled by NCurses_WindowUpdateSystem + TUI_LayerSystem).
  * F1: handled internally (pause mode for text selection/copy).
  * All other keys go into the keys[] array for the developer to read.
  */
 
 #include <cels_ncurses.h>
 #include "../tui_internal.h"
-#include <cels_ncurses_draw.h>
 #include <ncurses.h>
 #include <string.h>
 #include <cels/cels.h>
@@ -87,18 +86,12 @@ CEL_System(NCurses_InputSystem, .phase = OnLoad) {
             int ch;
             while ((ch = wgetch(stdscr)) != ERR) {
 
-                /* Internal: terminal resize */
+                /* Internal: terminal resize -- consume and drop.
+                 * Resize handled by NCurses_WindowUpdateSystem + TUI_LayerSystem. */
                 if (ch == KEY_RESIZE) {
                     int next;
                     while ((next = wgetch(stdscr)) == KEY_RESIZE) { /* consume */ }
                     if (next != ERR) ungetch(next);
-
-                    if (COLS >= 4 && LINES >= 4) {
-                        ncurses_console_log("[resize] COLS=%d LINES=%d\n", COLS, LINES);
-                        tui_layer_resize_all(COLS, LINES);
-                        tui_frame_invalidate_all();
-                        clearok(curscr, TRUE);
-                    }
                     continue;
                 }
 
